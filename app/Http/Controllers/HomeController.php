@@ -9,7 +9,7 @@ use App\Http\Requests\UpdateProfileRequest;
 use App\Rules\CurrentPassword;
 use App\Tag;
 use App\User;
-use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Validator;

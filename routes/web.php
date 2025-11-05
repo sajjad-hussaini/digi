@@ -11,13 +11,17 @@
 |
 */
 
-use App\Http\Controllers\CustomFieldController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TagController;
+use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\FileTypeController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\TagController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\CustomFieldController;
 
 Route::get('/', [HomeController::class,'welcome'])->name('home');
 
@@ -42,6 +46,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
     Route::resource('users', UserController::class);
     Route::get('/users-block/{user}',[UserController::class,'blockUnblock'])->name('users.blockUnblock');
     Route::resource('tags', TagController::class);
+    Route::resource('companies', CompanyController::class);
 
     Route::resource('documents', DocumentController::class);
     Route::post('document-verify/{id}',[DocumentController::class,'verify'])->name('documents.verify');
