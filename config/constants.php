@@ -15,6 +15,13 @@ return [
             'delete users' => 'delete',
             'user manage permission' => 'permission management',
         ],
+          'COMPANIES' => [
+            'create companies' => 'create',
+            'read companies' => 'read',
+            'update companies' => 'update',
+            'delete companies' => 'delete',
+            'company manage permission' => 'permission management',
+        ],
         'TAGS' => [
             'create tags' => 'create',
             'read tags' => 'read',

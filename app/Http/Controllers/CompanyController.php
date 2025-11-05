@@ -3,9 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Repositories\PermissionRepository;
 
 class CompanyController extends Controller
 {
+
+     /** @var  CompanyRepository */
+    private $companyRepository;
+    /** @var PermissionRepository */
+    private $permissionRepository;
+
+    public function __construct(CompanyRepository $companyRepo,
+                                PermissionRepository $permissionRepository)
+    {
+        $this->companyRepository = $companyRepo;
+        $this->permissionRepository = $permissionRepository;
+    }
+    
     /**
      * Display a listing of the resource.
      */

@@ -1,17 +1,17 @@
 @extends('layouts.app')
-@section('title','Show '.ucfirst(config('settings.tags_label_singular')))
+@section('title','Show '.ucfirst(config('settings.companies_label_singular')))
 @section('content')
     <section class="content-header">
         <h1>
-            {{ucfirst(config('settings.tags_label_singular'))}}
+            {{ucfirst(config('settings.companies_label_singular'))}}
             <span class="pull-right">
-            <a href="{{ route('tags.index') }}" class="btn btn-default">
+            <a href="{{ route('companies.index') }}" class="btn btn-default">
                 <i class="fa fa-chevron-left" aria-hidden="true"></i> Back
             </a>
-            <a href="{{ route('tags.edit',$tag->id) }}" class="btn btn-primary">
+            <a href="{{ route('companies.edit',$tag->id) }}" class="btn btn-primary">
                 <i class="fa fa-edit" aria-hidden="true"></i> Edit
             </a>
-            {!! Form::open(['route' => ['tags.destroy', $tag->id], 'method' => 'delete','style'=>'display:inline']) !!}
+            {!! Form::open(['route' => ['companies.destroy', $tag->id], 'method' => 'delete','style'=>'display:inline']) !!}
                 {!! Form::button('<i class="fa fa-trash"></i> Delete', [
                 'type' => 'submit',
                 'title' => 'Delete',
@@ -26,7 +26,7 @@
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#tag" data-toggle="tab"
-                                      aria-expanded="true">{{ucfirst(config('settings.tags_label_singular'))}}</a>
+                                      aria-expanded="true">{{ucfirst(config('settings.companies_label_singular'))}}</a>
                 </li>
                 @can('user manage permission')
                     <li class=""><a href="#tab_permissions" data-toggle="tab"
@@ -36,7 +36,7 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="tag">
-                    @include('tags.show_fields')
+                    @include('companies.show_fields')
                 </div>
                 @can('user manage permission')
                     <div class="tab-pane" id="tab_permissions">
@@ -44,7 +44,7 @@
                             <table class="table">
                                 <thead>
                                 <tr>
-                                    <th colspan="3" style="font-size: 1.8rem;">{{ucfirst(config('settings.document_label_plural'))}} permissions in this {{config('settings.tags_label_singular')}}</th>
+                                    <th colspan="3" style="font-size: 1.8rem;">{{ucfirst(config('settings.document_label_plural'))}} permissions in this {{config('settings.companies_label_singular')}}</th>
                                 </tr>
                                 <tr>
                                     <th>User</th>

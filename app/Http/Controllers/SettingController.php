@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\SettingDataTable;
+use App\User;
+use Response;
 use App\Http\Requests;
+use Laracasts\Flash\Flash;
+use Illuminate\Support\Arr;
+use Spatie\Permission\Guard;
+use App\DataTables\SettingDataTable;
+use App\Repositories\SettingRepository;
+use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateSettingRequest;
 use App\Http\Requests\UpdateSettingRequest;
-use App\Repositories\SettingRepository;
-use App\User;
-use Flash;
-use App\Http\Controllers\AppBaseController;
-use Illuminate\Support\Arr;
-use Response;
-use Spatie\Permission\Guard;
 
 class SettingController extends AppBaseController
 {
