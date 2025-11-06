@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Company;
 use Illuminate\Http\Request;
+use App\DataTables\CompanyDataTable;
+use App\Repositories\CompanyRepository;
 use App\Repositories\PermissionRepository;
 
 class CompanyController extends Controller
@@ -23,9 +26,10 @@ class CompanyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(CompanyDataTable $companyDataTable)
     {
-        //
+        $this->authorize('viewAny', Company::class);
+        return $companyDataTable->render('companies.index');
     }
 
     /**

@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\CustomField;
-use App\DataTables\TagDataTable;
-use App\Http\Requests\CreateTagRequest;
-use App\Http\Requests\UpdateTagRequest;
-use App\Repositories\PermissionRepository;
-use App\Repositories\TagRepository;
 use App\Tag;
 use App\User;
-use Flash;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Response;
+use App\CustomField;
+use Laracasts\Flash\Flash;
+use App\DataTables\TagDataTable;
+use App\Repositories\TagRepository;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\CreateTagRequest;
+use App\Http\Requests\UpdateTagRequest;
+use Illuminate\Database\QueryException;
 use Spatie\Permission\Models\Permission;
+use App\Repositories\PermissionRepository;
 
 class TagController extends AppBaseController
 {
