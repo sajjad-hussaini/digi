@@ -1,6 +1,11 @@
 <li class="{{ Request::is('admin/home*') ? 'active' : '' }}">
     <a href="{!! route('admin.dashboard') !!}"><i class="fa fa-home"></i><span>Home</span></a>
 </li>
+@can('read companies')
+    <li class="{{ Request::is('admin/companies*') ? 'active' : '' }}">
+        <a href="{!! route('companies.index') !!}"><i class="fa fa-briefcase"></i><span>Companies</span></a>
+    </li>
+@endcan
 @can('read users')
     <li class="{{ Request::is('admin/users*') ? 'active' : '' }}">
         <a href="{!! route('users.index') !!}"><i class="fa fa-users"></i><span>Users</span></a>

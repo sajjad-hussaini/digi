@@ -1,6 +1,6 @@
 <!-- Name Field -->
 <div class="form-group col-sm-6 {{ $errors->has('name') ? 'has-error' :'' }}">
-    {!! Form::label('name', 'Name:') !!}
+    {!! Form::label('name', 'Company Name:') !!}
     {!! Form::text('name', null, ['class' => 'form-control']) !!}
     {!! $errors->first('name','<span class="help-block">:message</span>') !!}
 </div>

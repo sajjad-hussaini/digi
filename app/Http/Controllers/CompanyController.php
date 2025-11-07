@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Company;
+use App\CustomField;
 use Illuminate\Http\Request;
 use App\DataTables\CompanyDataTable;
 use App\Repositories\CompanyRepository;
@@ -37,7 +38,8 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        //
+        $customFields = CustomField::where('model_type', 'tags')->get();
+        return view('companies.create', compact('customFields'));
     }
 
     /**

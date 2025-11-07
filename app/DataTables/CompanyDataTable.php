@@ -2,6 +2,7 @@
 
 namespace App\DataTables;
 
+use App\Company;
 use App\Tag;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Services\DataTable;
@@ -17,14 +18,14 @@ class CompanyDataTable extends DataTable
     public function dataTable($query)
     {
         $dataTable = new EloquentDataTable($query);
-        $dataTable = $dataTable->addColumn('action', 'tags.datatables_actions')
+        $dataTable = $dataTable->addColumn('action', 'companies.datatables_actions')
             ->addColumn('created_by', function (Tag $tag) {
                 return $tag->createdBy->name;
             })->editColumn('color', function (Tag $tag) {
                 return '<span class="label" style="background-color: ' . $tag->color . '">' . $tag->color . '</span>';
             })->rawColumns(['color'], true)
             ->filterColumn('created_by', function ($query, $keyword) {
-                return $query->whereRaw("select count(*) from users where lower(users.name) like ? and users.id=tags.created_by",["%$keyword%"]);
+                return $query->whereRaw("select count(*) from companies where lower(companies.name) like ? and companies.id=companies.created_by",["%$keyword%"]);
             });
 
         return $dataTable;
@@ -36,7 +37,7 @@ class CompanyDataTable extends DataTable
      * @param \App\Models\Tag $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function query(Tag $model)
+    public function query(Company $model)
     {
         $query = $model->newQuery()->with(['createdBy']);
         return $query;
@@ -76,8 +77,11 @@ class CompanyDataTable extends DataTable
     {
         return [
             'id',
-            'name',
-            'color',
+            'company_name',
+            'company_address',
+            'contact_number',
+            'email_address',
+            'solicitor_name',
         ];
     }
 
@@ -88,6 +92,6 @@ class CompanyDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'tagsdatatable_' . time();
+        return 'companiesdatatable_' . time();
     }
 }
