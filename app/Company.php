@@ -22,4 +22,9 @@ class Company extends Model
         'company_logo',
         'accreditor_logos',
     ];
+
+    protected $casts = [
+        'accreditor_logos' => 'array',
+    ];
+
 }

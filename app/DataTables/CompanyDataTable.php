@@ -19,10 +19,10 @@ class CompanyDataTable extends DataTable
     {
         $dataTable = new EloquentDataTable($query);
         $dataTable = $dataTable->addColumn('action', 'companies.datatables_actions')
-            ->addColumn('created_by', function (Tag $tag) {
-                return $tag->createdBy->name;
-            })->editColumn('color', function (Tag $tag) {
-                return '<span class="label" style="background-color: ' . $tag->color . '">' . $tag->color . '</span>';
+            ->addColumn('created_by', function (Company $company) {
+                return $company->created_by ? $company->creator->name : '';
+            })->editColumn('color', function (Company $company) {
+                return '<span class="label" style="background-color: ' . $company->color . '">' . $company->color . '</span>';
             })->rawColumns(['color'], true)
             ->filterColumn('created_by', function ($query, $keyword) {
                 return $query->whereRaw("select count(*) from companies where lower(companies.name) like ? and companies.id=companies.created_by",["%$keyword%"]);
@@ -39,7 +39,7 @@ class CompanyDataTable extends DataTable
      */
     public function query(Company $model)
     {
-        $query = $model->newQuery()->with(['createdBy']);
+        $query = $model->newQuery();
         return $query;
     }
 

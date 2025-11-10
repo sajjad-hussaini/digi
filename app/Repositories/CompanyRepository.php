@@ -3,9 +3,14 @@
 namespace App\Repositories;
 
 use App\Tag;
-use App\Repositories\BaseRepository;
 use App\User;
+use App\Company;
+use Laracasts\Flash\Flash;
+use App\Repositories\BaseRepository;
+use Illuminate\Support\Facades\Auth;
+use Intervention\Image\Facades\Image;
 use Spatie\Permission\Models\Permission;
+use App\Http\Requests\CreateFilesRequest;
 
 /**
  * Class TagRepository
@@ -19,8 +24,15 @@ class CompanyRepository extends BaseRepository
      * @var array
      */
     protected $fieldSearchable = [
-        'name',
-        'color'
+        'company_name',
+        'company_address',
+        'contact_number',
+        'email_address',
+        'solicitor_name',
+        'regulated_by',
+        'company_reg_number',
+        'company_logo',
+        'accreditor_logos',
     ];
 
     /**
@@ -38,23 +50,38 @@ class CompanyRepository extends BaseRepository
      **/
     public function model()
     {
-        return Tag::class;
+        return Company::class;
     }
 
-    public function deleteWithPermissions($tag)
+    public function store($request)
     {
-        $this->delete($tag->id);
-        //delete tag permissions
-        $permissions = [];
-        foreach (config('constants.TAG_LEVEL_PERMISSIONS') as $perm_key => $perm) {
-            $permissions[] = $perm_key . $tag->id;
+        // store images
+        if ($request->hasFile('company_logo')) {
+            $companyLogo = $request->file('company_logo')->store('uploads/logo', 'public');
+            $request->merge(['company_logo' => $companyLogo]);
         }
 
-        /** @var User $user */
-        $users=User::permission($permissions)->get();
-        foreach ($users as $user){
-            $user->revokePermissionTo($permissions);
+        if ($request->hasFile('accreditor_logos')) {
+            $accreditorLogos = [];
+            foreach ($request->file('accreditor_logos') as $logo) {
+                $path = $logo->store('uploads/accre_logo', 'public');
+                $accreditorLogos[] = $path;
+            }
+            $request->merge(['accreditor_logos' => $accreditorLogos]);
         }
-        Permission::whereIn('name', $permissions)->delete();
+
+        $company = new Company();
+        $company->company_name = $request->input('company_name');
+        $company->company_address = $request->input('company_address');
+        $company->contact_number = $request->input('contact_number');
+        $company->email_address = $request->input('email_address');
+        $company->solicitor_name = $request->input('solicitor_name');
+        $company->regulated_by = $request->input('regulated_by');
+        $company->company_reg_number = $request->input('company_reg_number');
+        $company->company_logo = $request->input('company_logo');
+        $company->accreditor_logos = $request->input('accreditor_logos');
+        $company->save();
+        
     }
+
 }
