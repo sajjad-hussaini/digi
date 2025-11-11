@@ -17,11 +17,19 @@ use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\FileTypeController;
+use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\CustomFieldController;
+use App\Http\Controllers\AttendanceNoteController;
+use App\Http\Controllers\FollowUpLetterController;
+use App\Http\Controllers\LedgerStatementController;
+use App\Http\Controllers\BalanceStatementController;
 
 Route::get('/', [HomeController::class,'welcome'])->name('home');
 
@@ -47,6 +55,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
     Route::get('/users-block/{user}',[UserController::class,'blockUnblock'])->name('users.blockUnblock');
     Route::resource('tags', TagController::class);
     Route::resource('companies', CompanyController::class);
+    Route::resource('clients', ClientController::class);
+    Route::resource('clients.invoices', InvoiceController::class)->shallow();
+    Route::resource('clients.receipts', ReceiptController::class)->shallow();
+    Route::resource('clients.ledger', LedgerStatementController::class)->shallow();
+    Route::resource('clients.balance', BalanceStatementController::class)->shallow();
+    Route::resource('clients.attendance-notes', AttendanceNoteController::class)->shallow();
+    Route::resource('clients.follow-up-letters', FollowUpLetterController::class)->shallow();
+    Route::resource('clients.reminders', ReminderController::class)->shallow();
+
 
     Route::resource('documents', DocumentController::class);
     Route::post('document-verify/{id}',[DocumentController::class,'verify'])->name('documents.verify');
