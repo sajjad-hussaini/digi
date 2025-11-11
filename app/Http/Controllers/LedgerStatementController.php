@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Client;
 use App\LedgerStatement;
 use Illuminate\Http\Request;
 
@@ -10,9 +11,10 @@ class LedgerStatementController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Client $client)
     {
-        //
+        $ledger = $client->ledgerStatements;
+        return view('ledger.index', compact('client', 'ledger'));
     }
 
     /**

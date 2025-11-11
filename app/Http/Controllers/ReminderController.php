@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Client;
 use App\Reminder;
 use Illuminate\Http\Request;
 
@@ -12,21 +13,26 @@ class ReminderController extends Controller
      */
     public function index()
     {
-        //
+        $reminders = Reminder::whereDate('reminder_date', '>=', now())->get();
+        return view('reminders.index', compact('reminders'));
+    }
+
+    public function store(Request $request, Client $client)
+    {
+        $validated = $request->validate([
+            'type' => 'required|string',
+            'reminder_date' => 'required|date',
+            'message' => 'nullable|string',
+        ]);
+
+        $client->reminders()->create($validated);
+        return back()->with('success', 'Reminder added successfully.');
     }
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
     {
         //
     }

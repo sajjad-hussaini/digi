@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Client;
 use App\BalanceStatement;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class BalanceStatementController extends Controller
 {
@@ -34,9 +36,10 @@ class BalanceStatementController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(BalanceStatement $balanceStatement)
+   public function show(Client $client)
     {
-        //
+        $balance = $client->balanceStatement;
+        return view('balance.show', compact('client', 'balance'));
     }
 
     /**

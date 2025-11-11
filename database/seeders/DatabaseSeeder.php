@@ -2,6 +2,7 @@
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Database\Seeders\CompanySeeder;
+use Database\Seeders\RemainingSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,7 +18,8 @@ class DatabaseSeeder extends Seeder
             UsersTableSeeder::class,
             PermissionsTableSeeder::class,
             FileTypesSeeder::class,
-            CompanySeeder::class
+            CompanySeeder::class,
+            RemainingSeeder::class
         ]);
     }
 }

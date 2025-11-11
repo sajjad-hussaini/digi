@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Client;
 use App\FollowUpLetter;
 use Illuminate\Http\Request;
 
@@ -26,9 +27,24 @@ class FollowUpLetterController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Client $client)
     {
-        //
+        $validated = $request->validate([
+            'subject' => 'required|string',
+            'body' => 'required|string',
+            'file' => 'nullable|file|mimes:pdf,doc,docx'
+        ]);
+
+        $path = $request->hasFile('file') ? $request->file('file')->store("clients/{$client->id}/letters", 'public') : null;
+
+        $client->followUpLetters()->create([
+            'subject' => $validated['subject'],
+            'body' => $validated['body'],
+            'file_path' => $path,
+            'sent_date' => now(),
+        ]);
+
+        return back()->with('success', 'Follow-up letter saved.');
     }
 
     /**
