@@ -6,6 +6,11 @@
         <a href="{!! route('companies.index') !!}"><i class="fa fa-briefcase"></i><span>Companies</span></a>
     </li>
 @endcan
+@can('read clients')
+    <li class="{{ Request::is('admin/clients*') ? 'active' : '' }}">
+        <a href="{!! route('clients.index') !!}"><i class="fa fa-user"></i><span>Clients</span></a>
+    </li>
+@endcan
 @can('read users')
     <li class="{{ Request::is('admin/users*') ? 'active' : '' }}">
         <a href="{!! route('users.index') !!}"><i class="fa fa-users"></i><span>Users</span></a>

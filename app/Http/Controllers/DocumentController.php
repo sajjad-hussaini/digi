@@ -2,29 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\CustomField;
-use App\Document;
-use App\File;
-use App\FileType;
-use App\Http\Requests\CreateDocumentRequest;
-use App\Http\Requests\CreateFilesRequest;
-use App\Http\Requests\UpdateDocumentRequest;
-use App\Repositories\CustomFieldRepository;
-use App\Repositories\DocumentRepository;
-use App\Repositories\FileTypeRepository;
-use App\Repositories\PermissionRepository;
-use App\Repositories\TagRepository;
 use App\Tag;
+use App\File;
 use App\User;
+use App\Client;
+use App\Document;
+use App\FileType;
 use Carbon\Carbon;
+use App\CustomField;
+use Laracasts\Flash\Flash;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
+use App\Repositories\TagRepository;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
-use Laracasts\Flash\Flash;
+use Illuminate\Support\Facades\Storage;
+use App\Repositories\DocumentRepository;
+use App\Repositories\FileTypeRepository;
 use Spatie\Permission\Models\Permission;
+use App\Http\Requests\CreateFilesRequest;
+use App\Repositories\PermissionRepository;
+use App\Repositories\CustomFieldRepository;
+use App\Http\Requests\CreateDocumentRequest;
+use App\Http\Requests\UpdateDocumentRequest;
 
 class DocumentController extends Controller
 {
@@ -66,11 +67,11 @@ class DocumentController extends Controller
         $this->authorize('viewAny', Document::class);
         $documents = $this->documentRepository->searchDocuments(
             $request->get('search'),
-            $request->get('tags'),
+            $request->get('clients'),
             $request->get('status')
         );
-        $tags = $this->tagRepository->all();
-        return view('documents.index', compact('documents', 'tags'));
+        $clients = Client::all();
+        return view('documents.index', compact('documents', 'clients'));
     }
 
     /**
@@ -81,9 +82,9 @@ class DocumentController extends Controller
     public function create()
     {
         $this->authorize('create', Document::class);
-        $tags = $this->tagRepository->all();
+        $clients = Client::all();
         $customFields = $this->customFieldRepository->getForModel('documents');
-        return view('documents.create', compact('tags', 'customFields'));
+        return view('documents.create', compact('clients', 'customFields'));
     }
 
     /**
@@ -179,9 +180,9 @@ class DocumentController extends Controller
     {
         $document = Document::findOrFail($id);
         $this->authorize('edit', $document);
-        $tags = Tag::all();
+        $clients = Client::all();
         $customFields = $this->customFieldRepository->getForModel('documents');
-        return view('documents.edit', compact('tags', 'customFields', 'document'));
+        return view('documents.edit', compact('clients', 'customFields', 'document'));
     }
 
     /**

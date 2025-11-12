@@ -3,33 +3,47 @@
 namespace App\Http\Controllers;
 
 use App\Client;
+use App\Company;
+use App\CustomField;
 use Illuminate\Http\Request;
+use App\DataTables\ClientDataTable;
+use App\Repositories\ClientRepository;
+use App\Repositories\PermissionRepository;
 
 class ClientController extends Controller
 {
+        /** @var  CompanyRepository */
+    private $clientRepository;
+    /** @var PermissionRepository */
+    private $permissionRepository;
+
+    public function __construct(ClientRepository $clientRepo,
+                                PermissionRepository $permissionRepository)
+    {
+        $this->clientRepository = $clientRepo;
+        $this->permissionRepository = $permissionRepository;
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ClientDataTable $clientDataTable)
     {
         $clients = Client::latest()->paginate(10);
-        return view('clients.index', compact('clients'));
+         return $clientDataTable->render('clients.index');
     }
 
     public function create()
     {
-        return view('clients.create');
+        $customFields = CustomField::where('model_type', 'clients')->get();
+        $companies = Company::get();
+        return view('clients.create', compact('customFields', 'companies'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required',
-            'email' => 'nullable|email',
-            'phone' => 'nullable|string',
-        ]);
-
-        Client::create($validated);
+        // store client
+        $this->clientRepository->store($request);
         return redirect()->route('clients.index')->with('success', 'Client created successfully.');
     }
 
@@ -40,18 +54,27 @@ class ClientController extends Controller
 
     public function edit(Client $client)
     {
-        return view('clients.edit', compact('client'));
+
+        $companies = Company::select('id', 'company_name')->get();
+        return view('clients.edit', compact('client', 'companies'));
     }
 
     public function update(Request $request, Client $client)
     {
-        $validated = $request->validate([
-            'name' => 'required',
-            'email' => 'nullable|email',
-            'phone' => 'nullable|string',
+        // update client
+        $client->update([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'company_id' => $request->input('company_id'),
+            'phone' => $request->input('phone'),
+            'passport_no' => $request->input('passport_no'),
+            'visa_type' => $request->input('visa_type'),
+            'visa_expiry_date' => $request->input('visa_expiry_date'),
+            'status' => $request->input('status'),
+            'priority' => $request->input('priority'),
+            'court_type' => $request->input('court_type'),
+            'color' => $request->input('color'),
         ]);
-
-        $client->update($validated);
         return redirect()->route('clients.index')->with('success', 'Client updated successfully.');
     }
 

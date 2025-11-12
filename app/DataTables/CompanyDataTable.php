@@ -52,7 +52,6 @@ class CompanyDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
-            ->addColumn(['data' => 'created_by'])
             ->minifiedAjax()
             ->addAction(['width' => '120px', 'printable' => false])
             ->parameters([

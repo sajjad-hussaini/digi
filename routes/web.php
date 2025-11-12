@@ -56,13 +56,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
     Route::resource('tags', TagController::class);
     Route::resource('companies', CompanyController::class);
     Route::resource('clients', ClientController::class);
-    Route::resource('clients.invoices', InvoiceController::class)->shallow();
-    Route::resource('clients.receipts', ReceiptController::class)->shallow();
-    Route::resource('clients.ledger', LedgerStatementController::class)->shallow();
-    Route::resource('clients.balance', BalanceStatementController::class)->shallow();
-    Route::resource('clients.attendance-notes', AttendanceNoteController::class)->shallow();
-    Route::resource('clients.follow-up-letters', FollowUpLetterController::class)->shallow();
-    Route::resource('clients.reminders', ReminderController::class)->shallow();
+    Route::resource('invoices', InvoiceController::class);
+    Route::resource('receipts', ReceiptController::class);
+    Route::resource('ledger-statements', LedgerStatementController::class);
+    Route::resource('balance-statements', BalanceStatementController::class);
+    Route::resource('attendance-notes', AttendanceNoteController::class);
+    Route::resource('follow-up-letters', FollowUpLetterController::class);
+    Route::resource('reminders', ReminderController::class);
 
 
     Route::resource('documents', DocumentController::class);

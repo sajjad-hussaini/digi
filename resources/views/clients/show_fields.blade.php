@@ -1,94 +1,111 @@
-<div class="card shadow-sm border-0 mb-4">
-    <div class="card-body">
-        <h4 class="card-title mb-3 text-primary">
-            <i class="fa fa-building"></i> Company Details
-        </h4>
+<div class="container-fluid">
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Client Details</h4>
+        </div>
 
-        <!-- Company Logo -->
-        @if(!empty($company->company_logo))
-            <div class="form-group text-center mb-4">
-                <label class="font-weight-bold d-block">Company Logo:</label>
-                <img src="{{ asset('storage/'.$company->company_logo) }}" 
-                     alt="Company Logo" 
-                     class="img-fluid rounded shadow-sm" 
-                     style="max-height: 150px; object-fit: contain;">
-            </div>
-        @endif
+        <div class="card-body">
+            <div class="row">
+                <!-- Company -->
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-muted">Company:</label>
+                    <p class="text-dark">{{ $client->company->company_name ?? 'N/A' }}</p>
+                </div>
 
-        <!-- Accreditor Logos -->
-        @if(!empty($company->accreditor_logos))
-            <div class="form-group mb-4">
-                <label class="font-weight-bold d-block">Accreditor Logos:</label>
-                <div class="d-flex flex-wrap align-items-center">
-                    @foreach($company->accreditor_logos as $logo)
-                        <div class="m-2">
-                            <img src="{{ asset('storage/'.$logo) }}" 
-                                 alt="Accreditor Logo" 
-                                 class="img-thumbnail shadow-sm" 
-                                 style="width: 80px; height: 80px; object-fit: contain;">
-                        </div>
-                    @endforeach
+                <!-- Full Name -->
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-muted">Full Name:</label>
+                    <p class="text-dark">{{ $client->name }}</p>
+                </div>
+
+                <!-- Phone -->
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-muted">Phone:</label>
+                    <p class="text-dark">{{ $client->phone ?? 'N/A' }}</p>
+                </div>
+
+                <!-- Email -->
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-muted">Email:</label>
+                    <p class="text-dark">{{ $client->email ?? 'N/A' }}</p>
+                </div>
+
+                <!-- Visa Type -->
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-muted">Visa Type:</label>
+                    <p class="text-dark">{{ $client->visa_type ?? 'N/A' }}</p>
+                </div>
+
+                <!-- Visa Expiry Date -->
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-muted">Visa Expiry Date:</label>
+                    <p class="text-dark">
+                        {{ $client->visa_expiry_date ? \Carbon\Carbon::parse($client->visa_expiry_date)->format('d M, Y') : 'N/A' }}
+                    </p>
+                </div>
+
+                <!-- Passport Number -->
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-muted">Passport Number:</label>
+                    <p class="text-dark">{{ $client->passport_no ?? 'N/A' }}</p>
+                </div>
+
+                <!-- Status -->
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-muted">Status:</label>
+                    <p>
+                        @if($client->status == 'Active')
+                            <span class="badge badge-success">Active</span>
+                        @elseif($client->status == 'Closed')
+                            <span class="badge badge-danger">Closed</span>
+                        @elseif($client->status == 'Pending')
+                            <span class="badge badge-warning">Pending</span>
+                        @else
+                            <span class="badge badge-secondary">{{ $client->status }}</span>
+                        @endif
+                    </p>
+                </div>
+
+                <!-- Priority -->
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-muted">Priority:</label>
+                    <p>
+                        @switch($client->priority)
+                            @case('Urgent')
+                                <span class="badge badge-danger">Urgent</span>
+                                @break
+                            @case('High')
+                                <span class="badge badge-warning">High</span>
+                                @break
+                            @case('Medium')
+                                <span class="badge badge-info">Medium</span>
+                                @break
+                            @case('Low')
+                                <span class="badge badge-secondary">Low</span>
+                                @break
+                            @default
+                                <span class="badge badge-light">N/A</span>
+                        @endswitch
+                    </p>
+                </div>
+
+                <!-- Court Type -->
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-muted">Court Type:</label>
+                    <p class="text-dark">{{ $client->court_type ?? 'N/A' }}</p>
+                </div>
+
+                <!-- Created At -->
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-muted">Created At:</label>
+                    <p class="text-dark">{{ $client->created_at->format('d M, Y h:i A') }}</p>
                 </div>
             </div>
-        @endif
-
-        <!-- Company Info -->
-        <div class="form-group">
-            {!! Form::label('company_name', 'Company Name:') !!}
-            <p class="text-muted">{{ $company->company_name }}</p>
         </div>
 
-        <div class="form-group">
-            {!! Form::label('company_address', 'Company Address:') !!}
-            <p class="text-muted">{{ $company->company_address }}</p>
-        </div>
-
-        <div class="form-group">
-            {!! Form::label('contact_number', 'Contact Number:') !!}
-            <p class="text-muted">{{ $company->contact_number }}</p>
-        </div>
-
-        <div class="form-group">
-            {!! Form::label('email_address', 'Email Address:') !!}
-            <p class="text-muted">{{ $company->email_address }}</p>
-        </div>
-
-        <div class="form-group">
-            {!! Form::label('solicitor_name', 'Solicitor Name:') !!}
-            <p class="text-muted">{{ $company->solicitor_name }}</p>
-        </div>
-
-        <div class="form-group">
-            {!! Form::label('regulated_by', 'Regulated By:') !!}
-            <p class="text-muted">{{ $company->regulated_by }}</p>
-        </div>
-
-        <div class="form-group">
-            {!! Form::label('company_reg_number', 'Company Reg. Number:') !!}
-            <p class="text-muted">{{ $company->company_reg_number }}</p>
-        </div>
-
-        <!-- Custom Fields -->
-        @foreach ($company->custom_fields ?? [] as $custom_field_name => $custom_field_value)
-            <div class="form-group">
-                {!! Form::label($custom_field_name, Str::title(str_replace('_',' ',$custom_field_name)).":") !!}
-                <p class="text-muted">{{ $custom_field_value }}</p>
-            </div>
-        @endforeach
-
-        <hr>
-
-        <!-- Created / Updated Info -->
-        <div class="row">
-            <div class="col-md-6">
-                <p><strong>Created By:</strong> {{ $company->createdBy->name ?? 'N/A' }}</p>
-            </div>
-            <div class="col-md-3">
-                <p><strong>Created At:</strong> {{ $company->created_at->format('d M, Y') }}</p>
-            </div>
-            <div class="col-md-3">
-                <p><strong>Updated At:</strong> {{ $company->updated_at->format('d M, Y') }}</p>
-            </div>
+        <div class="card-footer text-right">
+            <a href="{{ route('clients.index') }}" class="btn btn-secondary">Back</a>
+            <a href="{{ route('clients.edit', $client->id) }}" class="btn btn-primary">Edit</a>
         </div>
     </div>
 </div>

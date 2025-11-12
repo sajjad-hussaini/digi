@@ -21,7 +21,10 @@ return new class extends Migration
             $table->string('passport_no')->nullable();
             $table->string('visa_type')->nullable();
             $table->date('visa_expiry_date')->nullable();
-            $table->enum('status', ['active', 'closed'])->default('active');
+            $table->enum('status', ['Active', 'Closed', 'Pending', 'Archived'])->default('Active');
+            $table->string('priority')->nullable();
+            $table->string('court_type')->nullable();
+            $table->string('color')->nullable();
             $table->timestamps();
         });
     }

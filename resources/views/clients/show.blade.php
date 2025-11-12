@@ -8,10 +8,10 @@
             <a href="{{ route('clients.index') }}" class="btn btn-default">
                 <i class="fa fa-chevron-left" aria-hidden="true"></i> Back
             </a>
-            <a href="{{ route('clients.edit',$company->id) }}" class="btn btn-primary">
+            <a href="{{ route('clients.edit',$client->id) }}" class="btn btn-primary">
                 <i class="fa fa-edit" aria-hidden="true"></i> Edit
             </a>
-            {!! Form::open(['route' => ['clients.destroy', $company->id], 'method' => 'delete','style'=>'display:inline']) !!}
+            {!! Form::open(['route' => ['clients.destroy', $client->id], 'method' => 'delete','style'=>'display:inline']) !!}
                 {!! Form::button('<i class="fa fa-trash"></i> Delete', [
                 'type' => 'submit',
                 'title' => 'Delete',
@@ -25,7 +25,7 @@
     <div class="content">
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
-                <li class="active"><a href="#company" data-toggle="tab"
+                <li class="active"><a href="#client" data-toggle="tab"
                                       aria-expanded="true">{{ucfirst(config('settings.clients_label_singular'))}}</a>
                 </li>
                 @can('user manage permission')
@@ -35,7 +35,7 @@
                 @endcan
             </ul>
             <div class="tab-content">
-                <div class="tab-pane active" id="company">
+                <div class="tab-pane active" id="client">
                     @include('clients.show_fields')
                 </div>
                 @can('user manage permission')

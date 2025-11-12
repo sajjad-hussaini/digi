@@ -10,7 +10,7 @@ class Client extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'email', 'company_id', 'phone', 'passport_no', 'visa_type', 'visa_expiry_date', 'status'
+        'name', 'email', 'company_id', 'phone', 'passport_no', 'visa_type', 'visa_expiry_date', 'status', 'priority', 'court_type', 'color'
     ];
 
     // Relationships
@@ -52,5 +52,10 @@ class Client extends Model
     public function reminders()
     {
         return $this->hasMany(Reminder::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

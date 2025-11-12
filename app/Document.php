@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Client;
 use Eloquent as Model;
 
 /**
@@ -104,6 +105,11 @@ class Document extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class,'documents_tags','document_id','tag_id');
+    }
+
+    public function clients()
+    {
+        return $this->belongsToMany(Client::class,'clients_documents','document_id','client_id');
     }
 
     public function getIsVerifiedAttribute()

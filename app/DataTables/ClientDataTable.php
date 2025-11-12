@@ -51,7 +51,6 @@ class ClientDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
-            ->addColumn(['data' => 'created_by'])
             ->minifiedAjax()
             ->addAction(['width' => '120px', 'printable' => false])
             ->parameters([
@@ -76,11 +75,11 @@ class ClientDataTable extends DataTable
     {
         return [
             'id',
-            'client_name',
-            'client_address',
-            'contact_number',
-            'email_address',
-            'solicitor_name',
+            'name',
+            'email',
+            'phone',
+            'passport_no',
+            'status',
         ];
     }
 

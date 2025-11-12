@@ -95,19 +95,19 @@
                     {!! Form::text('search',null,['class'=>'form-control input-sm','placeholder'=>'Search...']) !!}
                 </div>
                 <div class="form-group">
-                    <label for="tags" class="sr-only">{{config('settings.tags_label_singular')}}:</label>
-                    <select class="form-control select2 input-sm" name="tags[]" id="tags"
-                            data-placeholder="Choose {{config('settings.tags_label_singular')}}" multiple>
-                        @foreach($tags as $tag)
-                            @canany(['read documents','read documents in tag '.$tag->id])
+                    <label for="clients" class="sr-only">{{config('settings.clients_label_singular')}}:</label>
+                    <select class="form-control select2 input-sm" name="clients[]" id="clients"
+                            data-placeholder="Choose {{config('settings.clients_label_singular')}}" multiple>
+                        @foreach($clients as $client)
+                            @canany(['read documents','read documents in client '.$client->id])
                                 <option
-                                    value="{{$tag->id}}" {{in_array($tag->id,request('tags',[]))?'selected':''}}>{{$tag->name}}</option>
+                                    value="{{$client->id}}" {{in_array($client->id,request('clients',[]))?'selected':''}}>{{$client->name}}</option>
                             @endcanany
                         @endforeach
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="status" class="sr-only">{{config('settings.tags_label_singular')}}:</label>
+                    <label for="status" class="sr-only">{{config('settings.clients_label_singular')}}:</label>
                     {!! Form::select('status',['0'=>"ALL",config('constants.STATUS.PENDING')=>config('constants.STATUS.PENDING'),config('constants.STATUS.APPROVED')=>config('constants.STATUS.APPROVED'),config('constants.STATUS.REJECT')=>config('constants.STATUS.REJECT')],null,['class'=>'form-control input-sm']) !!}
                 </div>
                 <button type="submit" class="btn btn-default btn-sm"><i class="fa fa-filter"></i> Filter</button>
@@ -162,9 +162,9 @@
                                     <!-- /.widget-user-image -->
                                     <a href="{{route('documents.show',$document->id)}}" style="color: black;">
                                     <span style="max-lines: 1; white-space: nowrap;margin-left: 3px;">
-                                    @foreach ($document->tags as $tag)
+                                    @foreach ($document->clients as $client)
                                             <small class="label"
-                                                   style="background-color: {{$tag->color}};font-size: 0.93rem;">{{$tag->name}}</small>
+                                                   style="background-color: {{$client->color}};font-size: 0.93rem;">{{$client->name}}</small>
                                         @endforeach
                                     </span>
                                         <h5 class="widget-user-username" title="{{$document->name}}"
