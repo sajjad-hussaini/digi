@@ -11,6 +11,11 @@
         <a href="{!! route('clients.index') !!}"><i class="fa fa-user"></i><span>Clients</span></a>
     </li>
 @endcan
+@can('read invoices')
+    <li class="{{ Request::is('admin/invoices*') ? 'active' : '' }}">
+        <a href="{!! route('invoices.index') !!}"><i class="fa fa-book"></i><span>Invoices</span></a>
+    </li>
+@endcan
 @can('read users')
     <li class="{{ Request::is('admin/users*') ? 'active' : '' }}">
         <a href="{!! route('users.index') !!}"><i class="fa fa-users"></i><span>Users</span></a>

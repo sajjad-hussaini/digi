@@ -2,12 +2,12 @@
 
 namespace App\DataTables;
 
-use App\Company;
+use App\invoice;
 use App\Tag;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Services\DataTable;
 
-class ReceiptDataTable extends DataTable
+class InvoiceDataTable extends DataTable
 {
     /**
      * Build DataTable class.
@@ -18,14 +18,17 @@ class ReceiptDataTable extends DataTable
     public function dataTable($query)
     {
         $dataTable = new EloquentDataTable($query);
-        $dataTable = $dataTable->addColumn('action', 'companies.datatables_actions')
-            ->addColumn('created_by', function (Company $company) {
-                return $company->created_by ? $company->creator->name : '';
-            })->editColumn('color', function (Company $company) {
-                return '<span class="label" style="background-color: ' . $company->color . '">' . $company->color . '</span>';
+        $dataTable = $dataTable->addColumn('action', 'invoices.datatables_actions')
+            ->addColumn('created_by', function (Invoice $invoice) {
+                return $invoice->created_by ? $invoice->creator->name : '';
+            })->editColumn('color', function (Invoice $invoice) {
+                return '<span class="label" style="background-color: ' . $invoice->color . '">' . $invoice->color . '</span>';
             })->rawColumns(['color'], true)
             ->filterColumn('created_by', function ($query, $keyword) {
-                return $query->whereRaw("select count(*) from companies where lower(companies.name) like ? and companies.id=companies.created_by",["%$keyword%"]);
+                return $query->whereRaw("select count(*) from invoices where lower(invoices.name) like ? and invoices.id=invoices.created_by",["%$keyword%"]);
+            })
+            ->addColumn('client', function($invoice){
+                  return $invoice->client ? $invoice->client->name : '';
             });
 
         return $dataTable;
@@ -34,10 +37,10 @@ class ReceiptDataTable extends DataTable
     /**
      * Get query source of dataTable.
      *
-     * @param \App\Models\Tag $model
+     * @param \App\Models\Invoice $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function query(Company $model)
+    public function query(Invoice $model)
     {
         $query = $model->newQuery();
         return $query;
@@ -52,7 +55,7 @@ class ReceiptDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
-            ->addColumn(['data' => 'created_by'])
+            // ->addColumn(['data' => 'created_by'])
             ->minifiedAjax()
             ->addAction(['width' => '120px', 'printable' => false])
             ->parameters([
@@ -77,11 +80,11 @@ class ReceiptDataTable extends DataTable
     {
         return [
             'id',
-            'company_name',
-            'company_address',
-            'contact_number',
-            'email_address',
-            'solicitor_name',
+            'client',
+            'invoice_no',
+            'amount',
+            'invoice_date',
+            'status',
         ];
     }
 
@@ -92,6 +95,6 @@ class ReceiptDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'companiesdatatable_' . time();
+        return 'invoicesdatatable_' . time();
     }
 }
