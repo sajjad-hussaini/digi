@@ -102,27 +102,27 @@ function buildPreviewUrl($file)
  * @param $permissions array|\Illuminate\Support\Collection
  * @return \Illuminate\Support\Collection|array
  */
-function groupTagsPermissions($permissions)
+function groupClientsPermissions($permissions)
 {
     if (is_null($permissions))
         return [];
 
-    $tagsWise = [];
+    $clientsWise = [];
     for ($i = 0; $i < $permissions->count(); $i++) {
         preg_match_all('/([\D]+) documents in tag ([\d]+)/m',
             $permissions[$i]->name, $matches, PREG_SET_ORDER, 0);
         if (!empty($matches)) {
-            if (isset($tagsWise[$matches[0][2]])) {
-                $tagsWise[$matches[0][2]]['permissions'][] = $matches[0][1];
+            if (isset($clientsWise[$matches[0][2]])) {
+                $clientsWise[$matches[0][2]]['permissions'][] = $matches[0][1];
             } else {
-                $tagsWise[$matches[0][2]] = [
+                $clientsWise[$matches[0][2]] = [
                     'tag_id' => $matches[0][2],
                     'permissions' => [$matches[0][1]]
                 ];
             }
         }
     }
-    return $tagsWise;
+    return $clientsWise;
 }
 
 /**

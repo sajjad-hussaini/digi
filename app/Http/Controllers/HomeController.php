@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\File;
+use App\User;
+use App\Client;
+use ZipArchive;
 use App\Activity;
 use App\Document;
-use App\File;
-use App\Http\Requests\UpdateProfileRequest;
-use App\Rules\CurrentPassword;
-use App\Tag;
-use App\User;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Rules\CurrentPassword;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\UploadedFile;
 use Intervention\Image\Facades\Image;
-use ZipArchive;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\UpdateProfileRequest;
 
 class HomeController extends AppBaseController
 {
@@ -44,20 +44,20 @@ class HomeController extends AppBaseController
             $activities->whereDate('created_at','<=',$dates[1]??'');
         }
         $activities = $activities->orderByDesc('id')->paginate(25);
-        $allTags = Tag::with('documents','documents.files')->withCount('documents');
+        $allClients = Client::with('documents','documents.files')->withCount('documents');
         if(!auth()->user()->can('read documents')){
             $allPerm = auth()->user()->getAllPermissions();
-            $tmpTags = array_column(groupTagsPermissions($allPerm),'tag_id');
-            $allTags->whereIn('id',$tmpTags);
+            $tmpClients = array_column(groupClientsPermissions($allPerm),'client_id');
+            $allClients->whereIn('id',$tmpClients);
         }
-        $allTags = $allTags->get();
-        $tagCounts = $allTags->count();
-        $allDocs =  Document::whereHas('tags',function ($q) use($allTags){
-            return $q->whereIn('tag_id',$allTags->pluck('id')->toArray());
+        $allClients = $allClients->get();
+        $clientCounts = $allClients->count();
+        $allDocs =  Document::whereHas('clients',function ($q) use($allClients){
+            return $q->whereIn('client_id',$allClients->pluck('id')->toArray());
         })->pluck('id');
         $documentCounts = $allDocs->count();
         $filesCounts = File::whereIn('document_id',$allDocs->toArray())->count();
-        return view('home',compact('documents','activities','tagCounts','documentCounts','filesCounts'));
+        return view('home',compact('documents','activities','clientCounts','documentCounts','filesCounts'));
     }
 
     public function welcome()

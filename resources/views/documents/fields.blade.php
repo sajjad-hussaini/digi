@@ -3,36 +3,36 @@
 {{--if in edit mode--}}
 @if ($document)
     @if (auth()->user()->can('update document '.$document->id) && !auth()->user()->is_super_admin)
-        @foreach($document->tags->pluck('id')->toArray() as $tagId)
-            <input type="hidden" name="tags[]" value="{{$tagId}}">
+        @foreach($document->clients->pluck('id')->toArray() as $clientId)
+            <input type="hidden" name="clients[]" value="{{$clientId}}">
         @endforeach
     @else
         <div class="form-group col-sm-6 ">
-            <label for="tags[]">{{ucfirst(config('settings.tags_label_plural'))}}</label>
-            <select class="form-control select2" id="tags"
-                    name="tags[]"
+            <label for="clients[]">{{ucfirst(config('settings.clients_label_plural'))}}</label>
+            <select class="form-control select2" id="clients"
+                    name="clients[]"
                     multiple>
-                @foreach($tags as $tag)
-                    @canany (['update documents','update documents in tag '.$tag->id])
+                @foreach($clients as $client)
+                    @canany (['update documents','update documents in client '.$client->id])
                         <option
-                            value="{{$tag->id}}" {{(in_array($tag->id,old('tags', optional(optional(optional($document)->tags)->pluck('id'))->toArray() ?? [] )))?"selected":"" }}>{{$tag->name}}</option>
+                            value="{{$client->id}}" {{(in_array($client->id,old('clients', optional(optional(optional($document)->clients)->pluck('id'))->toArray() ?? [] )))?"selected":"" }}>{{$client->name}}</option>
                     @endcanany
                 @endforeach
             </select>
         </div>
     @endif
 @else
-    <div class="form-group col-sm-6 {{ $errors->has("tags") ? 'has-error' :'' }}">
-        <label for="tags[]">{{ucfirst(config('settings.tags_label_plural'))}}</label>
-        <select class="form-control select2" id="tags" name="tags[]" multiple>
-            @foreach($tags as $tag)
-                @canany (['create documents','create documents in tag '.$tag->id])
+    <div class="form-group col-sm-6 {{ $errors->has("clients") ? 'has-error' :'' }}">
+        <label for="clients[]">{{ucfirst(config('settings.clients_label_plural'))}}</label>
+        <select class="form-control select2" id="clients" name="clients[]" multiple>
+            @foreach($clients as $client)
+                @canany (['create documents','create documents in client '.$client->id])
                     <option
-                        value="{{$tag->id}}" {{(in_array($tag->id,old('tags', optional(optional(optional($document)->tags)->pluck('id'))->toArray() ?? [] )))?"selected":"" }}>{{$tag->name}}</option>
+                        value="{{$client->id}}" {{(in_array($client->id,old('clients', optional(optional(optional($document)->clients)->pluck('id'))->toArray() ?? [] )))?"selected":"" }}>{{$client->name}}</option>
                 @endcanany
             @endforeach
         </select>
-        {!! $errors->first("tags",'<span class="help-block">:message</span>') !!}
+        {!! $errors->first("clients",'<span class="help-block">:message</span>') !!}
     </div>
 @endif
 {!! Form::bsTextarea('description',null,['class'=>'form-control b-wysihtml5-editor']) !!}

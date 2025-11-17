@@ -16,7 +16,7 @@ class Client extends Model
     // Relationships
     public function documents()
     {
-        return $this->hasMany(Document::class);
+        return $this->belongsToMany(Document::class, 'clients_documents', 'client_id', 'document_id');
     }
 
     public function invoices()

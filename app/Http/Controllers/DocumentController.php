@@ -99,7 +99,7 @@ class DocumentController extends Controller
         $data['created_by'] = Auth::id();
         $data['status'] = config('constants.STATUS.PENDING');
 
-        $this->authorize('store', [Document::class, $data['tags']]);
+        $this->authorize('store', [Document::class, $data['clients']]);
 
         $document = $this->documentRepository->createWithTags($data);
         Flash::success(ucfirst(config('settings.document_label_singular')) . " Saved Successfully");
@@ -126,7 +126,7 @@ class DocumentController extends Controller
     {
         /** @var Document $document */
         $document = $this->documentRepository
-            ->getOneEagerLoaded($id,['files', 'files.fileType', 'files.createdBy', 'activities', 'activities.createdBy', 'tags']);
+            ->getOneEagerLoaded($id,['files', 'files.fileType', 'files.createdBy', 'activities', 'activities.createdBy', 'clients']);
         if (empty($document)) {
             abort(404);
         }
@@ -196,7 +196,7 @@ class DocumentController extends Controller
     {
         $document = Document::findOrFail($id);
         $data = $request->all();
-        $this->authorize('update', [$document, $data['tags']]);
+        $this->authorize('update', [$document, $data['clients']]);
         $this->documentRepository->updateWithTags($data,$document);
         $document->newActivity(ucfirst(config('settings.document_label_singular')) . " Updated");
         Flash::success(ucfirst(config('settings.document_label_singular')) . " Updated Successfully");

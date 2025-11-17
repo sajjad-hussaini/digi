@@ -82,8 +82,8 @@
                     <span class="info-box-icon"><i class="fa fa-tags"></i></span>
 
                     <div class="info-box-content">
-                        <span class="info-box-text">{{ucfirst(config('settings.tags_label_plural'))}}</span>
-                        <span class="info-box-number">{{$tagCounts}}</span>
+                        <span class="info-box-text">{{ucfirst('Clients')}}</span>
+                        <span class="info-box-number">{{$clientCounts}}</span>
                         <span class="progress-description">
                     Total {{ucfirst(config('settings.tags_label_plural'))}} in system
                   </span>

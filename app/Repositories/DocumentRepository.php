@@ -86,14 +86,14 @@ class DocumentRepository extends BaseRepository
     public function createWithTags($data)
     {
         $document = $this->create($data);
-        $document->tags()->attach($data['tags']);
+        $document->clients()->attach($data['clients']);
         return $document;
     }
 
     public function updateWithTags($data,$document)
     {
         $document->update($data);
-        $document->tags()->sync($data['tags']);
+        $document->clients()->sync($data['clients']);
     }
 
     public function deleteWithFiles($document,$withPermissions=false)
@@ -140,6 +140,7 @@ class DocumentRepository extends BaseRepository
             foreach ($fileTypes as $fileType) {
                 $count = $fileType->no_of_files;
                 $allFiles = $document->files->where('file_type_id', $fileType->id);
+                
                 if ($allFiles->count() <= $count) {
                     for ($i = $allFiles->count(); $i < $count; $i++) {
                         $labels = explode(",", $fileType->labels)[$i];
