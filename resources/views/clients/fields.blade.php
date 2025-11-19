@@ -2,10 +2,10 @@
 
 <!-- Company Field -->
 <div class="form-group col-sm-6 {{ $errors->has('company_id') ? 'has-error' :'' }}">
-    {!! Form::label('company_id', 'Company:') !!}
+    {!! Form::label('company_id', 'Individual :') !!}
     {!! Form::select('company_id', $companies->pluck('company_name', 'id'), null, [
         'class' => 'form-control',
-        'placeholder' => 'Select Company'
+        'placeholder' => 'Select Individual '
     ]) !!}
     {!! $errors->first('company_id','<span class="help-block">:message</span>') !!}
 </div>
@@ -18,10 +18,17 @@
 </div>
 
 <!-- Client Name Field -->
-<div class="form-group col-sm-6 {{ $errors->has('name') ? 'has-error' :'' }}">
-    {!! Form::label('name', 'Full Name:') !!}
-    {!! Form::text('name', null, ['class' => 'form-control']) !!}
-    {!! $errors->first('name','<span class="help-block">:message</span>') !!}
+<div class="form-group col-sm-6 {{ $errors->has('first_name') ? 'has-error' :'' }}">
+    {!! Form::label('first_name', 'First Name:') !!}
+    {!! Form::text('first_name', null, ['class' => 'form-control', 'placeholder' => 'Enter first name']) !!}
+    {!! $errors->first('first_name','<span class="help-block">:message</span>') !!}
+</div>
+
+<!-- Client Name Field -->
+<div class="form-group col-sm-6 {{ $errors->has('sir_name') ? 'has-error' :'' }}">
+    {!! Form::label('sir_name', 'Sir Name:') !!}
+    {!! Form::text('sir_name', null, ['class' => 'form-control', 'placeholder' => 'Enter sir name']) !!}
+    {!! $errors->first('sir_name','<span class="help-block">:message</span>') !!}
 </div>
 
 <!-- Contact Number Field -->
@@ -40,14 +47,14 @@
 
 <!-- Visa Type Field -->
 <div class="form-group col-sm-6 {{ $errors->has('visa_type') ? 'has-error' :'' }}">
-    {!! Form::label('visa_type', 'Visa Type:') !!}
+    {!! Form::label('visa_type', 'Matter Type:') !!}
     {!! Form::select('visa_type', [
         'Work Visa' => 'Work Visa',
         'Student Visa' => 'Student Visa',
         'Spouse Visa' => 'Spouse Visa',
         'Visitor Visa' => 'Visitor Visa',
         'Settlement Visa' => 'Settlement Visa'
-    ], null, ['class' => 'form-control', 'placeholder' => 'Select Visa Type']) !!}
+    ], null, ['class' => 'form-control', 'placeholder' => 'Select Matter Type']) !!}
     {!! $errors->first('visa_type','<span class="help-block">:message</span>') !!}
 </div>
 

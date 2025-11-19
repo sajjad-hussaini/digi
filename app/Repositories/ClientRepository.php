@@ -57,7 +57,9 @@ class ClientRepository extends BaseRepository
     public function store($request)
     {
        $client = Client::create([
-            'name' => $request->input('name'),
+            // 'name' => $request->input('name'),
+            'first_name' => $request->input('first_name'),
+            'sir_name' => $request->input('sir_name'),
             'email' => $request->input('email'),
             'company_id' => $request->input('company_id'),
             'phone' => $request->input('phone'),
