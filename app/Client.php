@@ -58,4 +58,9 @@ class Client extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function authorityLetters()
+    {
+        return $this->hasMany(AuthorityLetter::class);
+    }
 }

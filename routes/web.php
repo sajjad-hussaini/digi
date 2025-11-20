@@ -28,6 +28,7 @@ use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\CustomFieldController;
 use App\Http\Controllers\AttendanceNoteController;
 use App\Http\Controllers\FollowUpLetterController;
+use App\Http\Controllers\AuthorityLetterController;
 use App\Http\Controllers\LedgerStatementController;
 use App\Http\Controllers\BalanceStatementController;
 
@@ -63,6 +64,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
     Route::resource('attendance-notes', AttendanceNoteController::class);
     Route::resource('follow-up-letters', FollowUpLetterController::class);
     Route::resource('reminders', ReminderController::class);
+    Route::get('clients/{client}/authority-letter/create', [AuthorityLetterController::class, 'create'])->name('authorityLetters.create');
+    Route::post('authority-letters/store', [AuthorityLetterController::class, 'store'])->name('authority_letters.store');
+    Route::get('clients/{client}/authority-letters', [AuthorityLetterController::class, 'index'])->name('authorityLetter.index');
+
 
 
     Route::resource('documents', DocumentController::class);

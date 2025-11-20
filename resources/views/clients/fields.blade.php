@@ -31,6 +31,13 @@
     {!! $errors->first('sir_name','<span class="help-block">:message</span>') !!}
 </div>
 
+<!-- Client Name Field -->
+<div class="form-group col-sm-6 {{ $errors->has('address') ? 'has-error' :'' }}">
+    {!! Form::label('address', 'Client Address:') !!}
+    {!! Form::text('address', null, ['class' => 'form-control', 'placeholder' => 'Enter address']) !!}
+    {!! $errors->first('address','<span class="help-block">:message</span>') !!}
+</div>
+
 <!-- Contact Number Field -->
 <div class="form-group col-sm-6 {{ $errors->has('phone') ? 'has-error' :'' }}">
     {!! Form::label('phone', 'Phone Number:') !!}

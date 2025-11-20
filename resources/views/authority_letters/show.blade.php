@@ -26,10 +26,7 @@
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#client" data-toggle="tab"
-                    aria-expanded="true">{{ucfirst(config('settings.clients_label_singular'))}}</a>
-                </li>
-                 <li class=""><a href="#client_letter" data-toggle="tab"
-                    aria-expanded="true">Client Letter</a>
+                                      aria-expanded="true">{{ucfirst(config('settings.clients_label_singular'))}}</a>
                 </li>
                 @can('user manage permission')
                     <li class=""><a href="#tab_permissions" data-toggle="tab"
@@ -40,9 +37,6 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="client">
                     @include('clients.show_fields')
-                </div>
-                <div class="tab-pane" id="client_letter">
-                     @include('authority_letters.index', ['letters' => $client->authorityLetters])
                 </div>
                 @can('user manage permission')
                     <div class="tab-pane" id="tab_permissions">

@@ -75,7 +75,7 @@ class ClientDataTable extends DataTable
     {
         return [
             'id',
-            'first_name',
+            'name',
             'email',
             'phone',
             'passport_no',

@@ -43,8 +43,8 @@ class ClientController extends Controller
     public function store(Request $request)
     {
         // store client
-        $this->clientRepository->store($request);
-        return redirect()->route('clients.index')->with('success', 'Client created successfully.');
+        $client = $this->clientRepository->store($request);
+        return redirect()->route('authorityLetters.create', $client->id)->with('success', 'Client created successfully.');
     }
 
     public function show(Client $client)
