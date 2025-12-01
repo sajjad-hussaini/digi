@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('passport_no')->nullable();
             $table->string('visa_type')->nullable();
+            $table->string('country')->nullable();
+            $table->date('dob')->nullable();
             $table->date('visa_expiry_date')->nullable();
             $table->enum('status', ['Active', 'Closed', 'Pending', 'Archived'])->default('Active');
             $table->string('priority')->nullable();

@@ -33,9 +33,16 @@
 
 <!-- Client Name Field -->
 <div class="form-group col-sm-6 {{ $errors->has('address') ? 'has-error' :'' }}">
-    {!! Form::label('address', 'Client Address:') !!}
+    {!! Form::label('address', 'Address:') !!}
     {!! Form::text('address', null, ['class' => 'form-control', 'placeholder' => 'Enter address']) !!}
     {!! $errors->first('address','<span class="help-block">:message</span>') !!}
+</div>
+
+<!-- Client Name Field -->
+<div class="form-group col-sm-6 {{ $errors->has('country') ? 'has-error' :'' }}">
+    {!! Form::label('country', 'Nationality:') !!}
+    {!! Form::text('country', null, ['class' => 'form-control', 'placeholder' => 'Enter nationality']) !!}
+    {!! $errors->first('country','<span class="help-block">:message</span>') !!}
 </div>
 
 <!-- Contact Number Field -->
@@ -70,6 +77,13 @@
     {!! Form::label('visa_expiry_date', 'Visa Expiry Date:') !!}
     {!! Form::date('visa_expiry_date', null, ['class' => 'form-control']) !!}
     {!! $errors->first('visa_expiry_date','<span class="help-block">:message</span>') !!}
+</div>
+
+<!-- Visa Expiry Date Field -->
+<div class="form-group col-sm-6 {{ $errors->has('dob') ? 'has-error' :'' }}">
+    {!! Form::label('dob', 'Date Of Birth:') !!}
+    {!! Form::date('dob', null, ['class' => 'form-control']) !!}
+    {!! $errors->first('dob','<span class="help-block">:message</span>') !!}
 </div>
 
 <!-- Passport Number Field -->

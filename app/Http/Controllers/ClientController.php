@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Client;
 use App\Company;
 use App\CustomField;
+// use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\DataTables\ClientDataTable;
 use App\Repositories\ClientRepository;
 use App\Repositories\PermissionRepository;
@@ -44,7 +46,7 @@ class ClientController extends Controller
     {
         // store client
         $client = $this->clientRepository->store($request);
-        return redirect()->route('authorityLetters.create', $client->id)->with('success', 'Client created successfully.');
+        return redirect()->route('clients.show', $client->id)->with('success', 'Client created successfully.');
     }
 
     public function show(Client $client)
@@ -70,6 +72,9 @@ class ClientController extends Controller
             'passport_no' => $request->input('passport_no'),
             'visa_type' => $request->input('visa_type'),
             'visa_expiry_date' => $request->input('visa_expiry_date'),
+            'dob' => $request->input('dob'),
+            'country' => $request->input('country'),
+            'address' => $request->input('address'),
             'status' => $request->input('status'),
             'priority' => $request->input('priority'),
             'court_type' => $request->input('court_type'),
@@ -82,5 +87,120 @@ class ClientController extends Controller
     {
         $client->delete();
         return back()->with('success', 'Client deleted.');
+    }
+
+    public function generateAuthorityLetter(Client $client)
+    {
+        // Date format kar lo jaise letter mein hai (29th October 2025)
+        $formattedDate = $client->created_at->format('jS F Y'); // 29th October 2025
+
+        // Data pass kar rahe hain blade template ko
+        $data = [
+            'client' => $client,
+            'formattedDate' => $formattedDate ?? now()->format('jS F Y'),
+            'today' => now()->format('jS F Y'),
+        ];
+
+        // PDF generate karo
+        $pdf = Pdf::loadView('clients.authority-letter', [
+            'client' => $client,
+            'today'  => now()->format('jS F Y')
+        ]);
+
+        // Download ya browser mein show karo
+        return $pdf->stream('Authority_Letter_'.$client->name.'.pdf');
+        // ya ->download() kar sakte ho
+    }
+
+    public function clientCareLetter(Client $client)
+    {
+        // Date format kar lo jaise letter mein hai (29th October 2025)
+        $formattedDate = $client->created_at->format('jS F Y'); // 29th October 2025
+
+        // Data pass kar rahe hain blade template ko
+        $data = [
+            'client' => $client,
+            'formattedDate' => $formattedDate ?? now()->format('jS F Y'),
+            'today' => now()->format('jS F Y'),
+        ];
+
+        // PDF generate karo
+        $pdf = Pdf::loadView('clients.client_clouser_letter', [
+            'client' => $client,
+            'today'  => now()->format('jS F Y')
+        ]);
+
+        // Download ya browser mein show karo
+        return $pdf->stream('care_Letter_'.$client->first_name.'.pdf');
+        // ya ->download() kar sakte ho
+    }
+
+    public function initialInstructionLetter(Client $client)
+    {
+        // Date format kar lo jaise letter mein hai (29th October 2025)
+        $formattedDate = $client->created_at->format('jS F Y'); // 29th October 2025
+
+        // Data pass kar rahe hain blade template ko
+        $data = [
+            'client' => $client,
+            'formattedDate' => $formattedDate ?? now()->format('jS F Y'),
+            'today' => now()->format('jS F Y'),
+        ];
+
+        // PDF generate karo
+        $pdf = Pdf::loadView('clients.client_instruction', [
+            'client' => $client,
+            'today'  => now()->format('jS F Y')
+        ]);
+
+        // Download ya browser mein show karo
+        return $pdf->stream('care_Letter_'.$client->first_name.'.pdf');
+        // ya ->download() kar sakte ho
+    }
+
+    public function eeCareLetter(Client $client)
+    {
+        // Date format kar lo jaise letter mein hai (29th October 2025)
+        $formattedDate = $client->created_at->format('jS F Y'); // 29th October 2025
+
+        // Data pass kar rahe hain blade template ko
+        $data = [
+            'client' => $client,
+            'formattedDate' => $formattedDate ?? now()->format('jS F Y'),
+            'today' => now()->format('jS F Y'),
+        ];
+
+        // PDF generate karo
+        $pdf = Pdf::loadView('clients.client_eecare_letter', [
+            'client' => $client,
+            'today'  => now()->format('jS F Y')
+        ]);
+
+        // Download ya browser mein show karo
+        return $pdf->stream('care_Letter_'.$client->first_name.'.pdf');
+        // ya ->download() kar sakte ho
+    }
+
+    public function coveringLetter(Client $client)
+    {
+        // Date format kar lo jaise letter mein hai (29th October 2025)
+        $formattedDate = $client->created_at->format('jS F Y'); // 29th October 2025
+
+        // Data pass kar rahe hain blade template ko
+        $data = [
+            'client' => $client,
+            'formattedDate' => $formattedDate ?? now()->format('jS F Y'),
+            'today' => now()->format('jS F Y'),
+        ];
+
+        // PDF generate karo
+        $pdf = Pdf::loadView('clients.client_cover_letter', [
+            'client' => $client,
+            'today'  => now()->format('jS F Y')
+        ]);
+
+        // Download ya browser mein show karo
+        return $pdf->stream('care_Letter_'.$client->first_name.'.pdf');
+        // ya ->download() kar sakte ho
     }
 }

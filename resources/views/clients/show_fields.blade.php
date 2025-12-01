@@ -15,7 +15,7 @@
                 <!-- Full Name -->
                 <div class="col-md-6 mb-3">
                     <label class="font-weight-bold text-muted">Full Name:</label>
-                    <p class="text-dark">{{ $client->name }}</p>
+                    <p class="text-dark">{{ $client->first_name.' '.$client->sir_name ?? 'Mr Sajjad' }}</p>
                 </div>
 
                 <!-- Phone -->
@@ -108,4 +108,68 @@
             <a href="{{ route('clients.edit', $client->id) }}" class="btn btn-primary">Edit</a>
         </div>
     </div>
+
+    <!-- ================== NEW CARD: Multiple Letter Generator ================== -->
+<div class="card shadow-sm border-0 rounded-lg mt-4">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">
+            <i class="fas fa-file-alt"></i> Generate Immigration Letters
+        </h5>
+    </div>
+    <div class="card-body py-4">
+        <div class="row text-center">
+
+            <!-- Authority Letter -->
+            <div class="col-lg-3 col-md-4 col-6 mb-3">
+                <a href="{{ route('clients.authority-letter', $client->id) }}"
+                   class="btn btn-block btn-outline-success shadow-sm"
+                   target="_blank">
+                    {{-- <i class="fas fa-file-signature fa-2x mb-2 d-block"></i> --}}
+                    <strong>Authority Letter</strong>
+                </a>
+            </div>
+
+            <!-- Initial Instruction Letter -->
+            <div class="col-lg-3 col-md-4 col-6 mb-3">
+                <a href="{{ route('clients.initial-instruction', $client->id) }}"
+                   class="btn btn-block btn-outline-primary shadow-sm"
+                   target="_blank">
+                    {{-- <i class="fas fa-clipboard-list fa-2x mb-2 d-block"></i> --}}
+                    <strong>Initial Instruction</strong>
+                </a>
+            </div>
+
+            <!-- Advice Letter -->
+            <div class="col-lg-3 col-md-4 col-6 mb-3">
+                <a href="{{ route('clients.advice-letter', $client->id) }}"
+                   class="btn btn-block btn-outline-info shadow-sm"
+                   target="_blank">
+                    {{-- <i class="fas fa-gavel fa-2x mb-2 d-block"></i> --}}
+                    <strong>Client Clouser Letter</strong>
+                </a>
+            </div>
+
+            <!-- Covering Letter (Home Office) -->
+            <div class="col-lg-3 col-md-4 col-6 mb-3">
+                <a href="{{ route('clients.covering-letter', $client->id) }}"
+                   class="btn btn-block btn-outline-warning shadow-sm"
+                   target="_blank">
+                    {{-- <i class="fas fa-envelope-open-text fa-2x mb-2 d-block"></i> --}}
+                    <strong>Covering Letter</strong>
+                </a>
+            </div>
+
+            <!-- Client Care Letter -->
+            <div class="col-lg-3 col-md-4 col-6 mb-3">
+                <a href="{{ route('clients.client-care-letter', $client->id) }}"
+                   class="btn btn-block btn-outline-danger shadow-sm"
+                   target="_blank">
+                    {{-- <i class="fas fa-handshake fa-2x mb-2 d-block"></i> --}}
+                    <strong>Client Care Letter</strong>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
 </div>
