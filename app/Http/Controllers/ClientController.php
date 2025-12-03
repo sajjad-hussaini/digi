@@ -194,7 +194,7 @@ class ClientController extends Controller
         ];
 
         // PDF generate karo
-        $pdf = Pdf::loadView('clients.client_cover_letter', [
+        $pdf = Pdf::loadView('clients.client_covering_letter', [
             'client' => $client,
             'today'  => now()->format('jS F Y')
         ]);
