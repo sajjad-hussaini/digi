@@ -21,6 +21,14 @@
       box-shadow: 0 6px 20px rgba(0,0,0,0.06);
       border-radius: 6px;
     }
+    .logo-top-right {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      width: 120px;           /* Apne logo ke size ke hisab se adjust kar lena */
+      height: auto;
+      z-index: 10;
+    }
     h1.title {
       text-align: center;
       font-size: 22px;
@@ -39,6 +47,8 @@
   </style>
 </head>
 <body>
+  <!-- Logo Top Right Corner -->
+  <img src="{{ public_path('images/logo_imigration_law.png') }}" alt="Company Logo" class="logo-top-right">
   <div class="letter-wrap">
     <h1 class="title">FORM OF AUTHORITY</h1>
 
