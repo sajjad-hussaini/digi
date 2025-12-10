@@ -8,12 +8,12 @@
             <i class="glyphicon glyphicon-edit"></i>
         </a>
     @endcan
-    @can('delete companies')
+    {{-- @can('delete companies')
         {!! Form::button('<i class="glyphicon glyphicon-trash"></i>', [
             'type' => 'submit',
             'class' => 'btn btn-danger btn-xs',
             'onclick' => "return conformDel(this,event)"
         ]) !!}
-    @endcan
+    @endcan --}}
 </div>
 {!! Form::close() !!}

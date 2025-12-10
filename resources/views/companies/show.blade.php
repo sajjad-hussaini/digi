@@ -11,14 +11,14 @@
             <a href="{{ route('companies.edit',$company->id) }}" class="btn btn-primary">
                 <i class="fa fa-edit" aria-hidden="true"></i> Edit
             </a>
-            {!! Form::open(['route' => ['companies.destroy', $company->id], 'method' => 'delete','style'=>'display:inline']) !!}
+            {{-- {!! Form::open(['route' => ['companies.destroy', $company->id], 'method' => 'delete','style'=>'display:inline']) !!}
                 {!! Form::button('<i class="fa fa-trash"></i> Delete', [
                 'type' => 'submit',
                 'title' => 'Delete',
                 'class' => 'btn btn-danger',
                 'onclick' => "return conformDel(this,event)",
                 ]) !!}
-                {!! Form::close() !!}
+                {!! Form::close() !!} --}}
         </span>
         </h1>
     </section>
