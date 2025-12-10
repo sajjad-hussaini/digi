@@ -11,14 +11,23 @@
     .ref-line { font-size:15px; margin-bottom:3px; }
     .address-block { margin-top:25px; white-space:pre-line; font-size:16px; }
     .footer { border-top:1px solid #ddd; margin-top:60px; padding-top:12px; font-size:14px; }
+        .logo-top-right {
+            position: absolute;
+            top: 30px;
+            right: 20px;
+            width: 70px;           /* Apne logo ke size ke hisab se adjust kar lena */
+            height: auto;
+            z-index: 10;
+        }
   </style>
 </head>
 <body>
 <div class="letter-box">
-
+<!-- Logo Top Right Corner -->
+  <img src="{{ public_path('images/logo_imigration_law.png') }}" alt="Company Logo" class="logo-top-right">
   <p class="ref-line"><strong>Our Ref:</strong> {{ $client->id ?? '2537' }}</p>
-  <p class="ref-line"><strong>Date:</strong> {{ $client->date }}</p>
-  <p class="ref-line"><strong>Please ask for:</strong> {{ $staff ?? '' }}</p>
+  <p class="ref-line"><strong>Date:</strong> {{ $date ?? now()->format('jS F Y') }}</p>
+  <p class="ref-line"><strong>Please ask for:</strong> {{ $adviserName ?? 'Mohamad Salim Kureshi' }}</p>
 
   <div class="address-block">
 {{ $client->first_name }}

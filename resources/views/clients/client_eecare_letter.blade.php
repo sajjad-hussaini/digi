@@ -11,33 +11,42 @@
         .section       { font-weight: bold; text-decoration: underline; margin-top: 25px; margin-bottom: 10px; }
         .sign-block    { margin-top: 60px; }
         .footer-text   { font-size: 12px; }
+        .logo-top-right {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            width: 70px;           /* Apne logo ke size ke hisab se adjust kar lena */
+            height: auto;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
-
+<!-- Logo Top Right Corner -->
+  <img src="{{ public_path('images/logo_imigration_law.png') }}" alt="Company Logo" class="logo-top-right">
 <div class="container my-4">
-
+ 
     <!-- TOP LEFT REFERENCE BOX -->
     <div class="letter-head">
         <strong>Our Ref:</strong> {{ $ourRef ?? '0099' }} &nbsp;&nbsp;&nbsp;
-        <strong>Date:</strong> {{ $letterDate ?? '29th October 2025' }}<br>
+        <strong>Date:</strong> {{ $date ?? now()->format('jS F Y') }}<br>
         <strong>Please ask for:</strong> {{ $adviserName ?? 'Mohamad Salim Kureshi' }}
     </div>
 
     <!-- ADDRESS -->
     <p>
-        <strong>{{ $clientName ?? 'Mr. XXXXXXXX' }}</strong><br>
+        <strong>{{ $client->first_name.' '.$client->sir_name ?? 'Mr. Waqas Ahmed' }}</strong><br>
         {{ $clientAddress ?? "goodgate Street\nBolton\nBL3" }}
     </p>
 
     <!-- SALUTATION -->
-    <p><strong>Dar {{ $clientName ?? 'XXXXXXXX' }}</strong></p>
+    <p><strong>Dar {{ $client->first_name.' '.$client->sir_name ?? 'Mr. Waqas Ahmed' }}</strong></p>
 
     <!-- SUBJECT -->
     <p><strong>Re: <span style="text-decoration: underline">Your EU Settled Status/Immigration Matter</span></strong></p>
 
     <!-- OPENING -->
-    <p>Thank you very much for instructing UK Immigration Law. We are registered with the Immigration Advice Authority (IAA). We are authorised to provide immigration advice and services in the categories of Asylum &amp; Protection and Immigration. Our registration number is <strong>{{ $iaaNo ?? 'XXXXXXXX' }}</strong>.</p>
+    <p>Thank you very much for instructing UK Immigration Law. We are registered with the Immigration Advice Authority (IAA). We are authorised to provide immigration advice and services in the categories of Asylum &amp; Protection and Immigration. Our registration number is <strong>{{ $iaaNo ?? '73264734' }}</strong>.</p>
 
     <p>I am writing to confirm our recent discussion on <strong>{{ $discussionDate ?? '16th October 2025' }}</strong>. Please read this letter carefully to make sure that I have understood what you want and that you understand what is going to happen.</p>
 

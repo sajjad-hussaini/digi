@@ -25,7 +25,7 @@
       position: absolute;
       top: 20px;
       right: 30px;
-      width: 120px;           /* Apne logo ke size ke hisab se adjust kar lena */
+      width: 80px;           /* Apne logo ke size ke hisab se adjust kar lena */
       height: auto;
       z-index: 10;
     }
@@ -75,6 +75,7 @@
         {{ $lawFirmAddress ?? '1st floor, 236 St. Helens Road, Bolton BL3 4EB' }}<br>
         Phone: {{ $phone ?? '07777328028' }} | Email: {{ $email ?? 'example@domain.com' }}
       </div>
+      
       <div style="text-align:right; font-size:12px; color:#adb5bd;">Immigration Advice Authority</div>
     </div>
   </div>

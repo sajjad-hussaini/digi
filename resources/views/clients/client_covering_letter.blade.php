@@ -36,6 +36,14 @@
       font-size: 14px;
       color: #444;
     }
+        .logo-top-right {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            width: 70px;           /* Apne logo ke size ke hisab se adjust kar lena */
+            height: auto;
+            z-index: 10;
+        }
 
     /* Print adjustments */
     @media print {
@@ -46,13 +54,14 @@
 </head>
 <body>
   <div class="sheet">
-
+<!-- Logo Top Right Corner -->
+  <img src="{{ public_path('images/logo_imigration_law.png') }}" alt="Company Logo" class="logo-top-right">
     <div class="row">
       <div class="col-6 small-line"><strong>Our Ref:</strong> {{ $ref ?? '' }}</div>
-      <div class="col-6 small-line text-end"><strong>Date:</strong> {{ $date ?? now()->format('jS F Y') }}</div>
+      <div class="col-6 small-line "><strong>Date:</strong> {{ $date ?? now()->format('jS F Y') }}</div>
     </div>
 
-    <p class="small-line"><strong>Please ask for:</strong> {{ $staff ?? '' }}</p>
+    <p class="small-line"><strong>Please ask for:</strong> {{ $adviserName ?? 'Mohamad Salim Kureshi' }}</p>
 
     <div class="address-block">
 {{ $client->first_name }} {{ $client->sir_name }}

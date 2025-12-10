@@ -22,12 +22,21 @@
         .content-list {
             padding-left: 20px;
         }
+        .logo-top-right {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            width: 70px;           /* Apne logo ke size ke hisab se adjust kar lena */
+            height: auto;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
 
 <div class="container my-5">
-
+<!-- Logo Top Right Corner -->
+  <img src="{{ public_path('images/logo_imigration_law.png') }}" alt="Company Logo" class="logo-top-right">
     <!-- Header Table -->
     <h4 class="text-center mb-4 text-uppercase">Client Initial Instructions and Advice</h4>
 
