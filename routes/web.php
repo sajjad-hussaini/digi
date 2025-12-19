@@ -70,7 +70,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
 
 
     Route::get('/clients/{client}/authority-letter', [ClientController::class, 'generateAuthorityLetter'])->name('clients.authority-letter');
-    Route::get('/clients/{client}/initial-instruction', [ClientController::class, 'initialInstructionLetter'])->name('clients.initial-instruction');
+    Route::post('/clients/{client}/initial-instruction', [ClientController::class, 'initialInstructionLetter'])->name('clients.initial-instruction');
     Route::get('/clients/{client}/advice-letter', [ClientController::class, 'eeCareLetter'])->name('clients.advice-letter');
     Route::get('/clients/{client}/covering-letter', [ClientController::class, 'coveringLetter'])->name('clients.covering-letter');
     Route::get('/clients/{client}/client-care-letter', [ClientController::class, 'clientCareLetter'])->name('clients.client-care-letter');

@@ -39,7 +39,8 @@ class ClientController extends Controller
     {
         $customFields = CustomField::where('model_type', 'clients')->get();
         $companies = Company::get();
-        return view('clients.create', compact('customFields', 'companies'));
+        $selectedCompany = $companies->first()->id ?? null;
+        return view('clients.create', compact('customFields', 'companies', 'selectedCompany'));
     }
 
     public function store(Request $request)
@@ -91,25 +92,36 @@ class ClientController extends Controller
 
     public function generateAuthorityLetter(Client $client)
     {
-        // Date format kar lo jaise letter mein hai (29th October 2025)
-        $formattedDate = $client->created_at->format('jS F Y'); // 29th October 2025
+        // Law firm details (agar database mein ho to wahan se lo, warna config ya hardcode)
+        $lawFirm = config('app.law_firm_name', 'UK Immigration Law');
+        $lawFirmAddress = config('app.law_firm_address', '1st floor, 236 St. Helens Road, Bolton BL3 4EB');
+        $phone = config('app.law_firm_phone', '07777328028');
+        $email = config('app.law_firm_email', 'qureshisalim@yahoo.com');
 
-        // Data pass kar rahe hain blade template ko
+        // Today's date formatted
+        $today = now()->format('jS F Y');
+
+        // Client ke fields ko safely access karo
+        $clientName = trim($client->first_name . ' ' . $client->sir_name);
+        $clientFullName = $clientName ?: '__________________'; // agar name na ho to blank line
+
         $data = [
-            'client' => $client,
-            'formattedDate' => $formattedDate ?? now()->format('jS F Y'),
-            'today' => now()->format('jS F Y'),
+            'client'         => $client,
+            'clientName'     => $clientName,
+            'clientFullName' => $clientFullName,
+            'dob'            => $client->dob ? \Carbon\Carbon::parse($client->dob)->format('d.m.Y') : '__________________',
+            'nationality'    => $client->country ?? '__________________',
+            'address'        => $client->address ?? '________________________________________________________________',
+            'lawFirm'        => $lawFirm,
+            'lawFirmAddress' => $lawFirmAddress,
+            'phone'          => $phone,
+            'email'          => $email,
+            'today'          => $today,
         ];
 
-        // PDF generate karo
-        $pdf = Pdf::loadView('clients.authority-letter', [
-            'client' => $client,
-            'today'  => now()->format('jS F Y')
-        ]);
+        $pdf = Pdf::loadView('clients.authority-letter', $data);
 
-        // Download ya browser mein show karo
-        return $pdf->stream('Authority_Letter_'.$client->name.'.pdf');
-        // ya ->download() kar sakte ho
+        return $pdf->stream('Authority_Letter_' . str_replace(' ', '_', $clientFullName) . '.pdf');
     }
 
     public function clientCareLetter(Client $client)
@@ -135,7 +147,7 @@ class ClientController extends Controller
         // ya ->download() kar sakte ho
     }
 
-    public function initialInstructionLetter(Client $client)
+    public function initialInstructionLetter(Request $request, Client $client)
     {
         // Date format kar lo jaise letter mein hai (29th October 2025)
         $formattedDate = $client->created_at->format('jS F Y'); // 29th October 2025
@@ -150,6 +162,7 @@ class ClientController extends Controller
         // PDF generate karo
         $pdf = Pdf::loadView('clients.client_instruction', [
             'client' => $client,
+            'request' => $request,
             'today'  => now()->format('jS F Y')
         ]);
 

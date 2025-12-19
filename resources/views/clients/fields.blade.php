@@ -1,13 +1,16 @@
 <!-- resources/views/clients/fields.blade.php -->
 
 <!-- Company Field -->
-<div class="form-group col-sm-6 {{ $errors->has('company_id') ? 'has-error' :'' }}">
-    {!! Form::label('company_id', 'Individual :') !!}
-    {!! Form::select('company_id', $companies->pluck('company_name', 'id'), null, [
-        'class' => 'form-control',
-        'placeholder' => 'Select Individual '
-    ]) !!}
-    {!! $errors->first('company_id','<span class="help-block">:message</span>') !!}
+<div class="form-group col-sm-6 {{ $errors->has('company_id') ? 'has-error' : '' }}">
+    {!! Form::label('company_id', 'Individual :') !!}
+    {!! Form::select('company_id', 
+        $companies->pluck('company_name', 'id'),
+        old('company_id', $companies->first()?->id),
+        [
+            'class' => 'form-control',
+            'placeholder' => 'Select Individual'
+        ]) !!}
+    {!! $errors->first('company_id', '<span class="help-block">:message</span>') !!}
 </div>
 
 <!-- Color Field -->

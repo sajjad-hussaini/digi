@@ -17,7 +17,7 @@
         .section-title {
             font-weight: bold;
             text-decoration: underline;
-            margin-top: 30px;
+            margin-top: 10px;
         }
         .content-list {
             padding-left: 20px;
@@ -99,15 +99,7 @@
 
     <!-- Immigration History -->
     <div class="section-title">Immigration History:</div>
-    <p>You have informed me that you are a <strong>{{ $client->country ?? 'Pakistani' }}</strong> national and you want to apply for an Entry Clearance visa for yourself to join your husband in the UK and your husband completely supports this application.</p>
-    <ul class="content-list">
-        <li>You never travelled to the UK before.</li>
-        <li>No previous UK visa applications were granted.</li>
-        <li>You have no history of overstaying, illegal entry, or breaches of UK immigration laws.</li>
-        <li>You never travelled to any other countries in the past 10 years.</li>
-        <li>You have no records of visa applications, refusals, or immigration issues outside the UK.</li>
-        <li>You have passed your IELTS Life Skills English test level A1 Speaking and Listening.</li>
-    </ul>
+        {{ $request->immigration_history ?? 'You have not previously applied for a visa to the UK. You have no refusals or deportations from the UK or any other country.' }}
 
     <!-- Work and Family Information -->
     <div class="section-title">Work and Family Information:</div>

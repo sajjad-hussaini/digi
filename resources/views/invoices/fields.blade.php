@@ -1,7 +1,7 @@
 <!-- Client Field -->
 <div class="form-group col-sm-6 {{ $errors->has('client_id') ? 'has-error' : '' }}">
     {!! Form::label('client_id', 'Client:') !!}
-    {!! Form::select('client_id', $clients->pluck('name', 'id'), null, [
+    {!! Form::select('client_id', $clients->pluck('first_name', 'id'), old('client_id', $clients->first()?->id), [
         'class' => 'form-control select2',
         'placeholder' => 'Select Client'
     ]) !!}
