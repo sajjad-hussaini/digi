@@ -122,35 +122,32 @@
 
                 <div class="card-body">
                     <a href="{{ route('clients.authority-letter', $client->id) }}"
-                        class="btn btn-block btn-outline-success mb-2" target="_blank">
+                        class="btn btn-block btn btn-default mb-3" target="_blank">
                         Authority Letter
                     </a>
 
-                    {{-- <a href="{{ route('clients.initial-instruction', $client->id) }}"
-                        class="btn btn-block btn-outline-primary mb-2" target="_blank">
-                        Initial Instruction
-                    </a> --}}
 
                     <a href="javascript:void(0)"
-                        class="btn btn-block btn-outline-primary mb-2"
+                        class="btn btn-block btn btn-default mb-3"
                         data-toggle="modal"
                         data-target="#initialInstructionModal">
                         Initial Instruction
                     </a>
 
-
-                    <a href="{{ route('clients.advice-letter', $client->id) }}"
-                        class="btn btn-block btn-outline-info mb-2" target="_blank">
+                    <a href="javascript:void(0)"
+                        class="btn btn-block btn btn-default mb-3"
+                        data-toggle="modal"
+                        data-target="#clientClouserModal">
                         Client Closure Letter
                     </a>
 
                     <a href="{{ route('clients.covering-letter', $client->id) }}"
-                        class="btn btn-block btn-outline-warning mb-2" target="_blank">
+                        class="btn btn-block btn btn-default mb-3" target="_blank">
                         Covering Letter
                     </a>
 
                     <a href="{{ route('clients.client-care-letter', $client->id) }}"
-                        class="btn btn-block btn-outline-danger" target="_blank">
+                        class="btn btn-block btn btn-default" target="_blank">
                         Client Care Letter
                     </a>
                 </div>
@@ -194,12 +191,7 @@
                                   required></textarea>
                     </div>
                     <div class="form-group">
-                        <label><strong>Initial Instruction</strong></label>
-                        <textarea name="initial_instruction"
-                                  class="form-control"
-                                  rows="6"
-                                  placeholder="Enter Initail Instruction..."
-                                  required></textarea>
+                        {!! Form::bsTextarea('initial_instruction',null,['class'=>'form-control b-wysihtml5-editor']) !!}
                     </div>
                 </div>
 
@@ -215,4 +207,61 @@
         </form>
     </div>
 </div>
+<!-- client clouser letter -->
+<div class="modal fade" id="clientClouserModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <form method="POST" action="{{ route('clients.advice-letter', $client->id) }}">
+            @csrf
+
+            <!-- client id hidden -->
+            <input type="hidden" name="client_id" value="{{ $client->id }}">
+
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Client Closure Letter</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                       {!! Form::bsTextarea('ILR vignette sticker',null,['class'=>'form-control b-wysihtml5-editor']) !!}
+                    </div>
+                    <div class="form-group">
+                        {!! Form::bsTextarea('Instructions Received',null,['class'=>'form-control b-wysihtml5-editor']) !!}
+                    </div>
+                    <div class="form-group">
+                        {!! Form::bsTextarea('initial instructions to me',null,['class'=>'form-control b-wysihtml5-editor']) !!}
+                    </div>
+                    <div class="form-group">
+                        {!! Form::bsTextarea('Advice given',null,['class'=>'form-control b-wysihtml5-editor']) !!}
+                    </div>
+                    <div class="form-group">
+                        {!! Form::bsTextarea('mentioned list of documents',null,['class'=>'form-control b-wysihtml5-editor']) !!}
+                    </div>
+                    <div class="form-group">
+                        {!! Form::bsTextarea('Care and conduct',null,['class'=>'form-control b-wysihtml5-editor']) !!}
+                    </div>
+                    <div class="form-group">
+                        {!! Form::bsTextarea('Complaints procedure',null,['class'=>'form-control b-wysihtml5-editor']) !!}
+                    </div>
+                    <div class="form-group">
+                        {!! Form::bsTextarea('Professional Fees',null,['class'=>'form-control b-wysihtml5-editor']) !!}
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 

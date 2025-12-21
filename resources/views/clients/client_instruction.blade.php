@@ -26,7 +26,7 @@
             position: absolute;
             top: 15px;
             right: 20px;
-            width: 70px;           /* Apne logo ke size ke hisab se adjust kar lena */
+            width: 70px;
             height: auto;
             z-index: 10;
         }
@@ -103,20 +103,11 @@
 
     <!-- Work and Family Information -->
     <div class="section-title">Work and Family Information:</div>
-    <ul class="content-list">
-        <li>You are not working in {{ $client->country == 'Pakistan' ? 'Pakistan' : 'your home country' }}.</li>
-        <li>You are living with your parents in {{ $client->country == 'Pakistan' ? 'Pakistan' : 'your home country' }} and the house is owned by your parents.</li>
-        <li>Your husband is <strong>{{ $husbandclient->country ?? 'Spanish' }}</strong> national and holding EU Settled Status in the UK.</li>
-        <li>Your husband is living with his parents and other siblings in the UK and the house is rented by your parents in law.</li>
-        <li>You met your husband on <strong>{{ $meetingDate ?? '15 December 2022' }}</strong> when he came to {{ $client->country == 'Pakistan' ? 'Pakistan' : 'your country' }} to marry you.</li>
-        <li>You legally married him on <strong>{{ $marriageDate ?? '31 December 2022' }}</strong> in <strong>{{ $marriageLocation ?? 'Mandi Bahauddin, Pakistan' }}</strong> and you have no children.</li>
-        <li>Your husband is working in the UK permanently as <strong>{{ $husbandJob ?? 'Sterile Service Technician 1' }}</strong> in a company and earning above £29,000 per annum.</li>
-    </ul>
+        {{ $request->work_family_info ?? 'You are currently employed as a Software Engineer at ABC Tech in Pakistan. You are married to Jane Doe, who is a British citizen. You have two children, aged 5 and 3.' }}
 
     <!-- Initial Instruction -->
     <div class="section-title">Initial Instruction:</div>
-    <p><strong>You have instructed me to apply Entry Clearance visa for you to enter the UK as a partner.</strong></p>
-
+        {!! $request->initial_instruction ?? 'I have instructed you to apply for an Entry Clearance visa to enter the UK as a partner of a British citizen. You have provided all necessary documents and information required for the application.' !!}
     <!-- Advice -->
     <div class="section-title">Advice:</div>
     <p>I confirmed that, based on the information you provided, I would be happy to act on your proposed application for the UK Entry Clearance visa (to enter the UK as a partner). I advised you that based on what you told me, under <strong>Appendix FM</strong>, you (applying as a partner) are eligible to apply for Entry Clearance visa to enter the UK. I will submit the online application to the Home Office and appointment will be booked at any nearest location to provide fingerprints in due course.</p>

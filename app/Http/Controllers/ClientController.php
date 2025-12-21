@@ -52,7 +52,8 @@ class ClientController extends Controller
 
     public function show(Client $client)
     {
-        return view('clients.show', compact('client'));
+        $customFields = CustomField::get();
+        return view('clients.show', compact('client', 'customFields'));
     }
 
     public function edit(Client $client)
@@ -149,6 +150,7 @@ class ClientController extends Controller
 
     public function initialInstructionLetter(Request $request, Client $client)
     {
+        // dd($request->all());
         // Date format kar lo jaise letter mein hai (29th October 2025)
         $formattedDate = $client->created_at->format('jS F Y'); // 29th October 2025
 
@@ -171,7 +173,7 @@ class ClientController extends Controller
         // ya ->download() kar sakte ho
     }
 
-    public function eeCareLetter(Client $client)
+    public function eeCareLetter(Request $request, Client $client)
     {
         // Date format kar lo jaise letter mein hai (29th October 2025)
         $formattedDate = $client->created_at->format('jS F Y'); // 29th October 2025
@@ -179,6 +181,7 @@ class ClientController extends Controller
         // Data pass kar rahe hain blade template ko
         $data = [
             'client' => $client,
+            'request' => $request,
             'formattedDate' => $formattedDate ?? now()->format('jS F Y'),
             'today' => now()->format('jS F Y'),
         ];
@@ -186,6 +189,7 @@ class ClientController extends Controller
         // PDF generate karo
         $pdf = Pdf::loadView('clients.client_eecare_letter', [
             'client' => $client,
+            'request' => $request,
             'today'  => now()->format('jS F Y')
         ]);
 

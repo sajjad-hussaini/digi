@@ -45,59 +45,36 @@
     <!-- SUBJECT -->
     <p><strong>Re: <span style="text-decoration: underline">Your EU Settled Status/Immigration Matter</span></strong></p>
 
-    <!-- OPENING -->
-    <p>Thank you very much for instructing UK Immigration Law. We are registered with the Immigration Advice Authority (IAA). We are authorised to provide immigration advice and services in the categories of Asylum &amp; Protection and Immigration. Our registration number is <strong>{{ $iaaNo ?? '73264734' }}</strong>.</p>
-
-    <p>I am writing to confirm our recent discussion on <strong>{{ $discussionDate ?? '16th October 2025' }}</strong>. Please read this letter carefully to make sure that I have understood what you want and that you understand what is going to happen.</p>
+    {!! $request->ILR_vignette_sticker ?? 'Your EU Settled Status/Immigration Matter' !!}
 
     <!-- SECTION 1 -->
     <div class="section">Instructions Received</div>
-    <p>You have instructed me to assist you with an application for an EU Settled Status in the UK.</p>
-    <p>I have now opened a file under the above reference, which you should quote each time you contact our office.</p>
+
+    {!! $request->Instructions_Received ?? 'You have instructed me to assist you with an application for an EU Settled Status in the UK.' !!}
 
     <!-- SECTION 2 -->
     <div class="section">Your initial instructions to me are as follows:</div>
-    <p>As per our recent discussion you have informed me that you are Pakistani national, living in the UK with your wife. Your wife sponsored you to join her in the UK and you entered the UK on an EEA Family permit on <strong>{{ $entryDate ?? '11.07.2020' }}</strong> at Manchester airport and since then you are continuously living in the UK and never been out of the UK for more than 6 months in the eligible period.</p>
-
-    <p>You informed me that currently you have Pre-Settled Status in the UK which is valid till <strong>{{ $preSettledExpiry ?? '09th December 2025' }}</strong> and you also have a Biometric Residence Card which is also valid till <strong>{{ $brcExpiry ?? '09th December 2025' }}</strong>. Your wife is Portuguese national and also holds EU Settled Status, exercising her treaty rights by living and working in the UK. You met your wife in Pakistan and married on <strong>{{ $marriageDate ?? '05.07.2018' }}</strong> in {{ $marriagePlace ?? 'Gujarat, Pakistan' }}. You are currently residing with your wife at the above address and you are both working full-time. The property where you live is rented by you and you want to apply for EU Settled Status under the EU Settlement Scheme to live permanently in the UK with your wife and child.</p>
-
+    
+    {!! $request->initial_instructions_to_me ?? 'You have informed me that you are a Pakistani national currently residing in the UK with Pre-Settled Status as a close family member of your EEA national wife who holds Settled Status in the UK. You have expressed your intention to apply for Settled Status under the EU Settlement Scheme to secure your permanent residence in the UK.' !!}
     <!-- SECTION 3 -->
     <div class="section">Advice given:</div>
-    <p>Based on the information you provided, I confirm that I am happy to assist with your proposed application for EEA Settled Status as a close family member of an EEA or Swiss national under the EU Settlement Scheme, allowing you to live permanently in the UK with your wife.</p>
-
-    <p>I advised you that, based on what you have told me, you meet the eligibility criteria to be issued Settled Status in the UK. As your Biometric Residence Card is valid, I will use this card as an identity document to apply for your Settled Status, so you do not need to provide your fingerprints. The Home Office has now replaced BRP/BRC with e-Visas, so you will not receive a new physical BRC card and you will get a digital copy of Settled Status.</p>
-
-    <p>What you will need to show to succeed in getting your Settled Status in the UK is that you will need to meet certain requirements and prove certain facts. Firstly, you will need to show that your wife is an EEA national, and you have been granted Pre-Settled Status, but these will be shown by your Biometric Residence Card, Pre-Settled Status and your wife's passport and Settled Status, so no problem here. And of course, you will need to demonstrate certain facts about your relationship with your wife; this means you need to prove by your marriage certificate, and you will need to show that you are living in the UK with your partner.</p>
-
-    <p>I also advised you that I will arrange for your application to be submitted online to the Home Office. I confirm that I will begin preparing your application upon receipt of the additional information requested and aim to complete the preparation within <strong>10 working days</strong> thereafter. I will review your file and advise you of any further documents or information required to finalise and submit your application.</p>
-
+    {!! $request->Advice_given ?? 'I have advised you that as a close family member of an EEA national with Settled Status, you are eligible to apply for Settled Status under the EU Settlement Scheme. I have explained the benefits of obtaining Settled Status, including the right to live and work in the UK without restrictions, access to public services, and the ability to apply for British citizenship in the future.' !!}
     <!-- SECTION 4 -->
     <div class="section">Please provide me below mentioned list of documents (scan copy) as soon as practical:</div>
-    <ol>
-        <li>Your valid Pakistani Passport</li>
-        <li>Your Biometric Residence Card</li>
-        <li>Your Pre-Settled Status outcome letter</li>
-        <li>Your wife's valid EEA Passport</li>
-        <li>Your wife's Settled Status outcome letter</li>
-        <li>Your Marriage Certificate</li>
-        <li>Your Proof of addresses for five years</li>
-    </ol>
+    {!! $request->mentioned_list_of_documents ?? '<ul>
+        <li>Valid passport or travel document</li>
+        <li>Proof of relationship to your EEA national spouse (e.g., marriage certificate)</li>
+        <li>Evidence of your EEA national spouse\'s Settled Status (e.g., copy of their Settled Status approval letter)</li>
+        <li>Proof of residence in the UK (e.g., utility bills, tenancy agreements)</li>
+        <li>Any other relevant documents supporting your application</li>
+    </ul>' !!}
 
     <!-- SECTION 5 -->
     <div class="section">Care and conduct</div>
-    <p>One of the main purposes of this letter is to explain how we operate:</p>
-    <p>My name is <strong>{{ $adviserName ?? 'Mohamad Salim Kureshi' }}</strong>, level 1 Adviser regulated and approved by the Immigration Advice Authority (IAA), responsible for the conduct of your case. I can be contacted on <strong>{{ $contactPhone ?? '07777328028' }}</strong> / <strong>{{ $contactEmail ?? 'qureshisalim@yahoo.com' }}</strong> / WhatsApp. Whenever possible, I shall also be available to advise and assist you. I will keep you informed of the progress of your case and any developments as and when they arise. If you need to see me, you should telephone first for an appointment as otherwise you may not be seen.</p>
-
-    <p>I am also required to tell you that the Immigration Advice Authority (IAA) may examine your file. I shall carry out most of the work on your case. We shall, of course, take great care with any original documents such as passports, which you may give to us for sending to the immigration authorities. These will be returned to you immediately once they are returned to us.</p>
-
-    <p>If you are on a low income or receiving welfare benefits, you may qualify for Legal Help under the Community Legal Services Scheme to assist you with your case. Please note that my organisation does not represent clients free under that scheme. If therefore you would prefer to be represented by the Community Legal Services adviser, please let me know immediately and I shall tell you where you can get possible alternative representation.</p>
-
-    <p>At UK Immigration Law, we try to provide the best possible service to our clients and, in order to do this, we need to know from you if you feel dissatisfied. Should you have any occasion to feel unhappy about our service, please let me know straightaway and I will discuss this with you and ensure you receive a response within 7 working days.</p>
-
+    {!! $request->Care_and_conduct ?? '<p>I am committed to providing you with a professional and efficient service throughout the duration of your case. I will keep you informed of any developments and respond promptly to any queries you may have. Please ensure that you provide me with accurate and complete information to enable me to represent you effectively.</p>' !!}
     <!-- SECTION 6 -->
     <div class="section">Complaints procedure</div>
-    <p>If at any stage you have any concerns regarding the conduct of your case, please raise them with me, preferably in writing. Please let me know if you would like full details of our complaint's procedure. If we are unable to resolve matters to your satisfaction or you wish to pursue your complaint through other channels, you are entitled to contact the Immigration Advice Authority (IAA) at any time. Their address is:</p>
-
+    {!! $request->Complaints_procedure ?? '<p>If you are dissatisfied with any aspect of my service, please let me know in the first instance so that I can address your concerns. If you remain dissatisfied, you may contact the' !!}
     <p><strong>Immigration Advice Authority Complaints Team<br>
         IAA<br>
         PO Box 567<br>
@@ -114,8 +91,7 @@
 
     <!-- SECTION 8 -->
     <div class="section">Professional Fees</div>
-    <p>As previously discussed, a fixed fee of <strong>£{{ $fee ?? 250 }}</strong> for you and there will be no extra cost to represent you in relation to your immigration matter. This fee includes your initial consultation. The fee also includes making representations to the Home Office, informing you of any developments as and when they arise and submission of all necessary documentation. There will not be VAT charged. I am glad to inform you that there is no Home Office fees for these applications and so you don't need to pay Home Office fees or any disbursement.</p>
-
+    {!! $request->Professional_Fees ?? '<p>As discussed, my professional fees for handling your EU Settled Status application will be £500. This fee covers all aspects of the application process, including initial consultation, document review, application preparation, and submission. Please note that this fee does not include any government application fees or additional costs that may arise during the process.</p>' !!}
     <!-- SECTION 9 -->
     <div class="section">Office Opening times</div>
     <p>Please note that our office is open from <strong>10:00 am to 6:00 pm Monday to Friday</strong> excluding public holidays <strong>pre-booked appointment basis only</strong>.</p>
@@ -138,7 +114,7 @@
     <p class="mt-4">Please sign, date this letter, and return it to us to indicate that you understand and agree to its contents.</p>
     <p>
         Client Signature: ___________________________ &nbsp;&nbsp;
-        Date: {{ $signatureDate ?? '29th October 2025' }}
+        Date: {{ $date ?? now()->format('jS F Y') }}
     </p>
 
 </div><!-- /container -->
