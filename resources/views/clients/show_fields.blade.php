@@ -126,6 +126,12 @@
                         Authority Letter
                     </a>
 
+                     <a href="javascript:void(0)"
+                        class="btn btn-block btn btn-default mb-3"
+                        data-toggle="modal"
+                        data-target="#clientClouserModal">
+                        Client Care Letter
+                    </a>
 
                     <a href="javascript:void(0)"
                         class="btn btn-block btn btn-default mb-3"
@@ -134,10 +140,8 @@
                         Initial Instruction
                     </a>
 
-                    <a href="javascript:void(0)"
-                        class="btn btn-block btn btn-default mb-3"
-                        data-toggle="modal"
-                        data-target="#clientClouserModal">
+                    <a href="{{ route('clients.client-care-letter', $client->id) }}"
+                        class="btn btn-block btn btn-default" target="_blank">
                         Client Closure Letter
                     </a>
 
@@ -145,11 +149,7 @@
                         class="btn btn-block btn btn-default mb-3" target="_blank">
                         Covering Letter
                     </a>
-
-                    <a href="{{ route('clients.client-care-letter', $client->id) }}"
-                        class="btn btn-block btn btn-default" target="_blank">
-                        Client Care Letter
-                    </a>
+                   
                 </div>
             </div>
         </div>
@@ -218,7 +218,7 @@
 
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Client Closure Letter</h5>
+                    <h5 class="modal-title">Client Care Letter</h5>
                     <button type="button" class="close text-white" data-dismiss="modal">
                         <span>&times;</span>
                     </button>

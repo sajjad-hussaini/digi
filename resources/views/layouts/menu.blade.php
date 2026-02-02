@@ -27,13 +27,13 @@
                 class="fa fa-tags"></i><span>{{ucfirst(config('settings.tags_label_plural'))}}</span></a>
     </li>
 @endcan --}}
-@can('viewAny',\App\Document::class)
+{{-- @can('viewAny',\App\Document::class)
     <li class="{{ Request::is('admin/documents*') ? 'active' : '' }}">
         <a href="{!! route('documents.index') !!}"><i
                 class="fa fa-file"></i><span>{{ucfirst(config('settings.document_label_plural'))}}</span></a>
     </li>
-@endcan
-@if(auth()->user()->is_super_admin)
+@endcan --}}
+{{-- @if(auth()->user()->is_super_admin)
     <li class="treeview {{ Request::is('admin/advanced*') ? 'active' : '' }}">
         <a href="#">
             <i class="fa fa-info-circle"></i>
@@ -55,5 +55,5 @@
             </li>
         </ul>
     </li>
-@endif
+@endif --}}
 
