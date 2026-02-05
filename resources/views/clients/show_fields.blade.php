@@ -126,18 +126,18 @@
                         Authority Letter
                     </a>
 
-                     <a href="javascript:void(0)"
-                        class="btn btn-block btn btn-default mb-3"
-                        data-toggle="modal"
-                        data-target="#clientClouserModal">
-                        Client Care Letter
-                    </a>
-
                     <a href="javascript:void(0)"
                         class="btn btn-block btn btn-default mb-3"
                         data-toggle="modal"
                         data-target="#initialInstructionModal">
                         Initial Instruction
+                    </a>
+
+                     <a href="javascript:void(0)"
+                        class="btn btn-block btn btn-default mb-3"
+                        data-toggle="modal"
+                        data-target="#clientClouserModal">
+                        Client Care Letter
                     </a>
 
                     <a href="{{ route('clients.client-care-letter', $client->id) }}"
@@ -158,6 +158,33 @@
 </div>
 <!-- Initial Instruction Modal -->
 <div class="modal fade" id="initialInstructionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Initial Instruction</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div id="choice-step">
+                    <a href="javascript:void(0)"
+                        class="btn btn-block btn btn-default mb-3"
+                        data-toggle="modal"
+                        data-target="#initialInstructionBaseModal">
+                        Continue with Base Template
+                    </a>
+                    <br>
+                    <label for="">Pick Existing Template</label>
+                    <input type="file" name="template" id="template" class="form-control" required>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Initial Instruction Modal -->
+<div class="modal fade" id="initialInstructionBaseModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <form method="POST" action="{{ route('clients.initial-instruction', $client->id) }}">
             @csrf

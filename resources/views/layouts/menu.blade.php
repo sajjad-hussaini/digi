@@ -1,11 +1,11 @@
 <li class="{{ Request::is('admin/home*') ? 'active' : '' }}">
     <a href="{!! route('admin.dashboard') !!}"><i class="fa fa-home"></i><span>Home</span></a>
 </li>
-@can('read companies')
+<!-- @can('read companies')
     <li class="{{ Request::is('admin/companies*') ? 'active' : '' }}">
         <a href="{!! route('companies.index') !!}"><i class="fa fa-briefcase"></i><span>Companies</span></a>
     </li>
-@endcan
+@endcan -->
 @can('read clients')
     <li class="{{ Request::is('admin/clients*') ? 'active' : '' }}">
         <a href="{!! route('clients.index') !!}"><i class="fa fa-user"></i><span>Clients</span></a>
