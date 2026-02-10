@@ -6,9 +6,13 @@ use App\Client;
 use App\Company;
 use App\CustomField;
 // use Barryvdh\DomPDF\PDF;
+use setasign\Fpdi\Fpdi;
 use Illuminate\Http\Request;
+use PhpOffice\PhpWord\PhpWord;
 use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpWord\IOFactory;
 use App\DataTables\ClientDataTable;
+use Illuminate\Support\Facades\Log;
 use App\Repositories\ClientRepository;
 use App\Repositories\PermissionRepository;
 
@@ -220,4 +224,149 @@ class ClientController extends Controller
         return $pdf->stream('care_Letter_'.$client->first_name.'.pdf');
         // ya ->download() kar sakte ho
     }
+
+     public function generateDocument(Request $request, Client $client)
+    {
+        $request->validate([
+            'original_docx' => 'required|mimes:docx|max:10240',
+            'edited_html' => 'required',
+            'format' => 'required|in:docx,pdf'
+        ]);
+
+        $editedHtml = $request->edited_html;
+        $format = $request->format;
+
+        try {
+            if ($format === 'docx') {
+                return $this->generateDocx($editedHtml, $client);
+            } else {
+                return $this->generatePdf($editedHtml, $client);
+            }
+        } catch (\Exception $e) {
+            Log::error('Document Generation Error: ' . $e->getMessage());
+            return response()->json(['error' => 'Generation failed'], 500);
+        }
+    }
+
+    private function generateDocx($htmlContent, $client)
+    {
+        $phpWord = new PhpWord();
+        
+        // Add section
+        $section = $phpWord->addSection([
+            'marginLeft' => 1440,
+            'marginRight' => 1440,
+            'marginTop' => 1440,
+            'marginBottom' => 1440,
+        ]);
+
+        // Convert HTML to Word (basic conversion)
+        // Remove HTML tags and create paragraphs
+        $dom = new \DOMDocument();
+        @$dom->loadHTML(mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8'));
+        
+        $paragraphs = $dom->getElementsByTagName('p');
+        
+        foreach ($paragraphs as $p) {
+            $text = $p->textContent;
+            if (!empty(trim($text))) {
+                $section->addText($text, ['size' => 11, 'name' => 'Calibri']);
+            }
+        }
+
+        // Save to temp file
+        $tempFile = tempnam(sys_get_temp_dir(), 'docx_');
+        $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
+        $objWriter->save($tempFile);
+
+        return response()->download($tempFile, 'Initial_Instruction_' . $client->first_name . '.docx')
+            ->deleteFileAfterSend(true);
+    }
+
+    private function generatePdf($htmlContent, $client)
+    {
+        // Clean HTML for PDF
+        $html = '
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.5; }
+                p { margin: 10px 0; }
+            </style>
+        </head>
+        <body>
+            ' . $htmlContent . '
+        </body>
+        </html>';
+
+        $pdf = Pdf::loadHTML($html);
+        
+        return $pdf->download('Initial_Instruction_' . $client->first_name . '.pdf');
+    }
+
+    // Base template method (existing)
+    public function initialInstructionBase(Client $client)
+    {
+        $pdf = Pdf::loadView('clients.client_instruction', [
+            'client' => $client,
+            'today'  => now()->format('jS F Y')
+        ]);
+
+        return $pdf->stream('Initial_Instruction_' . $client->first_name . '.pdf');
+    }
+
+public function initialInstructionCustom(Request $request, Client $client)
+{
+    $request->validate([
+        'template_pdf' => 'required|mimes:pdf|max:10240',
+        'text_data' => 'required|json'
+    ]);
+
+    $uploadedPdf = $request->file('template_pdf');
+    $textData = json_decode($request->text_data, true);
+
+    try {
+        $pdf = new Fpdi();
+        $pdf->AddPage();
+        
+        // Import original PDF
+        $pdf->setSourceFile($uploadedPdf->getRealPath());
+        $tplId = $pdf->importPage(1);
+        $pdf->useTemplate($tplId);
+        
+        // Process each text item
+        foreach ($textData as $text) {
+            if ($text['changed']) {
+                // Cover original text with white rectangle
+                $pdf->SetFillColor(255, 255, 255);
+                
+                // Calculate rectangle dimensions
+                $rectX = $text['x'] / 1.5;
+                $rectY = $text['y'] / 1.5;
+                $rectWidth = $text['width'] / 1.5 + 2; // Add padding
+                $rectHeight = $text['fontSize'] / 1.5 + 1;
+                
+                $pdf->Rect($rectX, $rectY, $rectWidth, $rectHeight, 'F');
+                
+                // Add new text
+                $pdf->SetFont('Arial', '', $text['fontSize'] / 1.5);
+                $pdf->SetTextColor(0, 0, 0);
+                $pdf->SetXY($rectX, $rectY);
+                $pdf->Write(0, $text['replacement']);
+            }
+        }
+        
+        $pdfContent = $pdf->Output('S');
+        
+        return response($pdfContent, 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="Initial_Instruction_' . $client->first_name . '.pdf"');
+            
+    } catch (\Exception $e) {
+        \Log::error('PDF Generation Error: ' . $e->getMessage());
+        return response()->json(['error' => 'PDF generation failed'], 500);
+    }
+}
 }

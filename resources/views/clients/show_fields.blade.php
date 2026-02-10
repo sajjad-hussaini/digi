@@ -158,7 +158,7 @@
 </div>
 <!-- Initial Instruction Modal -->
 <div class="modal fade" id="initialInstructionModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title">Initial Instruction</h5>
@@ -168,16 +168,81 @@
             </div>
 
             <div class="modal-body">
+                <!-- Step 1: Choice -->
                 <div id="choice-step">
-                    <a href="javascript:void(0)"
-                        class="btn btn-block btn btn-default mb-3"
-                        data-toggle="modal"
-                        data-target="#initialInstructionBaseModal">
+                    <button type="button" class="btn btn-block btn-primary mb-3" id="baseTemplateBtn">
                         Continue with Base Template
-                    </a>
+                    </button>
                     <br>
-                    <label for="">Pick Existing Template</label>
-                    <input type="file" name="template" id="template" class="form-control" required>
+                    <label for="templateSelect">Pick Existing Template (Word Document)</label>
+                    <input type="file" 
+                           name="template" 
+                           id="templateSelect" 
+                           class="form-control" 
+                           accept=".docx">
+                    <small class="text-muted">Upload a .docx file to edit</small>
+                </div>
+
+                <!-- Step 2: Word Editor -->
+                <div id="editor-step" style="display:none;">
+                    <div class="d-flex justify-content-between mb-3">
+                        <button type="button" class="btn btn-sm btn-secondary" id="backToChoice">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-info" id="findReplaceBtn">
+                                <i class="fas fa-search"></i> Find & Replace
+                            </button>
+                            <button type="button" class="btn btn-sm btn-success" id="generateDocxBtn">
+                                <i class="fas fa-file-word"></i> Generate DOCX
+                            </button>
+                            <button type="button" class="btn btn-sm btn-primary" id="generatePdfBtn">
+                                <i class="fas fa-file-pdf"></i> Generate PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Find & Replace Panel -->
+                    <div id="findReplacePanel" class="card mb-3" style="display:none;">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <label>Find:</label>
+                                    <input type="text" id="findText" class="form-control" placeholder="Text to find">
+                                </div>
+                                <div class="col-md-5">
+                                    <label>Replace with:</label>
+                                    <input type="text" id="replaceText" class="form-control" placeholder="Replacement text">
+                                </div>
+                                <div class="col-md-2">
+                                    <label>&nbsp;</label>
+                                    <button type="button" class="btn btn-primary btn-block" id="replaceAllBtn">
+                                        Replace All
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Document Editor -->
+                    <div id="docxEditor" class="border bg-white p-4" 
+                         style="min-height: 500px; max-height: 600px; overflow-y: auto;">
+                        <div id="documentContent" contenteditable="true" style="outline: none;">
+                            <!-- Word content will be rendered here -->
+                        </div>
+                    </div>
+
+                    <div class="mt-3 alert alert-info">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>How to edit:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Click anywhere in the document to edit directly</li>
+                            <li>Use Find & Replace for bulk changes</li>
+                            <li>Generate DOCX to download Word file</li>
+                            <li>Generate PDF to download PDF version</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

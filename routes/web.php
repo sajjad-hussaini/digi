@@ -68,6 +68,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
     Route::post('authority-letters/store', [AuthorityLetterController::class, 'store'])->name('authority_letters.store');
     Route::get('clients/{client}/authority-letters', [AuthorityLetterController::class, 'index'])->name('authorityLetter.index');
 
+Route::get('/client/{client}/initial-instruction/base', [ClientController::class, 'initialInstructionBase'])
+    ->name('client.initial.instruction.base');
+
+Route::post('/client/{client}/initial-instruction/generate', [ClientController::class, 'generateDocument'])
+    ->name('client.initial.instruction.generate');
+
 
     Route::get('/clients/{client}/authority-letter', [ClientController::class, 'generateAuthorityLetter'])->name('clients.authority-letter');
     Route::post('/clients/{client}/initial-instruction', [ClientController::class, 'initialInstructionLetter'])->name('clients.initial-instruction');
