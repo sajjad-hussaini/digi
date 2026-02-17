@@ -171,16 +171,32 @@
                 <!-- Step 1: Choice -->
                 <div id="choice-step">
                     <button type="button" class="btn btn-block btn-primary mb-3" id="baseTemplateBtn">
-                        Continue with Base Template
+                        <i class="fas fa-file"></i> Continue with Base Template
                     </button>
-                    <br>
-                    <label for="templateSelect">Pick Existing Template (Word Document)</label>
-                    <input type="file" 
-                           name="template" 
-                           id="templateSelect" 
-                           class="form-control" 
-                           accept=".docx">
-                    <small class="text-muted">Upload a .docx file to edit</small>
+
+                    <hr>
+
+                    <label for="templateSelect">
+                        <i class="fas fa-file-word text-primary"></i> Pick Existing Template
+                    </label>
+
+                    <!-- Loading state -->
+                    <div id="templatesLoading" class="text-center py-3">
+                        <i class="fas fa-spinner fa-spin"></i> Loading templates...
+                    </div>
+
+                    <!-- Templates dropdown -->
+                    <select id="templateSelect" class="form-control" style="display:none;">
+                        <option value="">-- Select a Template --</option>
+                    </select>
+
+                    <button type="button" 
+                            class="btn btn-block btn-outline-primary mt-2" 
+                            id="loadTemplateBtn" 
+                            style="display:none;" 
+                            disabled>
+                        <i class="fas fa-eye"></i> Load & Edit Template
+                    </button>
                 </div>
 
                 <!-- Step 2: Word Editor -->
@@ -197,7 +213,7 @@
                             <button type="button" class="btn btn-sm btn-success" id="generateDocxBtn">
                                 <i class="fas fa-file-word"></i> Generate DOCX
                             </button>
-                            <button type="button" class="btn btn-sm btn-primary" id="generatePdfBtn">
+                            <button type="button" class="btn btn-sm btn-danger" id="generatePdfBtn">
                                 <i class="fas fa-file-pdf"></i> Generate PDF
                             </button>
                         </div>
@@ -205,19 +221,18 @@
 
                     <!-- Find & Replace Panel -->
                     <div id="findReplacePanel" class="card mb-3" style="display:none;">
-                        <div class="card-body">
-                            <div class="row">
+                        <div class="card-body py-2">
+                            <div class="row align-items-end">
                                 <div class="col-md-5">
-                                    <label>Find:</label>
-                                    <input type="text" id="findText" class="form-control" placeholder="Text to find">
+                                    <label class="mb-1">Find:</label>
+                                    <input type="text" id="findText" class="form-control form-control-sm" placeholder="Text to find">
                                 </div>
                                 <div class="col-md-5">
-                                    <label>Replace with:</label>
-                                    <input type="text" id="replaceText" class="form-control" placeholder="Replacement text">
+                                    <label class="mb-1">Replace with:</label>
+                                    <input type="text" id="replaceText" class="form-control form-control-sm" placeholder="Replacement text">
                                 </div>
                                 <div class="col-md-2">
-                                    <label>&nbsp;</label>
-                                    <button type="button" class="btn btn-primary btn-block" id="replaceAllBtn">
+                                    <button type="button" class="btn btn-primary btn-sm btn-block" id="replaceAllBtn">
                                         Replace All
                                     </button>
                                 </div>
@@ -225,23 +240,33 @@
                         </div>
                     </div>
 
+                    <!-- Template title -->
+                    <div id="templateTitle" class="alert alert-light border mb-2">
+                        <i class="fas fa-file-word text-primary"></i> 
+                        <strong id="templateTitleText"></strong>
+                    </div>
+
                     <!-- Document Editor -->
                     <div id="docxEditor" class="border bg-white p-4" 
-                         style="min-height: 500px; max-height: 600px; overflow-y: auto;">
-                        <div id="documentContent" contenteditable="true" style="outline: none;">
+                         style="min-height: 500px; max-height: 600px; overflow-y: auto; 
+                                box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                        
+                        <!-- Loading -->
+                        <div id="editorLoading" class="text-center py-5">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            <p class="mt-2">Loading document...</p>
+                        </div>
+
+                        <div id="documentContent" contenteditable="true" style="outline: none; display:none;">
                             <!-- Word content will be rendered here -->
                         </div>
                     </div>
 
-                    <div class="mt-3 alert alert-info">
-                        <i class="fas fa-info-circle"></i> 
-                        <strong>How to edit:</strong>
-                        <ul class="mb-0 mt-2">
-                            <li>Click anywhere in the document to edit directly</li>
-                            <li>Use Find & Replace for bulk changes</li>
-                            <li>Generate DOCX to download Word file</li>
-                            <li>Generate PDF to download PDF version</li>
-                        </ul>
+                    <div class="mt-2 alert alert-info py-2">
+                        <small>
+                            <i class="fas fa-info-circle"></i> 
+                            Click anywhere to edit • Use Find & Replace for bulk changes
+                        </small>
                     </div>
                 </div>
             </div>

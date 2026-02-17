@@ -6,15 +6,16 @@ use App\Client;
 use App\Company;
 use App\CustomField;
 // use Barryvdh\DomPDF\PDF;
-use setasign\Fpdi\Fpdi;
-use Illuminate\Http\Request;
-use PhpOffice\PhpWord\PhpWord;
-use Barryvdh\DomPDF\Facade\Pdf;
-use PhpOffice\PhpWord\IOFactory;
 use App\DataTables\ClientDataTable;
-use Illuminate\Support\Facades\Log;
 use App\Repositories\ClientRepository;
 use App\Repositories\PermissionRepository;
+use App\Template;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\PhpWord;
+use setasign\Fpdi\Fpdi;
 
 class ClientController extends Controller
 {
@@ -317,56 +318,88 @@ class ClientController extends Controller
         return $pdf->stream('Initial_Instruction_' . $client->first_name . '.pdf');
     }
 
-public function initialInstructionCustom(Request $request, Client $client)
-{
-    $request->validate([
-        'template_pdf' => 'required|mimes:pdf|max:10240',
-        'text_data' => 'required|json'
-    ]);
+    public function initialInstructionCustom(Request $request, Client $client)
+    {
+        $request->validate([
+            'template_pdf' => 'required|mimes:pdf|max:10240',
+            'text_data' => 'required|json'
+        ]);
 
-    $uploadedPdf = $request->file('template_pdf');
-    $textData = json_decode($request->text_data, true);
+        $uploadedPdf = $request->file('template_pdf');
+        $textData = json_decode($request->text_data, true);
 
-    try {
-        $pdf = new Fpdi();
-        $pdf->AddPage();
-        
-        // Import original PDF
-        $pdf->setSourceFile($uploadedPdf->getRealPath());
-        $tplId = $pdf->importPage(1);
-        $pdf->useTemplate($tplId);
-        
-        // Process each text item
-        foreach ($textData as $text) {
-            if ($text['changed']) {
-                // Cover original text with white rectangle
-                $pdf->SetFillColor(255, 255, 255);
-                
-                // Calculate rectangle dimensions
-                $rectX = $text['x'] / 1.5;
-                $rectY = $text['y'] / 1.5;
-                $rectWidth = $text['width'] / 1.5 + 2; // Add padding
-                $rectHeight = $text['fontSize'] / 1.5 + 1;
-                
-                $pdf->Rect($rectX, $rectY, $rectWidth, $rectHeight, 'F');
-                
-                // Add new text
-                $pdf->SetFont('Arial', '', $text['fontSize'] / 1.5);
-                $pdf->SetTextColor(0, 0, 0);
-                $pdf->SetXY($rectX, $rectY);
-                $pdf->Write(0, $text['replacement']);
+        try {
+            $pdf = new Fpdi();
+            $pdf->AddPage();
+            
+            // Import original PDF
+            $pdf->setSourceFile($uploadedPdf->getRealPath());
+            $tplId = $pdf->importPage(1);
+            $pdf->useTemplate($tplId);
+            
+            // Process each text item
+            foreach ($textData as $text) {
+                if ($text['changed']) {
+                    // Cover original text with white rectangle
+                    $pdf->SetFillColor(255, 255, 255);
+                    
+                    // Calculate rectangle dimensions
+                    $rectX = $text['x'] / 1.5;
+                    $rectY = $text['y'] / 1.5;
+                    $rectWidth = $text['width'] / 1.5 + 2; // Add padding
+                    $rectHeight = $text['fontSize'] / 1.5 + 1;
+                    
+                    $pdf->Rect($rectX, $rectY, $rectWidth, $rectHeight, 'F');
+                    
+                    // Add new text
+                    $pdf->SetFont('Arial', '', $text['fontSize'] / 1.5);
+                    $pdf->SetTextColor(0, 0, 0);
+                    $pdf->SetXY($rectX, $rectY);
+                    $pdf->Write(0, $text['replacement']);
+                }
             }
+            
+            $pdfContent = $pdf->Output('S');
+            
+            return response($pdfContent, 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="Initial_Instruction_' . $client->first_name . '.pdf"');
+                
+        } catch (\Exception $e) {
+            Log::error('PDF Generation Error: ' . $e->getMessage());
+            return response()->json(['error' => 'PDF generation failed'], 500);
+        }
+    }
+
+    // Templates list fetch karne ke liye
+    public function getTemplates()
+    {
+        $templates = Template::select('id', 'title', 'created_at')->get();
+        return response()->json($templates);
+    }
+
+    // Single template content fetch (BLOB to base64)
+    public function getTemplateContent($id)
+    {
+        $template = Template::findOrFail($id);
+        
+        // LONGBLOB content
+        $content = $template->content;
+        
+        // Agar resource/stream hai (MySQL LONGBLOB sometimes stream return karta hai)
+        if (is_resource($content)) {
+            $content = stream_get_contents($content);
         }
         
-        $pdfContent = $pdf->Output('S');
+        // Check karo content valid hai
+        if (empty($content)) {
+            return response()->json(['error' => 'Template content empty'], 404);
+        }
         
-        return response($pdfContent, 200)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="Initial_Instruction_' . $client->first_name . '.pdf"');
-            
-    } catch (\Exception $e) {
-        \Log::error('PDF Generation Error: ' . $e->getMessage());
-        return response()->json(['error' => 'PDF generation failed'], 500);
+        return response()->json([
+            'id'      => $template->id,
+            'title'   => $template->title,
+            'content' => base64_encode($content)
+        ]);
     }
-}
 }

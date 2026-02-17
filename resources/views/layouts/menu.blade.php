@@ -16,6 +16,11 @@
         <a href="{!! route('invoices.index') !!}"><i class="fa fa-book"></i><span>Invoices</span></a>
     </li>
 @endcan
+@can('read invoices')
+    <li class="{{ Request::is('admin/templates*') ? 'active' : '' }}">
+        <a href="{!! route('templates.index') !!}"><i class="fa fa-address-book"></i><span>Templates</span></a>
+    </li>
+@endcan
 @can('read users')
     <li class="{{ Request::is('admin/users*') ? 'active' : '' }}">
         <a href="{!! route('users.index') !!}"><i class="fa fa-users"></i><span>Users</span></a>

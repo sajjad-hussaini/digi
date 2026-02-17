@@ -62,6 +62,93 @@ let documentData = null;
 
 $(document).ready(function() {
     
+      // Modal open hone par templates load karo
+    $('#initialInstructionModal').on('show.bs.modal', function() {
+        loadTemplatesList();
+    });
+
+    // Load templates list from DB
+    function loadTemplatesList() {
+        $('#templatesLoading').show();
+        $('#templateSelect').hide();
+        $('#loadTemplateBtn').hide();
+
+        $.ajax({
+            url: "{{ route('templates.list') }}",
+            type: 'GET',
+            success: function(response) {
+                console.log('Templates response:', response); // Debug
+                console.log('Type:', typeof response);        // Debug
+                
+                // Array ensure karo
+                let templates = Array.isArray(response) ? response : Object.values(response);
+                
+                $('#templateSelect').empty().append('<option value="">-- Select a Template --</option>');
+                
+                if (templates.length === 0) {
+                    $('#templateSelect').append('<option disabled>No templates found</option>');
+                } else {
+                    templates.forEach(function(template) {
+                        $('#templateSelect').append(
+                            `<option value="${template.id}">${template.title}</option>`
+                        );
+                    });
+                }
+
+                $('#templatesLoading').hide();
+                $('#templateSelect').show();
+                $('#loadTemplateBtn').show();
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseText); // Debug
+                $('#templatesLoading').html('<span class="text-danger">Error loading templates</span>');
+            }
+        });
+    }
+
+    // Load template content from DB
+    function loadTemplateContent(templateId) {
+        $('#choice-step').hide();
+        $('#editor-step').show();
+        $('#editorLoading').show();
+        $('#documentContent').hide();
+        $('#templateTitleText').text(selectedTemplateTitle);
+
+        $.ajax({
+            url: `/templates/${templateId}/content`,
+            type: 'GET',
+            success: function(response) {
+                // Base64 to ArrayBuffer convert karo
+                let binaryStr = atob(response.content);
+                let bytes = new Uint8Array(binaryStr.length);
+                for (let i = 0; i < binaryStr.length; i++) {
+                    bytes[i] = binaryStr.charCodeAt(i);
+                }
+
+                // Mammoth se DOCX to HTML convert karo
+                mammoth.convertToHtml({arrayBuffer: bytes.buffer})
+                    .then(function(result) {
+                        let html = result.value;
+                        
+                        // Auto replace client placeholders
+                        html = autoReplaceClientData(html);
+                        
+                        $('#documentContent').html(html);
+                        $('#editorLoading').hide();
+                        $('#documentContent').show();
+                    })
+                    .catch(function(err) {
+                        console.error('Mammoth error:', err);
+                        $('#editorLoading').html('<span class="text-danger">Error rendering document</span>');
+                    });
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr);
+                $('#editorLoading').html('<span class="text-danger">Error loading template</span>');
+            }
+        });
+    }
+
     // Base Template
     $('#baseTemplateBtn').click(function() {
         window.open("{{ route('client.initial.instruction.base', $client->id) }}", '_blank');

@@ -11,26 +11,27 @@
 |
 */
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TagController;
-use Illuminate\Support\Facades\Artisan;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\AttendanceNoteController;
+use App\Http\Controllers\AuthorityLetterController;
+use App\Http\Controllers\BalanceStatementController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\ReceiptController;
-use App\Http\Controllers\SettingController;
+use App\Http\Controllers\CustomFieldController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\FileTypeController;
-use App\Http\Controllers\ReminderController;
-use App\Http\Controllers\CustomFieldController;
-use App\Http\Controllers\AttendanceNoteController;
 use App\Http\Controllers\FollowUpLetterController;
-use App\Http\Controllers\AuthorityLetterController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LedgerStatementController;
-use App\Http\Controllers\BalanceStatementController;
+use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\ReminderController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\TemplateController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class,'welcome'])->name('home');
 
@@ -58,6 +59,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
     Route::resource('companies', CompanyController::class);
     Route::resource('clients', ClientController::class);
     Route::resource('invoices', InvoiceController::class);
+    Route::resource('templates', TemplateController::class);
     Route::resource('receipts', ReceiptController::class);
     Route::resource('ledger-statements', LedgerStatementController::class);
     Route::resource('balance-statements', BalanceStatementController::class);
@@ -68,11 +70,21 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
     Route::post('authority-letters/store', [AuthorityLetterController::class, 'store'])->name('authority_letters.store');
     Route::get('clients/{client}/authority-letters', [AuthorityLetterController::class, 'index'])->name('authorityLetter.index');
 
-Route::get('/client/{client}/initial-instruction/base', [ClientController::class, 'initialInstructionBase'])
-    ->name('client.initial.instruction.base');
+    // Templates list
+    Route::get('/templates/list', [ClientController::class, 'getTemplates'])
+        ->name('templates.list');
 
-Route::post('/client/{client}/initial-instruction/generate', [ClientController::class, 'generateDocument'])
-    ->name('client.initial.instruction.generate');
+    // Template content (BLOB)
+    Route::get('/templates/{id}/content', [ClientController::class, 'getTemplateContent'])
+        ->name('templates.content');
+
+    // Generate document
+    Route::post('/client/{client}/initial-instruction/generate', [ClientController::class, 'generateDocument'])
+        ->name('client.initial.instruction.generate');
+
+    // Base template
+    Route::get('/client/{client}/initial-instruction/base', [ClientController::class, 'initialInstructionBase'])
+        ->name('client.initial.instruction.base');
 
 
     Route::get('/clients/{client}/authority-letter', [ClientController::class, 'generateAuthorityLetter'])->name('clients.authority-letter');
