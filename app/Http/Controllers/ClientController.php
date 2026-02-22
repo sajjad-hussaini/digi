@@ -72,7 +72,8 @@ class ClientController extends Controller
     {
         // update client
         $client->update([
-            'name' => $request->input('name'),
+            'first_name' => $request->input('first_name'),
+            'sir_name' => $request->input('sir_name'),
             'email' => $request->input('email'),
             'company_id' => $request->input('company_id'),
             'phone' => $request->input('phone'),
@@ -228,11 +229,11 @@ class ClientController extends Controller
 
      public function generateDocument(Request $request, Client $client)
     {
-        $request->validate([
-            'original_docx' => 'required|mimes:docx|max:10240',
-            'edited_html' => 'required',
-            'format' => 'required|in:docx,pdf'
-        ]);
+        // $request->validate([
+        //     'original_docx' => 'required|mimes:docx|max:10240',
+        //     'edited_html' => 'required',
+        //     'format' => 'required|in:docx,pdf'
+        // ]);
 
         $editedHtml = $request->edited_html;
         $format = $request->format;

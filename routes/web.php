@@ -53,6 +53,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
         Route::resource('custom-fields', CustomFieldController::class, ['names' => 'customFields']);
         Route::resource('file-types', FileTypeController::class, ['names' => 'fileTypes']);
     });
+     // Templates list
+    Route::get('/templates/list', [ClientController::class, 'getTemplates']);
+
+    // Template content (BLOB)
+    Route::get('/templates/{id}/content', [ClientController::class, 'getTemplateContent'])
+        ->name('templates.content');
+
     Route::resource('users', UserController::class);
     Route::get('/users-block/{user}',[UserController::class,'blockUnblock'])->name('users.blockUnblock');
     Route::resource('tags', TagController::class);
@@ -70,13 +77,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
     Route::post('authority-letters/store', [AuthorityLetterController::class, 'store'])->name('authority_letters.store');
     Route::get('clients/{client}/authority-letters', [AuthorityLetterController::class, 'index'])->name('authorityLetter.index');
 
-    // Templates list
-    Route::get('/templates/list', [ClientController::class, 'getTemplates'])
-        ->name('templates.list');
-
-    // Template content (BLOB)
-    Route::get('/templates/{id}/content', [ClientController::class, 'getTemplateContent'])
-        ->name('templates.content');
 
     // Generate document
     Route::post('/client/{client}/initial-instruction/generate', [ClientController::class, 'generateDocument'])

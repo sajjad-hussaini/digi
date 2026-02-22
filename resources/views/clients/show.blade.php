@@ -52,119 +52,41 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
-<!-- Mammoth.js for DOCX to HTML conversion -->
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
 
 <script>
-let uploadedDocx = null;
-let originalHtml = '';
-let documentData = null;
+let selectedTemplateId = null;
+let selectedTemplateTitle = '';
 
 $(document).ready(function() {
-    
-      // Modal open hone par templates load karo
+
+    // Modal open hone par templates load karo
     $('#initialInstructionModal').on('show.bs.modal', function() {
         loadTemplatesList();
     });
-
-    // Load templates list from DB
-    function loadTemplatesList() {
-        $('#templatesLoading').show();
-        $('#templateSelect').hide();
-        $('#loadTemplateBtn').hide();
-
-        $.ajax({
-            url: "{{ route('templates.list') }}",
-            type: 'GET',
-            success: function(response) {
-                console.log('Templates response:', response); // Debug
-                console.log('Type:', typeof response);        // Debug
-                
-                // Array ensure karo
-                let templates = Array.isArray(response) ? response : Object.values(response);
-                
-                $('#templateSelect').empty().append('<option value="">-- Select a Template --</option>');
-                
-                if (templates.length === 0) {
-                    $('#templateSelect').append('<option disabled>No templates found</option>');
-                } else {
-                    templates.forEach(function(template) {
-                        $('#templateSelect').append(
-                            `<option value="${template.id}">${template.title}</option>`
-                        );
-                    });
-                }
-
-                $('#templatesLoading').hide();
-                $('#templateSelect').show();
-                $('#loadTemplateBtn').show();
-            },
-            error: function(xhr) {
-                console.error('Error:', xhr.responseText); // Debug
-                $('#templatesLoading').html('<span class="text-danger">Error loading templates</span>');
-            }
-        });
-    }
-
-    // Load template content from DB
-    function loadTemplateContent(templateId) {
-        $('#choice-step').hide();
-        $('#editor-step').show();
-        $('#editorLoading').show();
-        $('#documentContent').hide();
-        $('#templateTitleText').text(selectedTemplateTitle);
-
-        $.ajax({
-            url: `/templates/${templateId}/content`,
-            type: 'GET',
-            success: function(response) {
-                // Base64 to ArrayBuffer convert karo
-                let binaryStr = atob(response.content);
-                let bytes = new Uint8Array(binaryStr.length);
-                for (let i = 0; i < binaryStr.length; i++) {
-                    bytes[i] = binaryStr.charCodeAt(i);
-                }
-
-                // Mammoth se DOCX to HTML convert karo
-                mammoth.convertToHtml({arrayBuffer: bytes.buffer})
-                    .then(function(result) {
-                        let html = result.value;
-                        
-                        // Auto replace client placeholders
-                        html = autoReplaceClientData(html);
-                        
-                        $('#documentContent').html(html);
-                        $('#editorLoading').hide();
-                        $('#documentContent').show();
-                    })
-                    .catch(function(err) {
-                        console.error('Mammoth error:', err);
-                        $('#editorLoading').html('<span class="text-danger">Error rendering document</span>');
-                    });
-            },
-            error: function(xhr) {
-                console.error('Error:', xhr);
-                $('#editorLoading').html('<span class="text-danger">Error loading template</span>');
-            }
-        });
-    }
 
     // Base Template
     $('#baseTemplateBtn').click(function() {
         window.open("{{ route('client.initial.instruction.base', $client->id) }}", '_blank');
     });
 
-    // DOCX Upload
-    $('#templateSelect').change(function(e) {
-        uploadedDocx = e.target.files[0];
-        
-        if (uploadedDocx && uploadedDocx.name.endsWith('.docx')) {
-            loadDocx(uploadedDocx);
-            $('#choice-step').hide();
-            $('#editor-step').show();
+    // Template select change
+    $('#templateSelect').change(function() {
+        let val = $(this).val();
+        if (val) {
+            selectedTemplateId = val;
+            selectedTemplateTitle = $(this).find('option:selected').text();
+            $('#loadTemplateBtn').prop('disabled', false);
         } else {
-            alert('Please select a valid .docx file');
+            selectedTemplateId = null;
+            $('#loadTemplateBtn').prop('disabled', true);
         }
+    });
+
+    // Load Template button
+    $('#loadTemplateBtn').click(function() {
+        if (!selectedTemplateId) return;
+        loadTemplateContent(selectedTemplateId);
     });
 
     // Back button
@@ -179,171 +101,167 @@ $(document).ready(function() {
 
     // Replace All
     $('#replaceAllBtn').click(function() {
-        let findText = $('#findText').val();
+        let findText = $('#findText').val().trim();
         let replaceText = $('#replaceText').val();
-        
+
         if (!findText) {
             alert('Please enter text to find');
             return;
         }
-        
+
+        // innerHTML mein replace karo
         let content = $('#documentContent').html();
-        let regex = new RegExp(escapeRegExp(findText), 'g');
-        let newContent = content.replace(regex, replaceText);
-        
-        $('#documentContent').html(newContent);
-        
+        let regex = new RegExp(findText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
         let count = (content.match(regex) || []).length;
+        
+        if (count === 0) {
+            alert('Text not found');
+            return;
+        }
+
+        $('#documentContent').html(content.replace(regex, replaceText));
         alert(`Replaced ${count} occurrence(s)`);
     });
 
     // Generate DOCX
     $('#generateDocxBtn').click(function() {
-        generateDocx();
+        generateDocument('docx');
     });
 
     // Generate PDF
     $('#generatePdfBtn').click(function() {
-        generatePdf();
+        generateDocument('pdf');
     });
 });
 
-// Load DOCX file
-function loadDocx(file) {
-    console.log('Loading DOCX file...');
-    
-    let reader = new FileReader();
-    
-    reader.onload = function(e) {
-        let arrayBuffer = e.target.result;
-        
-        // Convert DOCX to HTML using Mammoth
-        mammoth.convertToHtml({arrayBuffer: arrayBuffer})
-            .then(function(result) {
-                originalHtml = result.value;
-                $('#documentContent').html(result.value);
-                
-                console.log('DOCX loaded successfully');
-                
-                // Auto-replace placeholders with client data
-                autoReplaceClientData();
-            })
-            .catch(function(err) {
-                console.error('Error loading DOCX:', err);
-                alert('Error loading document');
-            });
-    };
-    
-    reader.readAsArrayBuffer(file);
-}
+// Load templates list from DB
+function loadTemplatesList() {
+    $('#templatesLoading').show();
+    $('#templateSelect').hide();
+    $('#loadTemplateBtn').hide();
 
-// Auto-replace client data
-function autoReplaceClientData() {
-    let content = $('#documentContent').html();
-    
-    // Replace common placeholders
-    let replacements = {
-        '[CLIENT_NAME]': '{{ $client->first_name }} {{ $client->last_name }}',
-        '[CLIENT_FIRST_NAME]': '{{ $client->first_name }}',
-        '[CLIENT_LAST_NAME]': '{{ $client->last_name }}',
-        '[CLIENT_EMAIL]': '{{ $client->email ?? "" }}',
-        '[CLIENT_PHONE]': '{{ $client->phone ?? "" }}',
-        '[TODAY_DATE]': '{{ now()->format("jS F Y") }}',
-        '[CURRENT_DATE]': '{{ now()->format("jS F Y") }}'
-    };
-    
-    Object.keys(replacements).forEach(function(placeholder) {
-        let regex = new RegExp(escapeRegExp(placeholder), 'g');
-        content = content.replace(regex, replacements[placeholder]);
-    });
-    
-    $('#documentContent').html(content);
-}
-
-// Escape RegExp special characters
-function escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-// Generate DOCX
-function generateDocx() {
-    console.log('Generating DOCX...');
-    
-    let htmlContent = $('#documentContent').html();
-    
-    // Send to server
-    let formData = new FormData();
-    formData.append('original_docx', uploadedDocx);
-    formData.append('edited_html', htmlContent);
-    formData.append('client_id', '{{ $client->id }}');
-    formData.append('format', 'docx');
-    formData.append('_token', '{{ csrf_token() }}');
-    
-    $('#generateDocxBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Generating...');
-    
     $.ajax({
-        url: "{{ route('client.initial.instruction.generate', $client->id) }}",
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        xhrFields: {
-            responseType: 'blob'
-        },
-        success: function(blob) {
-            let link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = 'Initial_Instruction_{{ $client->first_name }}.docx';
-            link.click();
+        url: "/admin/templates/list",
+        type: 'GET',
+        success: function(templates) {
+            $('#templateSelect').empty().append('<option value="">-- Select a Template --</option>');
             
-            alert('DOCX generated successfully!');
-            $('#generateDocxBtn').prop('disabled', false).html('<i class="fas fa-file-word"></i> Generate DOCX');
+            templates.forEach(function(template) {
+                $('#templateSelect').append(
+                    `<option value="${template.id}">${template.title}</option>`
+                );
+            });
+
+            $('#templatesLoading').hide();
+            $('#templateSelect').show();
+            $('#loadTemplateBtn').show();
         },
-        error: function(xhr) {
-            console.error('Error:', xhr);
-            alert('Error generating DOCX');
-            $('#generateDocxBtn').prop('disabled', false).html('<i class="fas fa-file-word"></i> Generate DOCX');
+        error: function() {
+            $('#templatesLoading').html('<span class="text-danger">Error loading templates</span>');
         }
     });
 }
 
-// Generate PDF
-function generatePdf() {
-    console.log('Generating PDF...');
-    
+// Load template content from DB
+function loadTemplateContent(templateId) {
+    $('#choice-step').hide();
+    $('#editor-step').show();
+    $('#editorLoading').show();
+    $('#documentContent').hide();
+    $('#templateTitleText').text(selectedTemplateTitle);
+
+    $.ajax({
+        url: '/admin/templates/' + templateId + '/content',
+        type: 'GET',
+        success: function(response) {
+            // Base64 to ArrayBuffer convert karo
+            let binaryStr = atob(response.content);
+            let bytes = new Uint8Array(binaryStr.length);
+            for (let i = 0; i < binaryStr.length; i++) {
+                bytes[i] = binaryStr.charCodeAt(i);
+            }
+
+            // Mammoth se DOCX to HTML convert karo
+            mammoth.convertToHtml({arrayBuffer: bytes.buffer})
+                .then(function(result) {
+                    let html = result.value;
+                    
+                    // Auto replace client placeholders
+                    html = autoReplaceClientData(html);
+                    
+                    $('#documentContent').html(html);
+                    $('#editorLoading').hide();
+                    $('#documentContent').show();
+                })
+                .catch(function(err) {
+                    console.error('Mammoth error:', err);
+                    $('#editorLoading').html('<span class="text-danger">Error rendering document</span>');
+                });
+        },
+        error: function(xhr) {
+            console.error('Error:', xhr);
+            $('#editorLoading').html('<span class="text-danger">Error loading template</span>');
+        }
+    });
+}
+
+// Auto replace client placeholders
+function autoReplaceClientData(html) {
+    let replacements = {
+        '[CLIENT_NAME]'       : '{{ $client->first_name }} {{ $client->sir_name }}',
+        '[CLIENT_FIRST_NAME]' : '{{ $client->first_name }}',
+        '[CLIENT_LAST_NAME]'  : '{{ $client->last_name }}',
+        '[CLIENT_EMAIL]'      : '{{ $client->email ?? "" }}',
+        '[CLIENT_PHONE]'      : '{{ $client->phone ?? "" }}',
+        '[TODAY_DATE]'        : '{{ now()->format("jS F Y") }}',
+        '[DATE]'              : '{{ now()->format("jS F Y") }}'
+    };
+
+    Object.keys(replacements).forEach(function(key) {
+        let regex = new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        html = html.replace(regex, replacements[key]);
+    });
+
+    return html;
+}
+
+// Generate document
+function generateDocument(format) {
     let htmlContent = $('#documentContent').html();
+    let btnId = format === 'docx' ? '#generateDocxBtn' : '#generatePdfBtn';
+    let icon = format === 'docx' ? 'fa-file-word' : 'fa-file-pdf';
     
+    $(btnId).prop('disabled', true)
+            .html(`<i class="fas fa-spinner fa-spin"></i> Generating...`);
+
     let formData = new FormData();
-    formData.append('original_docx', uploadedDocx);
+    formData.append('template_id', selectedTemplateId);
     formData.append('edited_html', htmlContent);
     formData.append('client_id', '{{ $client->id }}');
-    formData.append('format', 'pdf');
+    formData.append('format', format);
     formData.append('_token', '{{ csrf_token() }}');
-    
-    $('#generatePdfBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Generating...');
-    
+
     $.ajax({
         url: "{{ route('client.initial.instruction.generate', $client->id) }}",
         type: 'POST',
         data: formData,
         processData: false,
         contentType: false,
-        xhrFields: {
-            responseType: 'blob'
-        },
+        xhrFields: { responseType: 'blob' },
         success: function(blob) {
+            let ext = format === 'docx' ? '.docx' : '.pdf';
             let link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
-            link.download = 'Initial_Instruction_{{ $client->first_name }}.pdf';
+            link.download = 'Initial_Instruction_{{ $client->first_name }}' + ext;
             link.click();
-            
-            alert('PDF generated successfully!');
-            $('#generatePdfBtn').prop('disabled', false).html('<i class="fas fa-file-pdf"></i> Generate PDF');
+
+            $(btnId).prop('disabled', false)
+                    .html(`<i class="fas ${icon}"></i> Generate ${format.toUpperCase()}`);
         },
         error: function(xhr) {
-            console.error('Error:', xhr);
-            alert('Error generating PDF');
-            $('#generatePdfBtn').prop('disabled', false).html('<i class="fas fa-file-pdf"></i> Generate PDF');
+            alert('Error generating document');
+            $(btnId).prop('disabled', false)
+                    .html(`<i class="fas ${icon}"></i> Generate ${format.toUpperCase()}`);
         }
     });
 }
@@ -352,32 +270,25 @@ function generatePdf() {
 function resetEditor() {
     $('#editor-step').hide();
     $('#choice-step').show();
-    $('#templateSelect').val('');
-    $('#documentContent').empty();
+    $('#documentContent').empty().hide();
+    $('#editorLoading').show();
     $('#findReplacePanel').hide();
-    uploadedDocx = null;
+    $('#templateSelect').val('');
+    $('#loadTemplateBtn').prop('disabled', true);
+    selectedTemplateId = null;
 }
 </script>
 
 <style>
 #documentContent {
-    font-family: 'Calibri', 'Arial', sans-serif;
+    font-family: 'Calibri', Arial, sans-serif;
     font-size: 11pt;
-    line-height: 1.5;
+    line-height: 1.6;
     color: #000;
+    min-height: 400px;
 }
-
-#documentContent p {
-    margin: 0 0 10px 0;
-}
-
-#documentContent h1, #documentContent h2, #documentContent h3 {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-#docxEditor {
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
+#documentContent p { margin: 0 0 8px 0; }
+#documentContent table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+#documentContent td, #documentContent th { border: 1px solid #ddd; padding: 6px; }
 </style>
 @endsection
