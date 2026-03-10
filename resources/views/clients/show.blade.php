@@ -209,11 +209,10 @@ function loadTemplateContent(templateId) {
 function autoReplaceClientData(html) {
     let replacements = {
         '[CLIENT_NAME]'       : '{{ $client->first_name }} {{ $client->sir_name }}',
-        '[CLIENT_FIRST_NAME]' : '{{ $client->first_name }}',
-        '[CLIENT_LAST_NAME]'  : '{{ $client->last_name }}',
         '[CLIENT_EMAIL]'      : '{{ $client->email ?? "" }}',
         '[CLIENT_PHONE]'      : '{{ $client->phone ?? "" }}',
-        '[TODAY_DATE]'        : '{{ now()->format("jS F Y") }}',
+        '[CLIENT_ADDRESS]'      : '{{ $client->address ?? "" }}',
+        '[CLIENT_DOB]'      : '{{ $client->date_of_birth ?? "" }}',
         '[DATE]'              : '{{ now()->format("jS F Y") }}'
     };
 

@@ -13,7 +13,7 @@
                 <div class="row">
                     {!! Form::open(['route' => 'templates.store', 'files' => true]) !!}
 
-                        @include('templates.fields')
+                        @include('templates.fields_create')
 
                     {!! Form::close() !!}
                 </div>

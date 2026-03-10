@@ -59,6 +59,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
     // Template content (BLOB)
     Route::get('/templates/{id}/content', [ClientController::class, 'getTemplateContent'])
         ->name('templates.content');
+    // get template content as text 
+    Route::get('/templates/{id}/content', [TemplateController::class, 'getContent'])->name('templates.content');
 
     Route::resource('users', UserController::class);
     Route::get('/users-block/{user}',[UserController::class,'blockUnblock'])->name('users.blockUnblock');
