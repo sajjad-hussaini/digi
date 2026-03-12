@@ -121,19 +121,19 @@
                 </div>
 
                 <div class="card-body">
-                    <a href="{{ route('clients.authority-letter', $client->id) }}"
+                    <!-- <a href="{{ route('clients.authority-letter', $client->id) }}"
                         class="btn btn-block btn btn-default mb-3" target="_blank">
                         Authority Letter
-                    </a>
+                    </a> -->
 
                     <a href="javascript:void(0)"
                         class="btn btn-block btn btn-default mb-3"
                         data-toggle="modal"
                         data-target="#initialInstructionModal">
-                        Initial Instruction
+                        Client Letters
                     </a>
 
-                     <a href="javascript:void(0)"
+                     <!-- <a href="javascript:void(0)"
                         class="btn btn-block btn btn-default mb-3"
                         data-toggle="modal"
                         data-target="#clientClouserModal">
@@ -148,7 +148,7 @@
                     <a href="{{ route('clients.covering-letter', $client->id) }}"
                         class="btn btn-block btn btn-default mb-3" target="_blank">
                         Covering Letter
-                    </a>
+                    </a> -->
                    
                 </div>
             </div>
@@ -161,7 +161,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Initial Instruction</h5>
+                <h5 class="modal-title">Client Letters</h5>
                 <button type="button" class="close text-white" data-dismiss="modal">
                     <span>&times;</span>
                 </button>
@@ -170,14 +170,14 @@
             <div class="modal-body">
                 <!-- Step 1: Choice -->
                 <div id="choice-step">
-                    <button type="button" class="btn btn-block btn-primary mb-3" id="baseTemplateBtn">
+                    <!-- <button type="button" class="btn btn-block btn-primary mb-3" id="baseTemplateBtn">
                         <i class="fas fa-file"></i> Continue with Base Template
-                    </button>
+                    </button> -->
 
                     <hr>
 
                     <label for="templateSelect">
-                        <i class="fas fa-file-word text-primary"></i> Pick Existing Template
+                        <i class="fas fa-file-word text-primary"></i> Existing Template
                     </label>
 
                     <!-- Loading state -->
