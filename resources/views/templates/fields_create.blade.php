@@ -11,6 +11,18 @@
     {!! $errors->first('title','<span class="help-block">:message</span>') !!}
 </div>
 
+<div class="form-group col-sm-6 {{ $errors->has('type') ? 'has-error' :'' }}">
+    {!! Form::label('type', 'Template Type:') !!}
+    {!! Form::select('type', [
+        'Authority Letter' => 'Authority Letter',
+        'Initial Instruction' => 'Initial Instruction',
+        'Client Care' => 'Client Care',
+        'Client Closure Letter' => 'Client Closure Letter',
+        'Covering Letter' => 'Covering Letter',
+    ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type']) !!}
+    {!! $errors->first('type','<span class="help-block">:message</span>') !!}
+</div>
+
 <!-- doc file -->
 <div class="form-group col-sm-12 {{ $errors->has('doc_file') ? 'has-error' : '' }}">
     {!! Form::label('doc_file', 'Upload Document:') !!}

@@ -176,6 +176,20 @@
 
                     <hr>
 
+                    <label for="templates_load">
+                        <i class="fas fa-file-word text-primary"></i> Templates Type
+                    </label>
+                    <div>
+                        <select id="templates_load" class="form-control py-3" >
+                            <option value="">Select a type</option>
+                            <option value="Authority Letter">Authority Letter</option>
+                            <option value="Client Care">Client Care</option>
+                            <option value="Client Closure Letter">Client Closure Letter</option>
+                            <option value="Covering Letter">Covering Letter</option>
+                            <option value="Initial Instruction">Initial Instruction</option>
+                        </select>   
+                     </div><br>
+
                     <label for="templateSelect">
                         <i class="fas fa-file-word text-primary"></i> Existing Template
                     </label>
@@ -187,7 +201,7 @@
 
                     <!-- Templates dropdown -->
                     <select id="templateSelect" class="form-control" style="display:none;">
-                        <option value="">-- Select a Template --</option>
+                        <option value="">Chose a template</option>
                     </select>
 
                     <button type="button" 
@@ -195,7 +209,7 @@
                             id="loadTemplateBtn" 
                             style="display:none;" 
                             disabled>
-                        <i class="fas fa-eye"></i> Load & Edit Template
+                        <i class="fa fa-eye"></i> Load & Edit Template
                     </button>
                 </div>
 

@@ -373,10 +373,17 @@ class ClientController extends Controller
     }
 
     // Templates list fetch karne ke liye
-    public function getTemplates()
+    public function getTemplates(Request $request)
     {
-        $templates = Template::select('id', 'title', 'created_at')->get();
+        $type = $request->query('type');
+        $query = Template::query();
+        if ($type) {
+            $query->where('type', $type);   // or whatever column name you use
+            // or: ->where('category', $type);
+        }
+        $templates = $query->get(['id', 'title', 'created_at']); // or whatever fields you need
         return response()->json($templates);
+
     }
 
     // Single template content fetch (BLOB to base64)

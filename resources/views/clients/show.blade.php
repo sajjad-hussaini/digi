@@ -60,10 +60,69 @@ let selectedTemplateTitle = '';
 
 $(document).ready(function() {
 
-    // Modal open hone par templates load karo
-    $('#initialInstructionModal').on('show.bs.modal', function() {
-        loadTemplatesList();
+// 1. Modal khulne par abhi kuch load mat karo
+$('#initialInstructionModal').on('show.bs.modal', function() {
+    // Optional: reset dropdowns to initial state
+    $('#templates_load').val('');
+    
+    $('#loadTemplateBtn').hide();
+    $('#templatesLoading').hide();
+});
+
+// 2. Jab user type select karega tab templates load karo
+$('#templates_load').on('change', function() {
+    const selectedType = $(this).val().trim();
+
+    // Agar koi type nahi chuna to reset kar do
+    if (!selectedType) {
+        $('#loadTemplateBtn').hide();
+        $('#templatesLoading').hide();
+        return;
+    }
+
+    // Type select hua hai → templates fetch karo
+    loadTemplatesByType(selectedType);
+});
+
+function loadTemplatesByType(type) {
+    $('#templatesLoading').show();
+    $('#loadTemplateBtn').hide();
+
+    $.ajax({
+        url: "/admin/templates/list",
+        type: 'GET',
+        data: { type: type },   // ← yeh sabse important change
+        success: function(templates) {
+            $('#templateSelect').empty();
+            console.log(templates);
+            if (templates.length === 0) {
+                $('#templateSelect').append(
+                    '<option value="">No templates found for this type</option>'
+                );
+            } else {
+                $('#templateSelect')
+                    .append('<option value="">Choose a template</option>');
+                
+                templates.forEach(function(template) {
+                    $('#templateSelect').append(
+                        `<option value="${template.id}">${template.title}</option>`
+                    );
+                });
+            }
+
+            $('#templateSelect').show();
+            $('#templatesLoading').hide();
+            $('#loadTemplateBtn').show();
+        },
+        error: function() {
+            $('#templateSelect').empty().append(
+                '<option value="">Error loading templates</option>'
+            );
+            $('#templatesLoading').html('<span class="text-danger">Error</span>');
+            $('#loadTemplateBtn').hide();
+        }
     });
+}
 
     // Base Template
     $('#baseTemplateBtn').click(function() {
@@ -134,33 +193,6 @@ $(document).ready(function() {
     });
 });
 
-// Load templates list from DB
-function loadTemplatesList() {
-    $('#templatesLoading').show();
-    $('#templateSelect').hide();
-    $('#loadTemplateBtn').hide();
-
-    $.ajax({
-        url: "/admin/templates/list",
-        type: 'GET',
-        success: function(templates) {
-            $('#templateSelect').empty().append('<option value="">-- Select a Template --</option>');
-            
-            templates.forEach(function(template) {
-                $('#templateSelect').append(
-                    `<option value="${template.id}">${template.title}</option>`
-                );
-            });
-
-            $('#templatesLoading').hide();
-            $('#templateSelect').show();
-            $('#loadTemplateBtn').show();
-        },
-        error: function() {
-            $('#templatesLoading').html('<span class="text-danger">Error loading templates</span>');
-        }
-    });
-}
 
 // Load template content from DB
 function loadTemplateContent(templateId) {

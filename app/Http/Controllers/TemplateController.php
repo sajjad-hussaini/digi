@@ -47,6 +47,7 @@ class TemplateController extends Controller
 
         $template = new Template();
         $template->title = $request->title;
+        $template->type = $request->type;
         $template->content = $content;
         $template->save();
 

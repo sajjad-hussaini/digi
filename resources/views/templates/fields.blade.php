@@ -47,6 +47,19 @@
                                         ]) !!}
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-0">
+                                        {!! Form::label('type', 'Template Type:') !!}
+                                        {!! Form::select('type', [
+                                            'Authority Letter' => 'Authority Letter',
+                                            'Initial Instruction' => 'Initial Instruction',
+                                            'Client Care' => 'Client Care',
+                                            'Client Closure Letter' => 'Client Closure Letter',
+                                            'Covering Letter' => 'Covering Letter',
+                                        ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type']) !!}
+                                        {!! $errors->first('type','<span class="help-block">:message</span>') !!}
+                                    </div>
+                                </div>
                                 <div class="col-md-6 text-right d-flex align-items-end">
                                     <button type="button" class="btn btn-info btn-sm ml-auto" id="findReplaceBtn">
                                         <i class="fa fa-search"></i> Find & Replace
@@ -114,12 +127,28 @@
                             ]) !!}
 
                             <!-- Title -->
-                            <div class="form-group">
-                                {!! Form::label('title', 'Title:') !!}
-                                {!! Form::text('title', null, [
-                                    'class' => 'form-control',
-                                    'required' => true,
-                                ]) !!}
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {!! Form::label('title', 'Title:') !!}
+                                    {!! Form::text('title', null, [
+                                        'class' => 'form-control',
+                                        'required' => true,
+                                    ]) !!}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    {!! Form::label('type', 'Template Type:') !!}
+                                    {!! Form::select('type', [
+                                        'Authority Letter' => 'Authority Letter',
+                                        'Initial Instruction' => 'Initial Instruction',
+                                        'Client Care' => 'Client Care',
+                                        'Client Closure Letter' => 'Client Closure Letter',
+                                        'Covering Letter' => 'Covering Letter',
+                                    ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type']) !!}
+                                    {!! $errors->first('type','<span class="help-block">:message</span>') !!}
+                                </div>
                             </div>
 
                             <!-- Upload File -->
