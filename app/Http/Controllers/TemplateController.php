@@ -124,10 +124,16 @@ class TemplateController extends Controller
     // Helper: Convert HTML to DOCX binary
     private function htmlToDocx($html)
     {
+        $html = $this->cleanHtmlForWord($html);
+
         $phpWord = new \PhpOffice\PhpWord\PhpWord();
         $section = $phpWord->addSection();
-        
-        \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html, false, false);
+
+        try {
+            \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html, false, false);
+        } catch (\Throwable $e) {
+            dd($html); // yahan dekh lo exact HTML
+        }
         
         $tempFile = tempnam(sys_get_temp_dir(), 'docx_');
         $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
@@ -138,6 +144,33 @@ class TemplateController extends Controller
         
         return $content;
     }
+
+private function cleanHtmlForWord($html)
+{
+    libxml_use_internal_errors(true);
+
+    // Remove DOCTYPE
+    $html = preg_replace('/<!DOCTYPE.*?>/i', '', $html);
+
+    // Extract only body content
+    if (preg_match('/<body[^>]*>(.*?)<\/body>/is', $html, $matches)) {
+        $html = $matches[1];
+    }
+
+    // Remove empty paragraphs
+    $html = preg_replace('/<p>\s*<\/p>/', '', $html);
+
+    // Replace tabs
+    $html = str_replace("\t", ' ', $html);
+
+    // Fix img tags (safe side)
+    $html = preg_replace('/<img([^>]+)>/', '<img$1 />', $html);
+
+    // Encoding fix
+    $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+
+    return $html;
+}
 
     // Delete template
     public function destroy(Template $template)
