@@ -121,10 +121,10 @@
                 </div>
 
                 <div class="card-body">
-                    <!-- <a href="{{ route('clients.authority-letter', $client->id) }}"
+                    <a href="{{ route('clients.authority-letter', $client->id) }}"
                         class="btn btn-block btn btn-default mb-3" target="_blank">
                         Authority Letter
-                    </a> -->
+                    </a> 
 
                     <a href="javascript:void(0)"
                         class="btn btn-block btn btn-default mb-3"

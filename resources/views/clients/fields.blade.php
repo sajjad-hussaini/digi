@@ -14,11 +14,11 @@
 </div>
 
 <!-- Color Field -->
-<div class="form-group col-sm-6 {{ $errors->has('color') ? 'has-error' :'' }}">
+{{-- <div class="form-group col-sm-6 {{ $errors->has('color') ? 'has-error' :'' }}">
     {!! Form::label('color', 'Color:') !!}
     {!! Form::color('color', null, ['class' => 'form-control']) !!}
     {!! $errors->first('color','<span class="help-block">:message</span>') !!}
-</div>
+</div> --}}
 
 <!-- Client Name Field -->
 <div class="form-group col-sm-6 {{ $errors->has('first_name') ? 'has-error' :'' }}">
