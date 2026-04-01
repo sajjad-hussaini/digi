@@ -66,8 +66,11 @@
 <div class="form-group col-sm-6 {{ $errors->has('visa_type') ? 'has-error' :'' }}">
     {!! Form::label('visa_type', 'Matter Type:') !!}
     {!! Form::select('visa_type', [
-        'Appeal' => 'Appeal',
-        'Visa' => 'Visa',
+        'Work Visa' => 'Work Visa',
+        'Student Visa' => 'Student Visa',
+        'Spouse Visa' => 'Spouse Visa',
+        'Visitor Visa' => 'Visitor Visa',
+        'Settlement Visa' => 'Settlement Visa'
     ], null, ['class' => 'form-control', 'placeholder' => 'Select Matter Type']) !!}
     {!! $errors->first('visa_type','<span class="help-block">:message</span>') !!}
 </div>

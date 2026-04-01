@@ -138,7 +138,7 @@
                         class="btn btn-block btn btn-default mb-3"
                         data-toggle="modal"
                         data-target="#initialInstructionModal"
-                        data-template-type="Client Care Letter"> Client Care Letter
+                        data-template-type="Client Care"> Client Care Letter
                     </a>
 
                     <a href="javascript:void(0)"

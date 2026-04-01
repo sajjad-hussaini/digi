@@ -251,7 +251,7 @@ function autoReplaceClientData(html) {
         '[CLIENT_EMAIL]'      : '{{ $client->email ?? "" }}',
         '[CLIENT_PHONE]'      : '{{ $client->phone ?? "" }}',
         '[CLIENT_ADDRESS]'      : '{{ $client->address ?? "" }}',
-        '[CLIENT_DOB]'      : '{{ $client->date_of_birth ?? "" }}',
+        '[CLIENT_DOB]'      : '{{ $client->dob ?? "" }}',
         '[DATE]'              : '{{ now()->format("jS F Y") }}'
     };
 

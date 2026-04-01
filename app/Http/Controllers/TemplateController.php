@@ -115,7 +115,7 @@ class TemplateController extends Controller
             // Convert HTML back to DOCX
             $template->content = $this->htmlToDocx($request->edited_html);
         }
-
+        $template->type = $request->type;
         $template->save();
 
         return redirect()->route('templates.index')->with('success', 'Template updated successfully');
