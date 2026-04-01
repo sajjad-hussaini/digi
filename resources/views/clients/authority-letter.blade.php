@@ -79,7 +79,7 @@
             currently residing at <span class="highlight">{{ $address }}</span> 
             hereby authorise and instruct <span class="highlight">{{ $lawFirm }}</span>, 
             <span class="highlight">{{ $lawFirmAddress }}</span> 
-            in relation to my <strong>Settled Status application / Immigration matter</strong>.
+            in relation to my <strong>{{$visaType ?? 'Other'}}</strong>.
         </p>
 
         <p class="lead-line">
