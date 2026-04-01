@@ -129,26 +129,31 @@
                     <a href="javascript:void(0)"
                         class="btn btn-block btn btn-default mb-3"
                         data-toggle="modal"
-                        data-target="#initialInstructionModal">
-                        Client Letters
+                        data-target="#initialInstructionModal"
+                        data-template-type="Initial Instruction"> Initial Instruction
+                    </a>
                     </a>
 
-                     <!-- <a href="javascript:void(0)"
+                    <a href="javascript:void(0)"
                         class="btn btn-block btn btn-default mb-3"
                         data-toggle="modal"
-                        data-target="#clientClouserModal">
-                        Client Care Letter
+                        data-target="#initialInstructionModal"
+                        data-template-type="Client Care Letter"> Client Care Letter
                     </a>
 
-                    <a href="{{ route('clients.client-care-letter', $client->id) }}"
-                        class="btn btn-block btn btn-default" target="_blank">
-                        Client Closure Letter
+                    <a href="javascript:void(0)"
+                        class="btn btn-block btn btn-default mb-3"
+                        data-toggle="modal"
+                        data-target="#initialInstructionModal"
+                        data-template-type="Client Closure Letter"> Client Closure Letter
                     </a>
 
-                    <a href="{{ route('clients.covering-letter', $client->id) }}"
-                        class="btn btn-block btn btn-default mb-3" target="_blank">
-                        Covering Letter
-                    </a> -->
+                    <a href="javascript:void(0)"
+                        class="btn btn-block btn btn-default mb-3"
+                        data-toggle="modal"
+                        data-target="#initialInstructionModal"
+                        data-template-type="Covering Letter"> Covering Letter
+                    </a>
                    
                 </div>
             </div>
@@ -173,30 +178,20 @@
                     <!-- <button type="button" class="btn btn-block btn-primary mb-3" id="baseTemplateBtn">
                         <i class="fas fa-file"></i> Continue with Base Template
                     </button> -->
-
-                    <hr>
-
-                    <label for="templates_load">
-                        <i class="fas fa-file-word text-primary"></i> Templates Type
-                    </label>
-                    <div>
-                        <select id="templates_load" class="form-control py-3" >
-                            <option value="">Select a type</option>
-                            <option value="Authority Letter">Authority Letter</option>
-                            <option value="Client Care">Client Care</option>
-                            <option value="Client Closure Letter">Client Closure Letter</option>
-                            <option value="Covering Letter">Covering Letter</option>
-                            <option value="Initial Instruction">Initial Instruction</option>
-                        </select>   
-                     </div><br>
-
+                    <div class="text-center mb-4">
+                        <div class="icon-circle bg-soft-primary mb-3">
+                            <i class="fa fa-copy fa-2x text-primary"></i>
+                        </div>
+                        <h4 class="mb-1">Select a Template</h4>
+                        <p class="text-muted">Choose a pre-defined letter to begin editing</p>
+                    </div>
                     <label for="templateSelect">
-                        <i class="fas fa-file-word text-primary"></i> Existing Template
+                        <i class="fa fa-file-word text-primary"></i> Existing Template
                     </label>
 
                     <!-- Loading state -->
                     <div id="templatesLoading" class="text-center py-3">
-                        <i class="fas fa-spinner fa-spin"></i> Loading templates...
+                        <i class="fa fa-spinner fa-spin"></i> Loading templates...
                     </div>
 
                     <!-- Templates dropdown -->
@@ -217,18 +212,18 @@
                 <div id="editor-step" style="display:none;">
                     <div class="d-flex justify-content-between mb-3">
                         <button type="button" class="btn btn-sm btn-secondary" id="backToChoice">
-                            <i class="fas fa-arrow-left"></i> Back
+                            <i class="fa fa-arrow-left"></i> Back
                         </button>
                         
                         <div class="btn-group">
                             <button type="button" class="btn btn-sm btn-info" id="findReplaceBtn">
-                                <i class="fas fa-search"></i> Find & Replace
+                                <i class="fa fa-search"></i> Find & Replace
                             </button>
                             <button type="button" class="btn btn-sm btn-success" id="generateDocxBtn">
-                                <i class="fas fa-file-word"></i> Generate DOCX
+                                <i class="fa fa-file-word"></i> Generate DOCX
                             </button>
                             <button type="button" class="btn btn-sm btn-danger" id="generatePdfBtn">
-                                <i class="fas fa-file-pdf"></i> Generate PDF
+                                <i class="fa fa-file-pdf"></i> Generate PDF
                             </button>
                         </div>
                     </div>
@@ -256,7 +251,7 @@
 
                     <!-- Template title -->
                     <div id="templateTitle" class="alert alert-light border mb-2">
-                        <i class="fas fa-file-word text-primary"></i> 
+                        <i class="fa fa-file-word text-primary"></i> 
                         <strong id="templateTitleText"></strong>
                     </div>
 
@@ -267,7 +262,7 @@
                         
                         <!-- Loading -->
                         <div id="editorLoading" class="text-center py-5">
-                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            <i class="fa fa-spinner fa-spin fa-2x"></i>
                             <p class="mt-2">Loading document...</p>
                         </div>
 
@@ -278,7 +273,7 @@
 
                     <div class="mt-2 alert alert-info py-2">
                         <small>
-                            <i class="fas fa-info-circle"></i> 
+                            <i class="fa fa-info-circle"></i> 
                             Click anywhere to edit • Use Find & Replace for bulk changes
                         </small>
                     </div>

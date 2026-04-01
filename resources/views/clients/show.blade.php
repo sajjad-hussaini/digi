@@ -60,28 +60,33 @@ let selectedTemplateTitle = '';
 
 $(document).ready(function() {
 
-// 1. Modal khulne par abhi kuch load mat karo
-$('#initialInstructionModal').on('show.bs.modal', function() {
-    // Optional: reset dropdowns to initial state
-    $('#templates_load').val('');
+$('#initialInstructionModal').on('show.bs.modal', function(event) {
+    const button = $(event.relatedTarget); // Button that triggered the modal
+    const targetType = button.data('template-type'); // Get 'Initial Instruction' or others
     
-    $('#loadTemplateBtn').hide();
+    // Reset UI
+    resetEditor();
+
+    $('#templateSelect').show();
     $('#templatesLoading').hide();
-});
+    $('#loadTemplateBtn').show();
 
-// 2. Jab user type select karega tab templates load karo
-$('#templates_load').on('change', function() {
-    const selectedType = $(this).val().trim();
+    if (targetType) {
+        // 1. Set the hidden/visible dropdown to the correct type
+        $('#templates_load').val(targetType);
+        
+        // 2. Hide the "Templates Type" label and select 
+        // so the user only sees "Existing Templates"
+        $('label[for="templates_load"]').hide();
+        $('#templates_load').hide();
 
-    // Agar koi type nahi chuna to reset kar do
-    if (!selectedType) {
-        $('#loadTemplateBtn').hide();
-        $('#templatesLoading').hide();
-        return;
+        // 3. Automatically trigger the AJAX load for this type
+        loadTemplatesByType(targetType);
+    } else {
+        // If opened without a specific type, show the selection dropdown
+        $('label[for="templates_load"]').show();
+        $('#templates_load').show();
     }
-
-    // Type select hua hai → templates fetch karo
-    loadTemplatesByType(selectedType);
 });
 
 function loadTemplatesByType(type) {
@@ -136,6 +141,8 @@ function loadTemplatesByType(type) {
             selectedTemplateId = val;
             selectedTemplateTitle = $(this).find('option:selected').text();
             $('#loadTemplateBtn').prop('disabled', false);
+            // 3. IMMEDIATELY LOAD THE CONTENT
+            loadTemplateContent(selectedTemplateId);
         } else {
             selectedTemplateId = null;
             $('#loadTemplateBtn').prop('disabled', true);
@@ -263,7 +270,7 @@ function generateDocument(format) {
     let icon = format === 'docx' ? 'fa-file-word' : 'fa-file-pdf';
     
     $(btnId).prop('disabled', true)
-            .html(`<i class="fas fa-spinner fa-spin"></i> Generating...`);
+            .html(`<i class="fa fa-spinner fa-spin"></i> Generating...`);
 
     let formData = new FormData();
     formData.append('template_id', selectedTemplateId);
@@ -287,12 +294,12 @@ function generateDocument(format) {
             link.click();
 
             $(btnId).prop('disabled', false)
-                    .html(`<i class="fas ${icon}"></i> Generate ${format.toUpperCase()}`);
+                    .html(`<i class="fa ${icon}"></i> Generate ${format.toUpperCase()}`);
         },
         error: function(xhr) {
             alert('Error generating document');
             $(btnId).prop('disabled', false)
-                    .html(`<i class="fas ${icon}"></i> Generate ${format.toUpperCase()}`);
+                    .html(`<i class="fa ${icon}"></i> Generate ${format.toUpperCase()}`);
         }
     });
 }
@@ -321,5 +328,87 @@ function resetEditor() {
 #documentContent p { margin: 0 0 8px 0; }
 #documentContent table { border-collapse: collapse; width: 100%; margin: 10px 0; }
 #documentContent td, #documentContent th { border: 1px solid #ddd; padding: 6px; }
+
+/* Modern Gradient Header */
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #4e73df 0%, #224abe 100%);
+}
+
+/* Modal Styling */
+.modal-content {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Icon Circle for Step 1 */
+.icon-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+.bg-soft-primary { background-color: rgba(78, 115, 223, 0.1); }
+
+/* The "Paper" Effect */
+.paper-container {
+    min-height: 500px;
+    max-height: 650px;
+    overflow-y: auto;
+    border-radius: 4px;
+    border: 1px solid #e3e6f0;
+    transition: all 0.3s ease;
+}
+
+.paper-content {
+    padding: 50px 60px; /* Real letter margins */
+    line-height: 1.6;
+    font-family: 'Georgia', serif; /* Classic document font */
+    color: #2e2e2e;
+    outline: none !important;
+}
+
+/* Custom Scrollbar for the Editor */
+.paper-container::-webkit-scrollbar {
+    width: 8px;
+}
+.paper-container::-webkit-scrollbar-track {
+    background: #f8f9fc;
+}
+.paper-container::-webkit-scrollbar-thumb {
+    background: #d1d3e2;
+    border-radius: 10px;
+}
+
+/* Highlight border on focus */
+#documentContent:focus {
+    background-color: #fdfdfd;
+}
+
+/* Simple Animations */
+.animate-slide-down {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Form refinement */
+.border-primary-soft {
+    border: 2px solid #eaecf4;
+    border-radius: 8px;
+}
+.border-primary-soft:focus {
+    border-color: #bac8f3;
+    box-shadow: none;
+}
+
+.border-left-primary {
+    border-left: 4px solid #4e73df !important;
+}
 </style>
 @endsection
