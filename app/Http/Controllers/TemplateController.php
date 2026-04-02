@@ -145,32 +145,44 @@ class TemplateController extends Controller
         return $content;
     }
 
-private function cleanHtmlForWord($html)
-{
-    libxml_use_internal_errors(true);
+    private function cleanHtmlForWord(string $html): string
+    {
+        // Base64 images ko temp files mein convert karo
+        $html = preg_replace_callback(
+            '/<img[^>]+src=["\']data:([^;]+);base64,([^"\']+)["\'][^>]*\/?>/i',
+            function ($matches) {
+                $mimeType = $matches[1]; // e.g. image/png
+                $base64Data = $matches[2];
+                $ext = explode('/', $mimeType)[1]; // png, jpg etc.
+                
+                $tmpFile = tempnam(sys_get_temp_dir(), 'img_') . '.' . $ext;
+                file_put_contents($tmpFile, base64_decode($base64Data));
+                
+                // PhpWord HTML parser img tag with file path
+                return '<img src="' . $tmpFile . '" />';
+            },
+            $html
+        );
 
-    // Remove DOCTYPE
-    $html = preg_replace('/<!DOCTYPE.*?>/i', '', $html);
+        // ... baaki steps same rehte hain
+        if (preg_match('/<body[^>]*>(.*?)<\/body>/is', $html, $matches)) {
+            $html = $matches[1];
+        }
 
-    // Extract only body content
-    if (preg_match('/<body[^>]*>(.*?)<\/body>/is', $html, $matches)) {
-        $html = $matches[1];
+        $allowedTags = '<p><br><strong><em><b><i><u><ul><ol><li><h1><h2><h3><h4><h5><h6><table><tr><td><th><thead><tbody><span><a><sup><sub><img>';
+        $html = strip_tags($html, $allowedTags);
+
+        $html = preg_replace('/\s+style=["\'][^"\']*["\']/i', '', $html);
+        $html = preg_replace('/\s+/', ' ', $html);
+        $html = preg_replace('/<p>\s*<\/p>/i', '', $html);
+        $html = preg_replace('/<br>/i', '<br/>', $html);
+
+        $html = htmlspecialchars_decode(
+            mb_convert_encoding($html, 'UTF-8', 'UTF-8')
+        );
+
+        return trim($html);
     }
-
-    // Remove empty paragraphs
-    $html = preg_replace('/<p>\s*<\/p>/', '', $html);
-
-    // Replace tabs
-    $html = str_replace("\t", ' ', $html);
-
-    // Fix img tags (safe side)
-    $html = preg_replace('/<img([^>]+)>/', '<img$1 />', $html);
-
-    // Encoding fix
-    $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
-
-    return $html;
-}
 
     // Delete template
     public function destroy(Template $template)
