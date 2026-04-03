@@ -33,7 +33,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [HomeController::class,'welcome'])->name('home');
+Route::get('/', [HomeController::class,'login'])->name('home');
 
 Route::get('config', function () {
     Artisan::call('route:clear');

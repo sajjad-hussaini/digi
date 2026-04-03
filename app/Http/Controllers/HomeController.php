@@ -67,6 +67,13 @@ class HomeController extends AppBaseController
         return view('welcome',compact('quotes'));
     }
 
+    public function login()
+    {
+        \Artisan::call("inspire");
+        $quotes = \Artisan::output();
+        return view('auth.login',compact('quotes'));
+    }
+
     public function profile(UpdateProfileRequest $request)
     {
         $profile = User::findOrFail(\Auth::id());
