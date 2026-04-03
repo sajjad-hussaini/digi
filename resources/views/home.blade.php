@@ -368,25 +368,25 @@
                 <i class="fa fa-bolt mr-2" style="color:#378ADD;"></i> Quick Actions
             </div>
 
-            <a href="{{ url('/clients/create') }}" class="quick-action">
+            <a href="{{ url('/admin/clients/create') }}" class="quick-action">
                 <div class="qa-icon icon-blue"><i class="fa fa-user-plus"></i></div>
                 Add New Client
                 <i class="fa fa-chevron-right qa-arrow"></i>
             </a>
 
-            <a href="{{ url('/documents/create') }}" class="quick-action">
+            <a href="{{ url('/admin/documents/create') }}" class="quick-action">
                 <div class="qa-icon icon-green"><i class="fa fa-folder-open"></i></div>
                 Create Document
                 <i class="fa fa-chevron-right qa-arrow"></i>
             </a>
 
-            <a href="{{ url('/invoices/create') }}" class="quick-action">
+            <a href="{{ url('/admin/invoices/create') }}" class="quick-action">
                 <div class="qa-icon icon-amber"><i class="fa fa-file-text-o"></i></div>
                 Generate Invoice
                 <i class="fa fa-chevron-right qa-arrow"></i>
             </a>
 
-            <a href="{{ url('/receipts/create') }}" class="quick-action">
+            <a href="{{ url('/admin/receipts/create') }}" class="quick-action">
                 <div class="qa-icon icon-teal"><i class="fa fa-plus-circle"></i></div>
                 Add Receipt
                 <i class="fa fa-chevron-right qa-arrow"></i>
