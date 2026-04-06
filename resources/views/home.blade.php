@@ -239,7 +239,7 @@
 <section class="content">
 
     {{-- ===== SUMMARY BANNER ===== --}}
-    <!-- <div class="summary-banner">
+    {{-- <div class="summary-banner">
         <div>
             <h3>System Overview</h3>
             <p>All records currently active in {{config('settings.system_title')}}</p>
@@ -260,7 +260,7 @@
                 <span class="b-label">{{ucfirst(config('settings.file_label_plural'))}}</span>
             </div>
         </div>
-    </div> -->
+    </div> --}}
 
     {{-- ===== STAT CARDS ROW ===== --}}
     <div class="section-title">
