@@ -17,7 +17,7 @@ use App\Http\Requests\CreateFilesRequest;
  * Class TagRepository
  * @package App\Repositories
  * @version November 12, 2019, 3:59 pm IST
-*/
+ */
 
 class ClientRepository extends BaseRepository
 {
@@ -57,28 +57,41 @@ class ClientRepository extends BaseRepository
 
     public function store($request)
     {
-       $client = Client::create([
-            // 'name' => $request->input('name'),
-            'first_name' => $request->input('first_name'),
-            'sir_name' => $request->input('sir_name'),
-            'address' => $request->input('address') ?? null,
-            'email' => $request->input('email'),
-            'company_id' => $request->input('company_id'),
-            'phone' => $request->input('phone'),
-            'passport_no' => $request->input('passport_no'),
-            'visa_type' => $request->input('visa_type'),
-            'visa_expiry_date' => $request->input('visa_expiry_date'),
-            'dob' => $request->input('dob'),
-            'address' => $request->input('address'),
-            'country' => $request->input('country'),
-            'status' => $request->input('status'),
-            'priority' => $request->input('priority'),
-            'court_type' => $request->input('court_type'),
-            'color' => $request->input('color'),
+
+        $request->validate([
+            'first_name' => 'required',
+            'surname' => 'required',
+            'email' => 'required|email',
+            'phone' => 'required',
+            'gender' => 'required',
         ]);
 
-         return $client;
-        
-    }
+        $client = Client::create([
+            'first_name'        => $request->first_name,
+            'sir_name'           => $request->sir_name,
+            'dob'               => $request->dob,
+            'gender'            => $request->gender,
+            'email'             => $request->email,
+            'phone'             => $request->phone,
+            'company_id'        => $request->company_id ?? 1,
 
+            'address'           => $request->address,
+            'city'              => $request->city,
+            'country'           => $request->country,
+
+            'passport_no'   => $request->passport_no,
+
+            'visa_type'         => $request->visa_type,
+            'visa_issue_date'   => $request->visa_issue_date,
+            'visa_expiry_date'  => $request->visa_expiry_date,
+
+            'status'            => $request->status,
+            'priority'          => $request->priority,
+            'court_type'        => $request->court_type,
+
+            'color'             => $request->color,
+        ]);
+
+        return $client;
+    }
 }

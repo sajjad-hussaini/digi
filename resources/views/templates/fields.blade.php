@@ -5,7 +5,10 @@
                 <div class="card-header">
                     <h4 class="card-title">Edit Template: {{ $template->title }}</h4>
                 </div>
-                <p>[CLIENT_NAME] => For Client Name</p>
+                <p>[CLIENT_FIRST_NAME] => For Client First Name</p>
+                <p>[CLIENT_SURNAME] => For Client Surname</p>
+                <p>[CLIENT_GENDER] => For Client Gender</p>
+                <p>[CITY] => For Client City</p>
                 <p>[CLIENT_EMAIL] => For Client Email</p>
                 <p>[CLIENT_PHONE] => For Client Phone</p>
                 <p>[CLIENT_ADDRESS] => For Client Address</p>

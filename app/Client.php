@@ -10,7 +10,24 @@ class Client extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'email', 'first_name', 'sir_name', 'company_id', 'phone', 'passport_no', 'visa_type', 'visa_expiry_date', 'status', 'priority', 'court_type', 'color', 'dob', 'address', 'country'
+        'first_name',
+        'sir_name',
+        'dob',
+        'gender',
+        'email',
+        'phone',
+        'company_id',
+        'address',
+        'city',
+        'country',
+        'passport_no',
+        'visa_type',
+        'visa_issue_date',
+        'visa_expiry_date',
+        'status',
+        'priority',
+        'court_type',
+        'color'
     ];
 
     // Relationships

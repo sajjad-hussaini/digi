@@ -75,7 +75,7 @@ class ClientController extends Controller
             'first_name' => $request->input('first_name'),
             'sir_name' => $request->input('sir_name'),
             'email' => $request->input('email'),
-            'company_id' => $request->input('company_id'),
+            'company_id' => $request->input('company_id') ?? 1,
             'phone' => $request->input('phone'),
             'passport_no' => $request->input('passport_no'),
             'visa_type' => $request->input('visa_type'),
@@ -87,6 +87,9 @@ class ClientController extends Controller
             'priority' => $request->input('priority'),
             'court_type' => $request->input('court_type'),
             'color' => $request->input('color'),
+            'city' => $request->input('city'),
+            'gender' => $request->input('gender'),
+            'visa_issued_date' => $request->input('visa_issued_date'),
         ]);
         return redirect()->route('clients.index')->with('success', 'Client updated successfully.');
     }

@@ -247,7 +247,11 @@ function loadTemplateContent(templateId) {
 // Auto replace client placeholders
 function autoReplaceClientData(html) {
     let replacements = {
-        '[CLIENT_NAME]'       : '{{ $client->first_name }} {{ $client->sir_name }}',
+        '[CLIENT_FIRST_NAME]'       : '{{ $client->first_name }}',
+        '[CLIENT_SURNAME]'      : '{{ $client->sir_name }}',
+        '[CLIENT_GENDER]'      : '{{ $client->gender ?? "" }}',
+        '[CLIENT_PASSPORT_NO]'      : '{{ $client->passport_no ?? "" }}',
+        '[CITY]'              : '{{ $client->city ?? "" }}',
         '[CLIENT_EMAIL]'      : '{{ $client->email ?? "" }}',
         '[CLIENT_PHONE]'      : '{{ $client->phone ?? "" }}',
         '[CLIENT_ADDRESS]'      : '{{ $client->address ?? "" }}',
