@@ -1,11 +1,11 @@
 <!-- resources/views/clients/fields.blade.php -->
 
 <!-- Company Field -->
-<div class="form-group col-sm-6 {{ $errors->has('company_id') ? 'has-error' : '' }}">
+<!-- <div class="form-group col-sm-6 {{ $errors->has('company_id') ? 'has-error' : '' }}">
     {!! Form::label('company_id', 'Individual :') !!}
     {!! Form::hidden('company_id', old('company_id', $companies->first()?->id)) !!}
     {!! $errors->first('company_id', '<span class="help-block">:message</span>') !!}
-</div>
+</div> -->
 
 <!-- Color Field -->
 {{-- <div class="form-group col-sm-6 {{ $errors->has('color') ? 'has-error' :'' }}">
@@ -28,6 +28,20 @@
     {!! $errors->first('sir_name','<span class="help-block">:message</span>') !!}
 </div>
 
+<!-- Visa Expiry Date Field -->
+<div class="form-group col-sm-6 {{ $errors->has('dob') ? 'has-error' :'' }}">
+    {!! Form::label('dob', 'Date Of Birth:') !!}
+    {!! Form::date('dob', null, ['class' => 'form-control']) !!}
+    {!! $errors->first('dob','<span class="help-block">:message</span>') !!}
+</div>
+
+<!-- Client Name Field -->
+<div class="form-group col-sm-6 {{ $errors->has('country') ? 'has-error' :'' }}">
+    {!! Form::label('country', 'Nationality:') !!}
+    {!! Form::text('country', null, ['class' => 'form-control', 'placeholder' => 'Enter nationality']) !!}
+    {!! $errors->first('country','<span class="help-block">:message</span>') !!}
+</div>
+
 <!-- Client Name Field -->
 <div class="form-group col-sm-6 {{ $errors->has('address') ? 'has-error' :'' }}">
     {!! Form::label('address', 'Address:') !!}
@@ -36,10 +50,17 @@
 </div>
 
 <!-- Client Name Field -->
-<div class="form-group col-sm-6 {{ $errors->has('country') ? 'has-error' :'' }}">
-    {!! Form::label('country', 'Nationality:') !!}
-    {!! Form::text('country', null, ['class' => 'form-control', 'placeholder' => 'Enter nationality']) !!}
-    {!! $errors->first('country','<span class="help-block">:message</span>') !!}
+<div class="form-group col-sm-6 {{ $errors->has('address') ? 'has-error' :'' }}">
+    {!! Form::label('address', 'City:') !!}
+    {!! Form::text('address', null, ['class' => 'form-control', 'placeholder' => 'Enter address']) !!}
+    {!! $errors->first('address','<span class="help-block">:message</span>') !!}
+</div>
+
+<!-- Passport Number Field -->
+<div class="form-group col-sm-6 {{ $errors->has('passport_number') ? 'has-error' :'' }}">
+    {!! Form::label('passport_number', 'gender:') !!}
+    {!! Form::text('passport_no', null, ['class' => 'form-control']) !!}
+    {!! $errors->first('passport_number','<span class="help-block">:message</span>') !!}
 </div>
 
 <!-- Contact Number Field -->
@@ -71,16 +92,16 @@
 
 <!-- Visa Expiry Date Field -->
 <div class="form-group col-sm-6 {{ $errors->has('visa_expiry_date') ? 'has-error' :'' }}">
-    {!! Form::label('visa_expiry_date', 'Visa Expiry Date:') !!}
+    {!! Form::label('visa_expiry_date', 'Visa Issue Date:') !!}
     {!! Form::date('visa_expiry_date', null, ['class' => 'form-control']) !!}
     {!! $errors->first('visa_expiry_date','<span class="help-block">:message</span>') !!}
 </div>
 
 <!-- Visa Expiry Date Field -->
-<div class="form-group col-sm-6 {{ $errors->has('dob') ? 'has-error' :'' }}">
-    {!! Form::label('dob', 'Date Of Birth:') !!}
-    {!! Form::date('dob', null, ['class' => 'form-control']) !!}
-    {!! $errors->first('dob','<span class="help-block">:message</span>') !!}
+<div class="form-group col-sm-6 {{ $errors->has('visa_expiry_date') ? 'has-error' :'' }}">
+    {!! Form::label('visa_expiry_date', 'Visa Expiry Date:') !!}
+    {!! Form::date('visa_expiry_date', null, ['class' => 'form-control']) !!}
+    {!! $errors->first('visa_expiry_date','<span class="help-block">:message</span>') !!}
 </div>
 
 <!-- Passport Number Field -->
@@ -88,6 +109,18 @@
     {!! Form::label('passport_number', 'Passport Number:') !!}
     {!! Form::text('passport_no', null, ['class' => 'form-control']) !!}
     {!! $errors->first('passport_number','<span class="help-block">:message</span>') !!}
+</div>
+
+<!-- priority Field -->
+<div class="form-group col-sm-6 {{ $errors->has('priority') ? 'has-error' :'' }}">
+    {!! Form::label('priority', 'Priority:') !!}
+    {!! Form::select('priority', [
+        'Urgent' => 'Urgent',
+        'High' => 'High',
+        'Medium' => 'Medium',
+        'Low' => 'Low'
+    ], null, ['class' => 'form-control', 'placeholder' => 'Select priority']) !!}
+    {!! $errors->first('priority','<span class="help-block">:message</span>') !!}
 </div>
 
 <!-- Status Field -->
@@ -102,17 +135,6 @@
     {!! $errors->first('status','<span class="help-block">:message</span>') !!}
 </div>
 
-<!-- priority Field -->
-<div class="form-group col-sm-6 {{ $errors->has('priority') ? 'has-error' :'' }}">
-    {!! Form::label('priority', 'Priority:') !!}
-    {!! Form::select('priority', [
-        'Urgent' => 'Urgent',
-        'High' => 'High',
-        'Medium' => 'Medium',
-        'Low' => 'Low'
-    ], null, ['class' => 'form-control', 'placeholder' => 'Select priority']) !!}
-    {!! $errors->first('priority','<span class="help-block">:message</span>') !!}
-</div>
 
 <!-- court_type Field -->
 <div class="form-group col-sm-6 {{ $errors->has('court_type') ? 'has-error' :'' }}">
