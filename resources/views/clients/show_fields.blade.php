@@ -11,10 +11,10 @@
                 <div class="card-body">
                     <div class="row">
                         <!-- Company -->
-                        <div class="col-md-6 mb-3">
+                        <!-- <div class="col-md-6 mb-3">
                             <label class="font-weight-bold text-muted">Company:</label>
                             <p class="text-dark">{{ $client->company->company_name ?? 'N/A' }}</p>
-                        </div>
+                        </div> -->
 
                         <!-- Full Name -->
                         <div class="col-md-6 mb-3">

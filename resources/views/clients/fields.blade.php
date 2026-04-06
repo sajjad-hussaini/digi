@@ -3,20 +3,14 @@
 <!-- Company Field -->
 <div class="form-group col-sm-6 {{ $errors->has('company_id') ? 'has-error' : '' }}">
     {!! Form::label('company_id', 'Individual :') !!}
-    {!! Form::select('company_id', 
-        $companies->pluck('company_name', 'id'),
-        old('company_id', $companies->first()?->id),
-        [
-            'class' => 'form-control',
-            'placeholder' => 'Select Individual'
-        ]) !!}
+    {!! Form::hidden('company_id', old('company_id', $companies->first()?->id)) !!}
     {!! $errors->first('company_id', '<span class="help-block">:message</span>') !!}
 </div>
 
 <!-- Color Field -->
 {{-- <div class="form-group col-sm-6 {{ $errors->has('color') ? 'has-error' :'' }}">
     {!! Form::label('color', 'Color:') !!}
-    {!! Form::color('color', null, ['class' => 'form-control']) !!}
+    {!! Form::hidden('color', null, ['class' => 'form-control']) !!}
     {!! $errors->first('color','<span class="help-block">:message</span>') !!}
 </div> --}}
 
@@ -29,7 +23,7 @@
 
 <!-- Client Name Field -->
 <div class="form-group col-sm-6 {{ $errors->has('sir_name') ? 'has-error' :'' }}">
-    {!! Form::label('sir_name', 'Sir Name:') !!}
+    {!! Form::label('sir_name', 'Sur Name:') !!}
     {!! Form::text('sir_name', null, ['class' => 'form-control', 'placeholder' => 'Enter sir name']) !!}
     {!! $errors->first('sir_name','<span class="help-block">:message</span>') !!}
 </div>
