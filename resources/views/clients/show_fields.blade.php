@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <div class="row">
-  <div class="card-header bg-primary text-white">
+  <div class="card-header bg-primary text-white" style="padding: 3px; margin-bottom: 5px; border-radius: 10px; border-bottom: 4px solid black;">
                     <h4 class="mb-0">Client Details</h4>
                 </div>
         <!-- LEFT SIDE : Client Details -->
@@ -10,16 +10,41 @@
 
                 <div class="card-body">
                     <div class="row">
-                        <!-- Company -->
-                        <!-- <div class="col-md-6 mb-3">
-                            <label class="font-weight-bold text-muted">Company:</label>
-                            <p class="text-dark">{{ $client->company->company_name ?? 'N/A' }}</p>
-                        </div> -->
 
                         <!-- Full Name -->
                         <div class="col-md-6 mb-3">
-                            <label class="font-weight-bold text-muted">Full Name:</label>
-                            <p class="text-dark">{{ $client->first_name . ' ' . $client->sir_name ?? 'Mr Sajjad' }}</p>
+                            <label class="font-weight-bold text-muted">Firstname:</label>
+                            <p class="text-dark">{{ $client->first_name ?? 'N/A' }}</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="font-weight-bold text-muted">Surname:</label>
+                            <p class="text-dark">{{ $client->sir_name ?? 'N/A' }}</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="font-weight-bold text-muted">Date Of Birth:</label>
+                            <p class="text-dark">{{ $client->dob ?? 'N/A' }}</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="font-weight-bold text-muted">Gender:</label>
+                            <p class="text-dark">{{ $client->gender ?? 'N/A' }}</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="font-weight-bold text-muted">Nationality:</label>
+                            <p class="text-dark">{{ $client->country ?? 'N/A' }}</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="font-weight-bold text-muted">Address:</label>
+                            <p class="text-dark">{{ $client->address ?? 'N/A' }}</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="font-weight-bold text-muted">City:</label>
+                            <p class="text-dark">{{ $client->city ?? 'N/A' }}</p>
                         </div>
 
                         <!-- Phone -->
@@ -38,6 +63,13 @@
                         <div class="col-md-6 mb-3">
                             <label class="font-weight-bold text-muted">Visa Type:</label>
                             <p class="text-dark">{{ $client->visa_type ?? 'N/A' }}</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="font-weight-bold text-muted">Visa issue Date:</label>
+                            <p class="text-dark">
+                                {{ $client->visa_issue_date ? \Carbon\Carbon::parse($client->visa_issue_date)->format('d M, Y') : 'N/A' }}
+                            </p>
                         </div>
 
                         <!-- Visa Expiry Date -->

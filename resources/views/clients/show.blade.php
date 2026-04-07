@@ -30,7 +30,7 @@
                 </li>
                 @can('user manage permission')
                     <li class=""><a href="#tab_permissions" data-toggle="tab"
-                                    aria-expanded="false">Permission</a>
+                                    aria-expanded="false"></a>
                     </li>
                 @endcan
             </ul>
