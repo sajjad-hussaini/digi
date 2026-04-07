@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <div class="row">
-  <div class="card-header bg-primary text-white" style="padding: 3px; margin-bottom: 5px; border-radius: 10px; border-bottom: 4px solid black;">
+  <div class="card-header bg-primary text-white" style="padding: 1px; margin-bottom: 15px; border-radius: 10px; border-bottom: 4px solid black;">
                     <h4 class="mb-0">Client Details</h4>
                 </div>
         <!-- LEFT SIDE : Client Details -->

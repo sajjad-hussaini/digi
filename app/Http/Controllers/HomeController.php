@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\File;
-use App\User;
-use App\Client;
-use ZipArchive;
 use App\Activity;
+use App\Client;
 use App\Document;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Rules\CurrentPassword;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\UploadedFile;
-use Intervention\Image\Facades\Image;
-use Illuminate\Support\Facades\Validator;
+use App\File;
 use App\Http\Requests\UpdateProfileRequest;
+use App\Invoice;
+use App\Receipt;
+use App\Rules\CurrentPassword;
+use App\Template;
+use App\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Intervention\Image\Facades\Image;
+use ZipArchive;
 
 class HomeController extends AppBaseController
 {
@@ -57,7 +60,18 @@ class HomeController extends AppBaseController
         })->pluck('id');
         $documentCounts = $allDocs->count();
         $filesCounts = File::whereIn('document_id',$allDocs->toArray())->count();
-        return view('home',compact('documents','activities','clientCounts','documentCounts','filesCounts'));
+        $authority_letter = Template::where('type','Authority Letter')->count();
+        $initial_instruction = Template::where('type','Initial Instruction')->count();
+        $client_care = Template::where('type','Client Care')->count();
+        $client_closure = Template::where('type','Client Closure Letter')->count();
+        $covering_letter = Template::where('type','Covering Letter')->count();
+        $templateCounts = Template::all()->count();
+        $invoiceCounts = Invoice::all()->count();
+        $receiptCounts = Receipt::all()->count();
+
+        return view('home',compact('documents','activities','clientCounts',
+        'documentCounts','filesCounts', 'authority_letter','initial_instruction',
+        'client_care','client_closure','covering_letter','invoiceCounts','receiptCounts', 'templateCounts'));
     }
 
     public function welcome()

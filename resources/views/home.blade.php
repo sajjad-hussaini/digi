@@ -285,7 +285,7 @@
         </div>
 
         {{-- Documents --}}
-        <div class="col-md-4 col-sm-6">
+        <!-- <div class="col-md-4 col-sm-6">
             <div class="stat-card">
                 <div class="stat-icon icon-green">
                     <i class="fa fa-folder-open"></i>
@@ -297,7 +297,7 @@
                 </div>
                 <span class="stat-badge badge-green">Total</span>
             </div>
-        </div>
+        </div> -->
 
         {{-- Invoices --}}
         <div class="col-md-4 col-sm-6">
@@ -318,7 +318,7 @@
         <div class="col-md-4 col-sm-6">
             <div class="stat-card">
                 <div class="stat-icon icon-teal">
-                    <i class="fa fa-receipt"></i>
+                    <i class="fa fa-file-text-o"></i>
                 </div>
                 <div class="stat-body">
                     <div class="stat-label">Receipts</div>
@@ -336,8 +336,8 @@
                     <i class="fa fa-paperclip"></i>
                 </div>
                 <div class="stat-body">
-                    <div class="stat-label">{{ucfirst(config('settings.file_label_plural'))}}</div>
-                    <div class="stat-number">{{$filesCounts}}</div>
+                    <div class="stat-label">Templates</div>
+                    <div class="stat-number">{{$templateCounts}}</div>
                     <div class="stat-sub">Uploaded across all documents</div>
                 </div>
                 <span class="stat-badge badge-purple">Stored</span>
@@ -345,7 +345,7 @@
         </div>
 
         {{-- Tags / Categories --}}
-        <div class="col-md-4 col-sm-6">
+        <!-- <div class="col-md-4 col-sm-6">
             <div class="stat-card">
                 <div class="stat-icon icon-coral">
                     <i class="fa fa-tags"></i>
@@ -357,7 +357,7 @@
                 </div>
                 <span class="stat-badge badge-coral">Tags</span>
             </div>
-        </div>
+        </div> -->
 
     </div>
 
@@ -374,11 +374,11 @@
                 <i class="fa fa-chevron-right qa-arrow"></i>
             </a>
 
-            <a href="{{ url('/admin/documents/create') }}" class="quick-action">
+            <!-- <a href="{{ url('/admin/documents/create') }}" class="quick-action">
                 <div class="qa-icon icon-green"><i class="fa fa-folder-open"></i></div>
                 Create Document
                 <i class="fa fa-chevron-right qa-arrow"></i>
-            </a>
+            </a> -->
 
             <a href="{{ url('/admin/invoices/create') }}" class="quick-action">
                 <div class="qa-icon icon-amber"><i class="fa fa-file-text-o"></i></div>
@@ -386,9 +386,9 @@
                 <i class="fa fa-chevron-right qa-arrow"></i>
             </a>
 
-            <a href="{{ url('/admin/receipts/create') }}" class="quick-action">
+            <a href="{{ url('/admin/templates/create') }}" class="quick-action">
                 <div class="qa-icon icon-teal"><i class="fa fa-plus-circle"></i></div>
-                Add Receipt
+                Add Template
                 <i class="fa fa-chevron-right qa-arrow"></i>
             </a>
         </div>
@@ -396,42 +396,42 @@
         {{-- ===== SYSTEM INFO ===== --}}
         <div class="col-md-8">
             <div class="section-title">
-                <i class="fa fa-info-circle mr-2" style="color:#378ADD;"></i> System Summary
+                <i class="fa fa-info-circle mr-2" style="color:#378ADD;"></i> Template types
             </div>
             <div class="table-responsive" style="background:#fff; border-radius:14px; border:1px solid #e8ecf4; overflow:hidden;">
                 <table class="table table-hover mb-0" style="font-size:14px;">
                     <thead style="background:#f8fafc;">
                         <tr>
                             <th style="border-top:none; color:#8a94a6; font-size:11px; text-transform:uppercase; letter-spacing:0.7px; padding:14px 20px;">Module</th>
-                            <th style="border-top:none; color:#8a94a6; font-size:11px; text-transform:uppercase; letter-spacing:0.7px;">Label Used</th>
+                            <!-- <th style="border-top:none; color:#8a94a6; font-size:11px; text-transform:uppercase; letter-spacing:0.7px;">Label Used</th> -->
                             <th style="border-top:none; color:#8a94a6; font-size:11px; text-transform:uppercase; letter-spacing:0.7px; text-align:right; padding-right:20px;">Count</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="padding:14px 20px; color:#0C1628; font-weight:500;"><i class="fa fa-users mr-2" style="color:#1d4ed8;"></i> Clients</td>
-                            <td style="color:#8a94a6;">{{ucfirst(config('settings.tags_label_plural'))}}</td>
-                            <td style="text-align:right; padding-right:20px; font-weight:600; color:#0C1628;">{{$clientCounts}}</td>
+                            <td style="padding:14px 20px; color:#0C1628; font-weight:500;"><i class="fa fa-file-text-o mr-2" style="color:#1d4ed8;"></i> Authority Letter</td>
+                            <td style="color:#8a94a6;">Authority Letter</td>
+                            <td style="text-align:right; padding-right:20px; font-weight:600; color:#0C1628;">{{$authority_letter ?? 0}}</td>
                         </tr>
                         <tr>
-                            <td style="padding:14px 20px; color:#0C1628; font-weight:500;"><i class="fa fa-folder mr-2" style="color:#15803d;"></i> Documents</td>
-                            <td style="color:#8a94a6;">{{ucfirst(config('settings.document_label_plural'))}}</td>
-                            <td style="text-align:right; padding-right:20px; font-weight:600; color:#0C1628;">{{$documentCounts}}</td>
+                            <td style="padding:14px 20px; color:#0C1628; font-weight:500;"><i class="fa fa-file-text-o mr-2" style="color:#15803d;"></i> Initial Instruction</td>
+                            <td style="color:#8a94a6;">Initial Instruction</td>
+                            <td style="text-align:right; padding-right:20px; font-weight:600; color:#0C1628;">{{$initial_instruction ?? 0}}</td>
                         </tr>
                         <tr>
-                            <td style="padding:14px 20px; color:#0C1628; font-weight:500;"><i class="fa fa-paperclip mr-2" style="color:#6d28d9;"></i> Files</td>
-                            <td style="color:#8a94a6;">{{ucfirst(config('settings.file_label_plural'))}}</td>
-                            <td style="text-align:right; padding-right:20px; font-weight:600; color:#0C1628;">{{$filesCounts}}</td>
+                            <td style="padding:14px 20px; color:#0C1628; font-weight:500;"><i class="fa fa-file-text-o mr-2" style="color:#6d28d9;"></i> Client Care</td>
+                            <td style="color:#8a94a6;">Client Care</td>
+                            <td style="text-align:right; padding-right:20px; font-weight:600; color:#0C1628;">{{$client_care ?? 0}}</td>
                         </tr>
                         <tr>
-                            <td style="padding:14px 20px; color:#0C1628; font-weight:500;"><i class="fa fa-file-text-o mr-2" style="color:#b45309;"></i> Invoices</td>
-                            <td style="color:#8a94a6;">Invoices</td>
-                            <td style="text-align:right; padding-right:20px; font-weight:600; color:#0C1628;">{{ $invoiceCounts ?? 0 }}</td>
+                            <td style="padding:14px 20px; color:#0C1628; font-weight:500;"><i class="fa fa-file-text-o mr-2" style="color:#b45309;"></i> Client Closure</td>
+                            <td style="color:#8a94a6;">Client Closure</td>
+                            <td style="text-align:right; padding-right:20px; font-weight:600; color:#0C1628;">{{ $client_closure ?? 0 }}</td>
                         </tr>
                         <tr>
-                            <td style="padding:14px 20px; color:#0C1628; font-weight:500;"><i class="fa fa-check-circle mr-2" style="color:#0f766e;"></i> Receipts</td>
-                            <td style="color:#8a94a6;">Receipts</td>
-                            <td style="text-align:right; padding-right:20px; font-weight:600; color:#0C1628;">{{ $receiptCounts ?? 0 }}</td>
+                            <td style="padding:14px 20px; color:#0C1628; font-weight:500;"><i class="fa fa-file-text-o mr-2" style="color:#0f766e;"></i> Covering Letter</td>
+                            <td style="color:#8a94a6;">Covering Letter</td>
+                            <td style="text-align:right; padding-right:20px; font-weight:600; color:#0C1628;">{{ $covering_letter ?? 0 }}</td>
                         </tr>
                     </tbody>
                 </table>
