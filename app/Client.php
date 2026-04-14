@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -79,5 +80,59 @@ class Client extends Model
     public function authorityLetters()
     {
         return $this->hasMany(AuthorityLetter::class);
+    }
+
+      /*
+    |--------------------------------------------------------------------------
+    | Mutators 
+    |--------------------------------------------------------------------------
+    */
+
+    public function setDobAttribute($value)
+    {
+        $this->attributes['dob'] = $value 
+            ? Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d') 
+            : null;
+    }
+
+    public function setVisaIssueDateAttribute($value)
+    {
+        $this->attributes['visa_issue_date'] = $value 
+            ? Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d') 
+            : null;
+    }
+
+    public function setVisaExpiryDateAttribute($value)
+    {
+        $this->attributes['visa_expiry_date'] = $value 
+            ? Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d') 
+            : null;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors 
+    |--------------------------------------------------------------------------
+    */
+
+    public function getDobAttribute($value)
+    {
+        return $value 
+            ? Carbon::parse($value)->format('d/m/Y') 
+            : null;
+    }
+
+    public function getVisaIssueDateAttribute($value)
+    {
+        return $value 
+            ? Carbon::parse($value)->format('d/m/Y') 
+            : null;
+    }
+
+    public function getVisaExpiryDateAttribute($value)
+    {
+        return $value 
+            ? Carbon::parse($value)->format('d/m/Y') 
+            : null;
     }
 }

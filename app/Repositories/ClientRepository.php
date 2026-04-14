@@ -2,16 +2,17 @@
 
 namespace App\Repositories;
 
-use App\Tag;
-use App\User;
 use App\Client;
 use App\Company;
-use Laracasts\Flash\Flash;
+use App\Http\Requests\CreateFilesRequest;
 use App\Repositories\BaseRepository;
+use App\Tag;
+use App\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
+use Laracasts\Flash\Flash;
 use Spatie\Permission\Models\Permission;
-use App\Http\Requests\CreateFilesRequest;
 
 /**
  * Class TagRepository
@@ -69,7 +70,7 @@ class ClientRepository extends BaseRepository
         $client = Client::create([
             'first_name'        => $request->first_name,
             'sir_name'           => $request->sir_name,
-            'dob'               => $request->dob,
+            'dob'               => Carbon::createFromFormat('d/m/Y', $request->dob)->format('Y-m-d'),
             'gender'            => $request->gender,
             'email'             => $request->email,
             'phone'             => $request->phone,
@@ -82,8 +83,8 @@ class ClientRepository extends BaseRepository
             'passport_no'   => $request->passport_no,
 
             'visa_type'         => $request->visa_type,
-            'visa_issue_date'   => $request->visa_issue_date,
-            'visa_expiry_date'  => $request->visa_expiry_date,
+            'visa_issue_date'   => Carbon::createFromFormat('d/m/Y', $request->visa_issue_date)->format('Y-m-d'),
+            'visa_expiry_date'  => Carbon::createFromFormat('d/m/Y', $request->visa_expiry_date)->format('Y-m-d'),
 
             'status'            => $request->status,
             'priority'          => $request->priority,

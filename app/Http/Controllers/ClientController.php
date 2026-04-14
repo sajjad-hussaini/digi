@@ -45,7 +45,8 @@ class ClientController extends Controller
         $customFields = CustomField::where('model_type', 'clients')->get();
         $companies = Company::get();
         $selectedCompany = $companies->first()->id ?? null;
-        return view('clients.create', compact('customFields', 'companies', 'selectedCompany'));
+        $countries = include base_path('vendor/umpirsky/country-list/data/en/country.php');
+        return view('clients.create', compact('customFields', 'companies', 'selectedCompany', 'countries'));
     }
 
     public function store(Request $request)
@@ -63,9 +64,9 @@ class ClientController extends Controller
 
     public function edit(Client $client)
     {
-
+        $countries = include base_path('vendor/umpirsky/country-list/data/en/country.php');
         $companies = Company::select('id', 'company_name')->get();
-        return view('clients.edit', compact('client', 'companies'));
+        return view('clients.edit', compact('client', 'companies', 'countries'));
     }
 
     public function update(Request $request, Client $client)

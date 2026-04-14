@@ -68,7 +68,10 @@
                         <div class="col-md-6 mb-3">
                             <label class="font-weight-bold text-muted">Visa issue Date:</label>
                             <p class="text-dark">
-                                {{ $client->visa_issue_date ? \Carbon\Carbon::parse($client->visa_issue_date)->format('d M, Y') : 'N/A' }}
+                                {{ $client->visa_issue_date 
+                                    ? \Carbon\Carbon::parse($client->getRawOriginal('visa_issue_date'))->format('d M, Y') 
+                                    : 'N/A' 
+                                }}
                             </p>
                         </div>
 
@@ -76,7 +79,10 @@
                         <div class="col-md-6 mb-3">
                             <label class="font-weight-bold text-muted">Visa Expiry Date:</label>
                             <p class="text-dark">
-                                {{ $client->visa_expiry_date ? \Carbon\Carbon::parse($client->visa_expiry_date)->format('d M, Y') : 'N/A' }}
+                                {{ $client->visa_expiry_date 
+                                    ? \Carbon\Carbon::parse($client->getRawOriginal('visa_expiry_date'))->format('d M, Y') 
+                                    : 'N/A' 
+                                }}
                             </p>
                         </div>
 
