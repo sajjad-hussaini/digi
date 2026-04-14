@@ -60,7 +60,7 @@ class ClientRepository extends BaseRepository
 
         $request->validate([
             'first_name' => 'required',
-            'surname' => 'required',
+            'sir_name' => 'required',
             'email' => 'required|email',
             'phone' => 'required',
             'gender' => 'required',

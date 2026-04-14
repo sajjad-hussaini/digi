@@ -136,10 +136,10 @@
                         </div>
 
                         <!-- Created At -->
-                        <div class="col-md-6 mb-3">
+                        <!-- <div class="col-md-6 mb-3">
                             <label class="font-weight-bold text-muted">Created At:</label>
                             <p class="text-dark">{{ $client->created_at->format('d M, Y h:i A') }}</p>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
