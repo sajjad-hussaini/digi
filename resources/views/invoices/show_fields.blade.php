@@ -17,10 +17,9 @@
 
             <div class="col-md-6">
                 <h5 class="mb-2">Client Information</h5>
-                <p><strong>Name:</strong> {{ $invoice->client->name }}</p>
+                <p><strong>Name:</strong> {{ $invoice->client->first_name }} {{ $invoice->client->sir_name }}</p>
                 <p><strong>Phone:</strong> {{ $invoice->client->phone }}</p>
-                <p><strong>Email:</strong> {{ $invoice->client->email_address }}</p>
-                <p><strong>Company:</strong> {{ $invoice->client->company->name ?? '—' }}</p>
+                <p><strong>Email:</strong> {{ $invoice->client->email }}</p>
             </div>
 
             <div class="col-md-6">

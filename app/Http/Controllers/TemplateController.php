@@ -40,6 +40,8 @@ class TemplateController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'doc_file' => 'required|file|mimes:docx',
+            'type' => 'required|in:Authority Letter,Initial Instruction,Client Care,Client Closure Letter,Covering Letter',
+            'visa_type' => 'required|in:Appeal,Work Visa,Student Visa,Spouse Visa,Visitor Visa,Settlement Visa',
         ]);
 
         $filePath = $request->file('doc_file')->getRealPath();
@@ -48,6 +50,7 @@ class TemplateController extends Controller
         $template = new Template();
         $template->title = $request->title;
         $template->type = $request->type;
+        $template->matter_type = $request->visa_type;
         $template->content = $content;
         $template->save();
 

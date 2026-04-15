@@ -23,6 +23,19 @@
     {!! $errors->first('type','<span class="help-block">:message</span>') !!}
 </div>
 
+<div class="form-group col-sm-6 {{ $errors->has('type') ? 'has-error' :'' }}" >
+    {!! Form::label('visa_type', 'Visa Type:') !!}
+    {!! Form::select('visa_type', [
+        'Appeal' => 'Appeal',
+        'Work Visa' => 'Work Visa',
+        'Student Visa' => 'Student Visa',
+        'Spouse Visa' => 'Spouse Visa',
+        'Visitor Visa' => 'Visitor Visa',
+        'Settlement Visa' => 'Settlement Visa'
+    ], null, ['class' => 'form-control', 'placeholder' => 'Select Type']) !!}
+    {!! $errors->first('visa_type','<span class="help-block">:message</span>') !!}
+</div>
+
 <!-- doc file -->
 <div class="form-group col-sm-12 {{ $errors->has('doc_file') ? 'has-error' : '' }}">
     {!! Form::label('doc_file', 'Upload Document:') !!}
