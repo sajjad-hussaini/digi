@@ -168,6 +168,7 @@
                         class="btn btn-block btn btn-default mb-3"
                         data-toggle="modal"
                         data-target="#initialInstructionModal"
+                        data-matter-type="{{$client_matter_type}}"
                         data-template-type="Initial Instruction"> Initial Instruction
                     </a>
                     </a>
@@ -176,6 +177,7 @@
                         class="btn btn-block btn btn-default mb-3"
                         data-toggle="modal"
                         data-target="#initialInstructionModal"
+                        data-matter-type="{{$client_matter_type}}"
                         data-template-type="Client Care"> Client Care Letter
                     </a>
 
@@ -183,6 +185,7 @@
                         class="btn btn-block btn btn-default mb-3"
                         data-toggle="modal"
                         data-target="#initialInstructionModal"
+                        data-matter-type="{{$client_matter_type}}"
                         data-template-type="Client Closure Letter"> Client Closure Letter
                     </a>
 
@@ -190,6 +193,7 @@
                         class="btn btn-block btn btn-default mb-3"
                         data-toggle="modal"
                         data-target="#initialInstructionModal"
+                        data-matter-type="{{$client_matter_type}}"
                         data-template-type="Covering Letter"> Covering Letter
                     </a>
                    

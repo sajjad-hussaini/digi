@@ -63,6 +63,7 @@ $(document).ready(function() {
 $('#initialInstructionModal').on('show.bs.modal', function(event) {
     const button = $(event.relatedTarget); // Button that triggered the modal
     const targetType = button.data('template-type'); // Get 'Initial Instruction' or others
+    const matterType = button.data('matter-type'); // Get 'Initial Instruction' or others
     
     // Reset UI
     resetEditor();
@@ -81,7 +82,7 @@ $('#initialInstructionModal').on('show.bs.modal', function(event) {
         $('#templates_load').hide();
 
         // 3. Automatically trigger the AJAX load for this type
-        loadTemplatesByType(targetType);
+        loadTemplatesByType(targetType, matterType);
     } else {
         // If opened without a specific type, show the selection dropdown
         $('label[for="templates_load"]').show();
@@ -89,14 +90,14 @@ $('#initialInstructionModal').on('show.bs.modal', function(event) {
     }
 });
 
-function loadTemplatesByType(type) {
+function loadTemplatesByType(type, matter_type) {
     $('#templatesLoading').show();
     $('#loadTemplateBtn').hide();
 
     $.ajax({
         url: "/admin/templates/list",
         type: 'GET',
-        data: { type: type },   // ← yeh sabse important change
+        data: { type: type, matter_type: matter_type},   // ← yeh sabse important change
         success: function(templates) {
             $('#templateSelect').empty();
             console.log(templates);

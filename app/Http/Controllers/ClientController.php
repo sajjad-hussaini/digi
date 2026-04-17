@@ -59,7 +59,9 @@ class ClientController extends Controller
     public function show(Client $client)
     {
         $customFields = CustomField::get();
-        return view('clients.show', compact('client', 'customFields'));
+        $client_matter_type = $client->visa_type;
+
+        return view('clients.show', compact('client', 'customFields', 'client_matter_type'));
     }
 
     public function edit(Client $client)
@@ -381,10 +383,11 @@ class ClientController extends Controller
     public function getTemplates(Request $request)
     {
         $type = $request->query('type');
+        $matter_type = $request->query('matter_type');
         $query = Template::query();
         if ($type) {
-            $query->where('type', $type);   // or whatever column name you use
-            // or: ->where('category', $type);
+            $query->where('type', $type)->where('matter_type', $matter_type);   // or whatever column name you use
+            
         }
         $templates = $query->get(['id', 'title', 'created_at']); // or whatever fields you need
         return response()->json($templates);

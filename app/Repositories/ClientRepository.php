@@ -65,6 +65,7 @@ class ClientRepository extends BaseRepository
             'email' => 'required|email',
             'phone' => 'required',
             'gender' => 'required',
+            'visa_type' => 'required',
         ]);
 
         $client = Client::create([
