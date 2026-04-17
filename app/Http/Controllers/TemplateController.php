@@ -119,6 +119,7 @@ class TemplateController extends Controller
             $template->content = $this->htmlToDocx($request->edited_html);
         }
         $template->type = $request->type;
+        $template->matter_type = $request->matter_type;
         $template->save();
 
         return redirect()->route('templates.index')->with('success', 'Template updated successfully');

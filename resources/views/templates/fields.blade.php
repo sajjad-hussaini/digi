@@ -63,6 +63,18 @@
                                         {!! $errors->first('type','<span class="help-block">:message</span>') !!}
                                     </div>
                                 </div>
+                                <div class="form-group col-sm-6 {{ $errors->has('type') ? 'has-error' :'' }}" >
+                                    {!! Form::label('matter_type', 'Visa Type:') !!}
+                                    {!! Form::select('matter_type', [
+                                        'Appeal' => 'Appeal',
+                                        'Work Visa' => 'Work Visa',
+                                        'Student Visa' => 'Student Visa',
+                                        'Spouse Visa' => 'Spouse Visa',
+                                        'Visitor Visa' => 'Visitor Visa',
+                                        'Settlement Visa' => 'Settlement Visa'
+                                    ], null, ['class' => 'form-control', 'placeholder' => 'Select Type']) !!}
+                                    {!! $errors->first('matter_type','<span class="help-block">:message</span>') !!}
+                                </div>
                                 <div class="col-md-6 text-right d-flex align-items-end">
                                     <button type="button" class="btn btn-info btn-sm ml-auto" id="findReplaceBtn">
                                         <i class="fa fa-search"></i> Find & Replace
@@ -152,6 +164,19 @@
                                     ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type']) !!}
                                     {!! $errors->first('type','<span class="help-block">:message</span>') !!}
                                 </div>
+                            </div>
+
+                            <div class="form-group col-sm-6 {{ $errors->has('type') ? 'has-error' :'' }}" >
+                                {!! Form::label('matter_type', 'Visa Type:') !!}
+                                {!! Form::select('matter_type', [
+                                    'Appeal' => 'Appeal',
+                                    'Work Visa' => 'Work Visa',
+                                    'Student Visa' => 'Student Visa',
+                                    'Spouse Visa' => 'Spouse Visa',
+                                    'Visitor Visa' => 'Visitor Visa',
+                                    'Settlement Visa' => 'Settlement Visa'
+                                ], null, ['class' => 'form-control', 'placeholder' => 'Select Type']) !!}
+                                {!! $errors->first('matter_type','<span class="help-block">:message</span>') !!}
                             </div>
 
                             <!-- Upload File -->

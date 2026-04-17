@@ -90,23 +90,44 @@ class Client extends Model
 
     public function setDobAttribute($value)
     {
-        $this->attributes['dob'] = $value 
-            ? Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d') 
-            : null;
+        $this->attributes['dob'] = $this->parseDateToYmd($value);
     }
 
     public function setVisaIssueDateAttribute($value)
     {
-        $this->attributes['visa_issue_date'] = $value 
-            ? Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d') 
-            : null;
+        $this->attributes['visa_issue_date'] = $this->parseDateToYmd($value);
     }
 
     public function setVisaExpiryDateAttribute($value)
     {
-        $this->attributes['visa_expiry_date'] = $value 
-            ? Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d') 
-            : null;
+        $this->attributes['visa_expiry_date'] = $this->parseDateToYmd($value);
+    }
+
+    /**
+     * Helper method to safely convert d/m/Y (or other common formats) to Y-m-d
+     */
+    protected function parseDateToYmd($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        // Trim any whitespace (very common cause of "trailing data")
+        $value = trim($value);
+
+        try {
+            // First try the expected format (strict)
+            return Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+        } catch (\Exception $e) {
+            try {
+                // Fallback: let Carbon guess (more forgiving for Y-m-d, m/d/Y, etc.)
+                return Carbon::parse($value)->format('Y-m-d');
+            } catch (\Exception $e2) {
+                // Log the bad value if needed, then return null or throw
+                // \Log::warning("Invalid date format for field: " . $value);
+                return null;   // or throw new \InvalidArgumentException("Invalid date: {$value}");
+            }
+        }
     }
 
     /*
