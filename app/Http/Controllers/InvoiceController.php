@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Client;
 use App\CustomField;
-use App\Invoice;
-use Illuminate\Http\Request;
 use App\DataTables\InvoiceDataTable;
+use App\Invoice;
 use App\Repositories\InvoiceRepository;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
@@ -60,9 +61,15 @@ class InvoiceController extends Controller
         return redirect()->route('invoices.index');
     }
 
-    public function show($id)
-    {
-        $invoice = Invoice::findOrFail($id);
+    public function show($id) {
+        $invoice = Invoice::with(['client', 'items'])->findOrFail($id);
         return view('invoices.show', compact('invoice'));
+    }
+
+    public function downloadPdf($id) {
+        $invoice = Invoice::with(['client', 'items'])->findOrFail($id);
+        $pdf = Pdf::loadView('invoices.template', compact('invoice'))
+                  ->setPaper('a4');
+        return $pdf->download('invoice-'.$invoice->invoice_no.'.pdf');
     }
 }

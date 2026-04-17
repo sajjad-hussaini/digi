@@ -55,6 +55,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
     });
      // Templates list
     Route::get('/templates/list', [ClientController::class, 'getTemplates']);
+    // routes/web.php
+    Route::get('/invoice/{id}', [InvoiceController::class, 'show']);
+    Route::get('/invoice/{id}/pdf', [InvoiceController::class, 'downloadPdf']);
 
     // Template content (BLOB)
     Route::get('/templates/{id}/content', [ClientController::class, 'getTemplateContent'])

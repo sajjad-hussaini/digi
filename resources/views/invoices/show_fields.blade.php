@@ -1,87 +1,93 @@
-<div class="container">
+{{-- resources/views/invoices/template.blade.php --}}
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 12px; margin: 40px; }
+  .header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+  .client-info { width: 45%; }
+  .company-info { width: 45%; text-align: right; font-size: 11px; }
+  .invoice-meta { background: #f0f0f0; padding: 8px; display: flex; 
+                  justify-content: space-between; border: 1px solid #ccc; }
+  .ref-box { background: yellow; padding: 3px 8px; font-weight: bold; }
+  .notice { background: yellow; text-align: center; font-size: 11px; 
+            padding: 4px; margin: 5px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th { background: #ddd; border: 1px solid #999; padding: 6px; text-align: left; }
+  td { border: 1px solid #ccc; padding: 6px; vertical-align: top; }
+  .total-row td { font-weight: bold; }
+  .payment-info { margin-top: 10px; border: 1px solid #ccc; 
+                  padding: 8px; font-size: 11px; }
+</style>
+</head>
+<body>
 
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h3>Invoice Details</h3>
-            <a href="{{ route('invoices.index') }}" class="btn btn-secondary btn-sm">Back</a>
-        </div>
-    </div>
-
-    <!-- Invoice Summary Card -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <strong>Invoice #{{ $invoice->invoice_no }}</strong>
-        </div>
-
-        <div class="card-body row">
-
-            <div class="col-md-6">
-                <h5 class="mb-2">Client Information</h5>
-                <p><strong>Name:</strong> {{ $invoice->client->first_name }} {{ $invoice->client->sir_name }}</p>
-                <p><strong>Phone:</strong> {{ $invoice->client->phone }}</p>
-                <p><strong>Email:</strong> {{ $invoice->client->email }}</p>
-            </div>
-
-            <div class="col-md-6">
-                <h5 class="mb-2">Invoice Information</h5>
-
-                <p><strong>Invoice No:</strong> {{ $invoice->invoice_no }}</p>
-                <p><strong>Amount:</strong> £{{ number_format($invoice->amount, 2) }}</p>
-
-                <p><strong>Status:</strong>
-                    @if($invoice->status == 'paid')
-                        <span class="badge bg-success">Paid</span>
-                    @else
-                        <span class="badge bg-danger">Unpaid</span>
-                    @endif
-                </p>
-
-                <p><strong>Invoice Date:</strong>
-                    {{ $invoice->invoice_date ? $invoice->invoice_date : '—' }}
-                </p>
-
-                <p><strong>Created At:</strong>
-                    {{ $invoice->created_at->format('d M, Y H:i') }}
-                </p>
-
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Description -->
-    @if($invoice->description)
-    <div class="card mb-4">
-        <div class="card-header">
-            <strong>Description</strong>
-        </div>
-        <div class="card-body">
-            {!! nl2br(e($invoice->description)) !!}
-        </div>
-    </div>
-    @endif
-
-
-    <!-- Attachments (If using documents in your system) -->
-    @if(isset($invoice->documents) && $invoice->documents->count())
-    <div class="card mb-4">
-        <div class="card-header">
-            <strong>Attached Documents</strong>
-        </div>
-        <div class="card-body">
-
-            <ul>
-                @foreach($invoice->documents as $doc)
-                <li>
-                    <a href="{{ asset('storage/'.$doc->file_path) }}" target="_blank">
-                        {{ $doc->document_type->name ?? 'Document' }}
-                    </a>
-                </li>
-                @endforeach
-            </ul>
-
-        </div>
-    </div>
-    @endif
-
+{{-- Header --}}
+<div class="header">
+  <div class="client-info">
+    <strong>{{ $invoice->client->name }}</strong><br>
+    {{ $invoice->client->street }}<br>
+    {{ $invoice->client->city }}<br>
+    {{ $invoice->client->country }}
+  </div>
+  <div class="company-info">
+    <img src="{{ asset('images/logo_imigration_law.png') }}" height="50"><br>
+    1st Floor, 236 St. Helens Road | Bolton | BL3 4EE<br>
+    Ph: 07777528028<br>
+    Email: qaimkhalifen@yahoo.com<br>
+    www.silkline.co.uk
+  </div>
 </div>
+
+{{-- Invoice Meta --}}
+<div class="invoice-meta">
+  <span><strong>INVOICE No:</strong> {{ $invoice->invoice_no }}</span>
+  <span><strong>Date:</strong> {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d F Y') }}</span>
+  <span class="ref-box"><strong>Our Ref: {{ $invoice->our_ref }}</strong></span>
+</div>
+
+<div class="notice">Please quote on all correspondence</div>
+
+{{-- Items Table --}}
+<table>
+  <thead>
+    <tr>
+      <th width="5%">Sr. No.</th>
+      <th width="75%">Description of Work</th>
+      <th width="20%">Fees</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach($invoice->items as $item)
+    <tr>
+      <td>{{ $item->sr_no }}</td>
+      <td>{{ $item->description }}</td>
+      <td>£{{ number_format($item->fees, 2) }}</td>
+    </tr>
+    @endforeach
+
+    {{-- Empty rows for spacing --}}
+    @for($i = count($invoice->items); $i < 8; $i++)
+    <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    @endfor
+
+    <tr>
+      <td colspan="2" align="right"><strong>VAT</strong></td>
+      <td>£{{ number_format($invoice->vat, 2) }}</td>
+    </tr>
+    <tr class="total-row">
+      <td colspan="2" align="right"><strong>Total Due</strong></td>
+      <td><strong>£{{ number_format($invoice->total_due, 2) }}</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+{{-- Payment Info --}}
+<div class="payment-info">
+  Please make payment to <strong>UK Immigration Law</strong> at 
+  (Bank: <strong>ANNA Bank</strong>, Account no: <strong>75841370</strong> 
+  Sort Code: <strong>04-03-70</strong>)
+</div>
+
+</body>
+</html>
