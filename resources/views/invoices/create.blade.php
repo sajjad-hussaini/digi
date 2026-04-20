@@ -11,8 +11,7 @@
 
             <div class="box-body">
                 <div class="row">
-                    {!! Form::open(['route' => 'invoices.store', 'files' => true]) !!}
-
+                   {!! Form::open(['route' => 'invoices.store', 'id' => 'invoice-form']) !!}
                         @include('invoices.fields')
 
                     {!! Form::close() !!}

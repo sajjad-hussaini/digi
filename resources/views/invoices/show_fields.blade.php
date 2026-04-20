@@ -5,7 +5,7 @@
 <style>
   body { font-family: Arial, sans-serif; font-size: 12px; margin: 40px; }
   .header { display: flex; justify-content: space-between; margin-bottom: 20px; }
-  .client-info { width: 45%; }
+  .client-info { width: 45%; padding-top: 20px;}
   .company-info { width: 45%; text-align: right; font-size: 11px; }
   .invoice-meta { background: #f0f0f0; padding: 8px; display: flex; 
                   justify-content: space-between; border: 1px solid #ccc; }
@@ -25,8 +25,9 @@
 {{-- Header --}}
 <div class="header">
   <div class="client-info">
-    <strong>{{ $invoice->client->name }}</strong><br>
-    {{ $invoice->client->street }}<br>
+    <strong>{{ $invoice->client->first_name }} {{ $invoice->client->sir_name }}</strong><br>
+    {{ $invoice->client->email }}<br>
+    {{ $invoice->client->address }}<br>
     {{ $invoice->client->city }}<br>
     {{ $invoice->client->country }}
   </div>
@@ -88,6 +89,10 @@
   (Bank: <strong>ANNA Bank</strong>, Account no: <strong>75841370</strong> 
   Sort Code: <strong>04-03-70</strong>)
 </div>
-
+<script>
+function printInvoice() {
+    window.print();
+}
+</script>
 </body>
 </html>

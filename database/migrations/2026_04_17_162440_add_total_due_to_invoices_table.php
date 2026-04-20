@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('invoices', function (Blueprint $table) {
             $table->string('our_ref')->after('client_id')->nullable();
             $table->decimal('vat', 10, 2)->default(0);
-            $table->decimal('total_due', 10, 2);
+            $table->decimal('total_due', 10, 2)->default(0)->after('vat');
         });
     }
 

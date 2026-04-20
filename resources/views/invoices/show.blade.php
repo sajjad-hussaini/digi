@@ -8,17 +8,12 @@
             <a href="{{ route('invoices.index') }}" class="btn btn-default">
                 <i class="fa fa-chevron-left" aria-hidden="true"></i> Back
             </a>
-            <a href="{{ route('invoices.edit',$invoice->id) }}" class="btn btn-primary">
-                <i class="fa fa-edit" aria-hidden="true"></i> Edit
+              <button onclick="printInvoice()" class="btn btn-default btn-sm">
+                <i class="fa fa-print"></i> Print
+            </button>
+             <a href="{{ route('invoices.pdf', $invoice->id) }}" class="btn btn-primary btn-sm">
+                <i class="fa fa-file-pdf-o"></i> Download PDF
             </a>
-            {!! Form::open(['route' => ['invoices.destroy', $invoice->id], 'method' => 'delete','style'=>'display:inline']) !!}
-                {!! Form::button('<i class="fa fa-trash"></i> Delete', [
-                'type' => 'submit',
-                'title' => 'Delete',
-                'class' => 'btn btn-danger',
-                'onclick' => "return conformDel(this,event)",
-                ]) !!}
-                {!! Form::close() !!}
         </span>
         </h1>
     </section>
@@ -30,7 +25,7 @@
                 </li>
                 @can('user manage permission')
                     <li class=""><a href="#tab_permissions" data-toggle="tab"
-                                    aria-expanded="false">Permission</a>
+                                    aria-expanded="false"></a>
                     </li>
                 @endcan
             </ul>

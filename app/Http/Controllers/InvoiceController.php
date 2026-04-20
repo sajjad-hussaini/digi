@@ -6,6 +6,7 @@ use App\Client;
 use App\CustomField;
 use App\DataTables\InvoiceDataTable;
 use App\Invoice;
+use App\InvoiceItem;
 use App\Repositories\InvoiceRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -36,24 +37,38 @@ class InvoiceController extends Controller
         return view('invoices.create', compact('clients', 'customFields', 'invoiceNo'));
     }
 
-    public function store(Request $request, Client $client)
+    public function store(Request $request)
     {
- 
-        Invoice::create([
-            'client_id' => $request->input('client_id'),
-            'invoice_no' => $request->input('invoice_no'),
-            'amount' => $request->input('amount'),
-            'invoice_date' => $request->input('invoice_date'),
-            'status' => $request->input('status'),
-            'description' => $request->input('description'),
+        // Step 1: Invoice save karein
+        $invoice = Invoice::create([
+            'client_id'    => $request->client_id,
+            'invoice_no'   => $request->invoice_no,
+            'invoice_date' => $request->invoice_date,
+            'our_ref'      => $request->our_ref,
+            'vat'          => $request->vat ?? 0,
+            'total_due'    => $request->total_due,
+            'amount'    => 2,
+            'status'       => 'unpaid',
         ]);
-        return redirect()->route('invoices.index', $client)->with('success', 'Invoice created successfully.');
-    }
 
+        // Step 2: Invoice items save karein
+        foreach ($request->items as $index => $item) {
+            InvoiceItem::create([
+                'invoice_id'  => $invoice->id,
+                'sr_no'       => $index + 1,
+                'description' => $item['description'],
+                'fees'        => $item['fees'],
+            ]);
+        }
+
+        return redirect()->route('invoices.show', $invoice->id)
+               ->with('success', 'Invoice successfully created!');
+    }
     public function destroy($id)
     {
         $invoice = Invoice::findOrFail($id);
         if($invoice)
+
         {
             $invoice->delete();
         }
@@ -62,7 +77,7 @@ class InvoiceController extends Controller
     }
 
     public function show($id) {
-        $invoice = Invoice::with(['client', 'items'])->findOrFail($id);
+        $invoice = Invoice::with(['client', 'items',])->findOrFail($id);
         return view('invoices.show', compact('invoice'));
     }
 

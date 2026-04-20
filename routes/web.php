@@ -110,5 +110,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
 
     Route::get('/_files/{dir?}/{file?}',[HomeController::class,'showFile'])->name('files.showfile');
     Route::get('/_zip/{id}/{dir?}',[HomeController::class,'downloadZip'])->name('files.downloadZip');
-    Route::post('/_pdf',[HomeController::class,'downloadPdf'])->name('files.downloadPdf');
+    // routes/web.php
+    Route::get('/invoices/{id}/pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
+
 });
