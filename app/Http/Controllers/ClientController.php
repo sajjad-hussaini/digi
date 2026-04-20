@@ -19,14 +19,15 @@ use setasign\Fpdi\Fpdi;
 
 class ClientController extends Controller
 {
-        /** @var  CompanyRepository */
+    /** @var  CompanyRepository */
     private $clientRepository;
     /** @var PermissionRepository */
     private $permissionRepository;
 
-    public function __construct(ClientRepository $clientRepo,
-                                PermissionRepository $permissionRepository)
-    {
+    public function __construct(
+        ClientRepository $clientRepo,
+        PermissionRepository $permissionRepository
+    ) {
         $this->clientRepository = $clientRepo;
         $this->permissionRepository = $permissionRepository;
     }
@@ -37,7 +38,7 @@ class ClientController extends Controller
     public function index(ClientDataTable $clientDataTable)
     {
         $clients = Client::latest()->paginate(10);
-         return $clientDataTable->render('clients.index');
+        return $clientDataTable->render('clients.index');
     }
 
     public function create()
@@ -157,7 +158,7 @@ class ClientController extends Controller
         ]);
 
         // Download or show in browser
-        return $pdf->stream('care_Letter_'.$client->first_name.'.pdf');
+        return $pdf->stream('care_Letter_' . $client->first_name . '.pdf');
         // or you can use ->download()
     }
 
@@ -182,7 +183,7 @@ class ClientController extends Controller
         ]);
 
         // Download or show in browser
-        return $pdf->stream('care_Letter_'.$client->first_name.'.pdf');
+        return $pdf->stream('care_Letter_' . $client->first_name . '.pdf');
         // or you can use ->download()
     }
 
@@ -207,7 +208,7 @@ class ClientController extends Controller
         ]);
 
         // Download or show in browser
-        return $pdf->stream('care_Letter_'.$client->first_name.'.pdf');
+        return $pdf->stream('care_Letter_' . $client->first_name . '.pdf');
         // or you can use ->download()
     }
 
@@ -230,11 +231,11 @@ class ClientController extends Controller
         ]);
 
         // Download or show in browser
-        return $pdf->stream('care_Letter_'.$client->first_name.'.pdf');
+        return $pdf->stream('care_Letter_' . $client->first_name . '.pdf');
         // or you can use ->download()
     }
 
-     public function generateDocument(Request $request, Client $client)
+    public function generateDocument(Request $request, Client $client)
     {
         // $request->validate([
         //     'original_docx' => 'required|mimes:docx|max:10240',
@@ -260,7 +261,7 @@ class ClientController extends Controller
     private function generateDocx($htmlContent, $client)
     {
         $phpWord = new PhpWord();
-        
+
         // Add section
         $section = $phpWord->addSection([
             'marginLeft' => 1440,
@@ -273,9 +274,9 @@ class ClientController extends Controller
         // Remove HTML tags and create paragraphs
         $dom = new \DOMDocument();
         @$dom->loadHTML(mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8'));
-        
+
         $paragraphs = $dom->getElementsByTagName('p');
-        
+
         foreach ($paragraphs as $p) {
             $text = $p->textContent;
             if (!empty(trim($text))) {
@@ -311,7 +312,7 @@ class ClientController extends Controller
         </html>';
 
         $pdf = Pdf::loadHTML($html);
-        
+
         return $pdf->download('Initial_Instruction_' . $client->first_name . '.pdf');
     }
 
@@ -339,26 +340,26 @@ class ClientController extends Controller
         try {
             $pdf = new Fpdi();
             $pdf->AddPage();
-            
+
             // Import original PDF
             $pdf->setSourceFile($uploadedPdf->getRealPath());
             $tplId = $pdf->importPage(1);
             $pdf->useTemplate($tplId);
-            
+
             // Process each text item
             foreach ($textData as $text) {
                 if ($text['changed']) {
                     // Cover original text with white rectangle
                     $pdf->SetFillColor(255, 255, 255);
-                    
+
                     // Calculate rectangle dimensions
                     $rectX = $text['x'] / 1.5;
                     $rectY = $text['y'] / 1.5;
                     $rectWidth = $text['width'] / 1.5 + 2; // Add padding
                     $rectHeight = $text['fontSize'] / 1.5 + 1;
-                    
+
                     $pdf->Rect($rectX, $rectY, $rectWidth, $rectHeight, 'F');
-                    
+
                     // Add new text
                     $pdf->SetFont('Arial', '', $text['fontSize'] / 1.5);
                     $pdf->SetTextColor(0, 0, 0);
@@ -366,13 +367,12 @@ class ClientController extends Controller
                     $pdf->Write(0, $text['replacement']);
                 }
             }
-            
+
             $pdfContent = $pdf->Output('S');
-            
+
             return response($pdfContent, 200)
                 ->header('Content-Type', 'application/pdf')
                 ->header('Content-Disposition', 'attachment; filename="Initial_Instruction_' . $client->first_name . '.pdf"');
-                
         } catch (\Exception $e) {
             Log::error('PDF Generation Error: ' . $e->getMessage());
             return response()->json(['error' => 'PDF generation failed'], 500);
@@ -387,31 +387,30 @@ class ClientController extends Controller
         $query = Template::query();
         if ($type) {
             $query->where('type', $type)->where('matter_type', $matter_type);   // or whatever column name you use
-            
+
         }
         $templates = $query->get(['id', 'title', 'created_at']); // or whatever fields you need
         return response()->json($templates);
-
     }
 
     // Single template content fetch (BLOB to base64)
     public function getTemplateContent($id)
     {
         $template = Template::findOrFail($id);
-        
+
         // LONGBLOB content
         $content = $template->content;
-        
+
         // If it's a resource/stream (MySQL LONGBLOB sometimes returns stream)
         if (is_resource($content)) {
             $content = stream_get_contents($content);
         }
-        
+
         // Check if content is valid
         if (empty($content)) {
             return response()->json(['error' => 'Template content empty'], 404);
         }
-        
+
         return response()->json([
             'id'      => $template->id,
             'title'   => $template->title,
