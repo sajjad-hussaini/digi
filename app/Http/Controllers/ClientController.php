@@ -105,7 +105,7 @@ class ClientController extends Controller
 
     public function generateAuthorityLetter(Client $client)
     {
-        // Law firm details (agar database mein ho to wahan se lo, warna config ya hardcode)
+        // Law firm details (if in database, get from there, otherwise config or hardcode)
         $lawFirm = config('app.law_firm_name', 'UK Immigration Law');
         $lawFirmAddress = config('app.law_firm_address', '1st floor, 236 St. Helens Road, Bolton BL3 4EB');
         $phone = config('app.law_firm_phone', '07777328028');
@@ -114,9 +114,9 @@ class ClientController extends Controller
         // Today's date formatted
         $today = now()->format('jS F Y');
 
-        // Client ke fields ko safely access karo
+        // Safely access client fields
         $clientName = trim($client->first_name . ' ' . $client->sir_name);
-        $clientFullName = $clientName ?: '__________________'; // agar name na ho to blank line
+        $clientFullName = $clientName ?: '__________________'; // if name not available, blank line
 
         $data = [
             'client'         => $client,
@@ -140,58 +140,58 @@ class ClientController extends Controller
 
     public function clientCareLetter(Client $client)
     {
-        // Date format kar lo jaise letter mein hai (29th October 2025)
+        // Format the date as in the letter (29th October 2025)
         $formattedDate = $client->created_at->format('jS F Y'); // 29th October 2025
 
-        // Data pass kar rahe hain blade template ko
+        // Passing data to blade template
         $data = [
             'client' => $client,
             'formattedDate' => $formattedDate ?? now()->format('jS F Y'),
             'today' => now()->format('jS F Y'),
         ];
 
-        // PDF generate karo
+        // Generate PDF
         $pdf = Pdf::loadView('clients.client_clouser_letter', [
             'client' => $client,
             'today'  => now()->format('jS F Y')
         ]);
 
-        // Download ya browser mein show karo
+        // Download or show in browser
         return $pdf->stream('care_Letter_'.$client->first_name.'.pdf');
-        // ya ->download() kar sakte ho
+        // or you can use ->download()
     }
 
     public function initialInstructionLetter(Request $request, Client $client)
     {
         // dd($request->all());
-        // Date format kar lo jaise letter mein hai (29th October 2025)
+        // Format the date as in the letter (29th October 2025)
         $formattedDate = $client->created_at->format('jS F Y'); // 29th October 2025
 
-        // Data pass kar rahe hain blade template ko
+        // Passing data to blade template
         $data = [
             'client' => $client,
             'formattedDate' => $formattedDate ?? now()->format('jS F Y'),
             'today' => now()->format('jS F Y'),
         ];
 
-        // PDF generate karo
+        // Generate PDF
         $pdf = Pdf::loadView('clients.client_instruction', [
             'client' => $client,
             'request' => $request,
             'today'  => now()->format('jS F Y')
         ]);
 
-        // Download ya browser mein show karo
+        // Download or show in browser
         return $pdf->stream('care_Letter_'.$client->first_name.'.pdf');
-        // ya ->download() kar sakte ho
+        // or you can use ->download()
     }
 
     public function eeCareLetter(Request $request, Client $client)
     {
-        // Date format kar lo jaise letter mein hai (29th October 2025)
+        // Format the date as in the letter (29th October 2025)
         $formattedDate = $client->created_at->format('jS F Y'); // 29th October 2025
 
-        // Data pass kar rahe hain blade template ko
+        // Passing data to blade template
         $data = [
             'client' => $client,
             'request' => $request,
@@ -199,39 +199,39 @@ class ClientController extends Controller
             'today' => now()->format('jS F Y'),
         ];
 
-        // PDF generate karo
+        // Generate PDF
         $pdf = Pdf::loadView('clients.client_eecare_letter', [
             'client' => $client,
             'request' => $request,
             'today'  => now()->format('jS F Y')
         ]);
 
-        // Download ya browser mein show karo
+        // Download or show in browser
         return $pdf->stream('care_Letter_'.$client->first_name.'.pdf');
-        // ya ->download() kar sakte ho
+        // or you can use ->download()
     }
 
     public function coveringLetter(Client $client)
     {
-        // Date format kar lo jaise letter mein hai (29th October 2025)
+        // Format the date as in the letter (29th October 2025)
         $formattedDate = $client->created_at->format('jS F Y'); // 29th October 2025
 
-        // Data pass kar rahe hain blade template ko
+        // Passing data to blade template
         $data = [
             'client' => $client,
             'formattedDate' => $formattedDate ?? now()->format('jS F Y'),
             'today' => now()->format('jS F Y'),
         ];
 
-        // PDF generate karo
+        // Generate PDF
         $pdf = Pdf::loadView('clients.client_covering_letter', [
             'client' => $client,
             'today'  => now()->format('jS F Y')
         ]);
 
-        // Download ya browser mein show karo
+        // Download or show in browser
         return $pdf->stream('care_Letter_'.$client->first_name.'.pdf');
-        // ya ->download() kar sakte ho
+        // or you can use ->download()
     }
 
      public function generateDocument(Request $request, Client $client)
@@ -379,7 +379,7 @@ class ClientController extends Controller
         }
     }
 
-    // Templates list fetch karne ke liye
+    // To fetch templates list
     public function getTemplates(Request $request)
     {
         $type = $request->query('type');
@@ -402,12 +402,12 @@ class ClientController extends Controller
         // LONGBLOB content
         $content = $template->content;
         
-        // Agar resource/stream hai (MySQL LONGBLOB sometimes stream return karta hai)
+        // If it's a resource/stream (MySQL LONGBLOB sometimes returns stream)
         if (is_resource($content)) {
             $content = stream_get_contents($content);
         }
         
-        // Check karo content valid hai
+        // Check if content is valid
         if (empty($content)) {
             return response()->json(['error' => 'Template content empty'], 404);
         }
