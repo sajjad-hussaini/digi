@@ -139,6 +139,11 @@
         'Tribunal' => 'Tribunal',
     ], null, ['class' => 'form-control']) !!}
 </div>
+<!-- Post Code -->
+<div class="form-group col-sm-6 {{ $errors->has('type') ? 'has-error' :'' }}">
+    {!! Form::label('post_code', 'Post Code:') !!}
+    {!! Form::text('post_code', null, ['class' => 'form-control']) !!}
+</div>
 
 <!-- Submit -->
 <div class="form-group col-sm-12 mt-3">

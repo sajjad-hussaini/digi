@@ -9,8 +9,10 @@ class Receipt extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'client_id', 'invoice_id', 'receipt_no', 'amount', 'receipt_date'
+     protected $fillable = [
+        'invoice_id', 'client_id', 'receipt_no', 'ref_no',
+        'date', 'amount', 'amount_in_words', 'for_payment_of',
+        'received_by', 'paid_by', 'cheque_no',
     ];
 
     public function client()

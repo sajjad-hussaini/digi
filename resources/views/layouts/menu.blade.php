@@ -17,6 +17,11 @@
     </li>
 @endcan
 @can('read invoices')
+    <li class="{{ Request::is('admin/receipts*') ? 'active' : '' }}">
+        <a href="{!! route('receipts.index') !!}"><i class="fa fa-money"></i><span>Receipts</span></a>
+    </li>
+@endcan
+@can('read invoices')
     <li class="{{ Request::is('admin/templates*') ? 'active' : '' }}">
         <a href="{!! route('templates.index') !!}"><i class="fa fa-address-book"></i><span>Templates</span></a>
     </li>

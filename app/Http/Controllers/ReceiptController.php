@@ -2,72 +2,74 @@
 
 namespace App\Http\Controllers;
 
-use App\Client;
+use App\DataTables\ReceiptDataTable;
+use App\Invoice;
 use App\Receipt;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class ReceiptController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(ReceiptDataTable $dataTable)
     {
-        //
+        $receipts = Receipt::with(['client', 'invoice'])->latest()->paginate(10);
+        return $dataTable->render('receipts.index', compact('receipts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $invoice = Invoice::with(['client', 'payments'])->findOrFail($invoiceId);
+
+        // Auto receipt number
+        $lastReceipt = Receipt::latest()->first();
+        $receiptNo   = str_pad(($lastReceipt ? $lastReceipt->id + 1 : 1), 4, '0', STR_PAD_LEFT);
+
+        return view('receipts.template', compact('invoice', 'receiptNo'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request, Client $client)
+    public function generate($invoiceId)
     {
-        $validated = $request->validate([
-            'invoice_id' => 'nullable|exists:invoices,id',
-            'receipt_no' => 'required|unique:receipts',
-            'amount' => 'required|numeric',
-            'receipt_date' => 'nullable|date',
+        $invoice = Invoice::with(['client', 'payments'])->findOrFail($invoiceId);
+
+        // Auto receipt number
+        $lastReceipt = Receipt::latest()->first();
+        $receiptNo   = str_pad(($lastReceipt ? $lastReceipt->id + 1 : 1), 4, '0', STR_PAD_LEFT);
+
+        return view('receipts.create', compact('invoice', 'receiptNo'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'invoice_id'     => 'required|exists:invoices,id',
+            'client_id'      => 'required|exists:clients,id',
+            'receipt_no'     => 'required',
+            'ref_no'         => 'required',
+            'date'           => 'required|date',
+            'amount'         => 'required|numeric|min:1',
+            'amount_in_words'=> 'required|string',
+            'for_payment_of' => 'required|string',
+            'received_by'    => 'required|string',
+            'paid_by'        => 'required|in:cash,cheque,money_order,bacs',
+            'cheque_no'      => 'nullable|string',
         ]);
 
-        $client->receipts()->create($validated);
-        return back()->with('success', 'Receipt added successfully.');
-    }
-    /**
-     * Display the specified resource.
-     */
-    public function show(Receipt $receipt)
-    {
-        //
+        $receipt = Receipt::create($request->all());
+
+        return redirect()->route('receipts.pdf', $receipt->id);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Receipt $receipt)
+    public function show($id)
     {
-        //
+        $receipt = Receipt::with(['client', 'invoice'])->findOrFail($id);
+        return view('receipts.show', compact('receipt'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Receipt $receipt)
+    public function downloadPdf($id)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Receipt $receipt)
-    {
-        //
+        $receipt = Receipt::with(['client', 'invoice'])->findOrFail($id);
+        $pdf = Pdf::loadView('receipts.template', compact('receipt'))
+                  ->setPaper('a4');
+        return $pdf->download('receipt-' . $receipt->receipt_no . '.pdf');
     }
 }

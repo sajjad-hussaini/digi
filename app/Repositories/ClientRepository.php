@@ -76,21 +76,17 @@ class ClientRepository extends BaseRepository
             'email'             => $request->email,
             'phone'             => $request->phone,
             'company_id'        => $request->company_id ?? 1,
-
             'address'           => $request->address,
             'city'              => $request->city,
             'country'           => $request->country,
-
             'passport_no'   => $request->passport_no,
-
             'visa_type'         => $request->visa_type,
             'visa_issue_date'   => Carbon::createFromFormat('d/m/Y', $request->visa_issue_date)->format('Y-m-d'),
             'visa_expiry_date'  => Carbon::createFromFormat('d/m/Y', $request->visa_expiry_date)->format('Y-m-d'),
-
             'status'            => $request->status,
             'priority'          => $request->priority,
             'court_type'        => $request->court_type,
-
+            'post_code'         => $request->post_code ?? null,
             'color'             => $request->color,
         ]);
 

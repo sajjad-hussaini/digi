@@ -28,7 +28,8 @@ class Client extends Model
         'status',
         'priority',
         'court_type',
-        'color'
+        'color',
+        'post_code',
     ];
 
     // Relationships

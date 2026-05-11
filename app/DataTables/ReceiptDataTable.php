@@ -3,11 +3,12 @@
 namespace App\DataTables;
 
 use App\Company;
+use App\Receipt;
 use App\Tag;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Services\DataTable;
 
-class CompanyDataTable extends DataTable
+class ReceiptDataTable extends DataTable
 {
     /**
      * Build DataTable class.
@@ -18,11 +19,11 @@ class CompanyDataTable extends DataTable
     public function dataTable($query)
     {
         $dataTable = new EloquentDataTable($query);
-        $dataTable = $dataTable->addColumn('action', 'companies.datatables_actions')
-            ->addColumn('created_by', function (Company $company) {
-                return $company->created_by ? $company->creator->name : '';
-            })->editColumn('color', function (Company $company) {
-                return '<span class="label" style="background-color: ' . $company->color . '">' . $company->color . '</span>';
+        $dataTable = $dataTable->addColumn('action', 'receipts.datatables_actions')
+            ->addColumn('created_by', function (Receipt $receipt) {
+                return $receipt->created_by ? $receipt->creator->name : '';
+            })->editColumn('color', function (Receipt $receipt) {
+                return '<span class="label" style="background-color: ' . $receipt->color . '">' . $receipt->color . '</span>';
             })->rawColumns(['color'], true)
             ->filterColumn('created_by', function ($query, $keyword) {
                 return $query->whereRaw("select count(*) from companies where lower(companies.name) like ? and companies.id=companies.created_by",["%$keyword%"]);
@@ -34,10 +35,10 @@ class CompanyDataTable extends DataTable
     /**
      * Get query source of dataTable.
      *
-     * @param \App\Models\Tag $model
+     * @param \App\Models\Receipt $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function query(Company $model)
+    public function query(Receipt $model)
     {
         $query = $model->newQuery();
         return $query;
@@ -77,11 +78,11 @@ class CompanyDataTable extends DataTable
     {
         return [
             'id',
-            'company_name',
-            'company_address',
-            'contact_number',
-            'email_address',
-            'solicitor_name',
+            'receipt_no',
+            'ref_no',
+            'date',
+            'amount',
+            'client_name',
         ];
     }
 
@@ -92,6 +93,6 @@ class CompanyDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'companiesdatatable_' . time();
+        return 'receiptsdatatable_' . time();
     }
 }
