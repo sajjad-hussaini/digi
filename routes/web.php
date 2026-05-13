@@ -74,9 +74,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
     Route::resource('templates', TemplateController::class);
     Route::resource('receipts', ReceiptController::class);
     // // routes/web.php
-    // Route::post('/receipts',                    [ReceiptController::class, 'store'])->name('receipts.store');
-    // Route::get('/receipts/{id}',               [ReceiptController::class, 'show'])->name('receipts.show');
-    // Route::get('/receipts/{id}/pdf',           [ReceiptController::class, 'downloadPdf'])->name('receipts.pdf');
+    Route::patch('invoices/{invoice}/mark-paid', [InvoiceController::class, 'markAsPaid'])
+         ->name('invoices.markPaid');
+ 
+    // ── Receipts (new) ───────────────────────────────
+    Route::resource('receipts', ReceiptController::class)->only(['index', 'show', 'create', 'store']);
+    Route::get('receipts/{receipt}/pdf', [ReceiptController::class, 'downloadPdf'])
+         ->name('receipts.pdf');
 
     Route::resource('ledger-statements', LedgerStatementController::class);
     Route::resource('balance-statements', BalanceStatementController::class);

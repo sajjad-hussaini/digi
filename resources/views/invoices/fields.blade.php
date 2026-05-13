@@ -69,7 +69,6 @@
                                 step="0.01"
                                 min="0"
                                 value="{{ old('items.0.fees') }}">
-                                {{-- required nahi --}}
                         </td>
                         <td class="text-center">
                             <button type="button" class="btn btn-danger btn-sm btn-remove">
@@ -141,14 +140,25 @@
         // ----- Total Calculate -----
         function calculateTotal() {
             let subtotal = 0;
+
             $('.fee-input').each(function () {
                 subtotal += parseFloat($(this).val()) || 0;
             });
-            const vat   = parseFloat($('#vat').val()) || 0;
+
+            // VAT 20%
+            const vat = (20 / 100) * subtotal;
+
+            // Total
             const total = subtotal + vat;
 
+            // Set VAT input value
+            $('#vat').val(vat.toFixed(2));
+
+            // Display values
             $('#subtotal-display').text('£' + subtotal.toFixed(2));
             $('#total-display').text('£' + total.toFixed(2));
+
+            // Hidden input
             $('#total_due').val(total.toFixed(2));
         }
 

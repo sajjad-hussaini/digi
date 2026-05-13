@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Client;
 use App\CustomField;
 use App\DataTables\InvoiceDataTable;
+use App\Http\Controllers\ReceiptController;
 use App\Invoice;
 use App\InvoiceItem;
 use App\Repositories\InvoiceRepository;
@@ -86,5 +87,36 @@ class InvoiceController extends Controller
         $pdf = Pdf::loadView('invoices.template', compact('invoice'))
                   ->setPaper('a4');
         return $pdf->download('invoice-'.$invoice->invoice_no.'.pdf');
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 2. InvoiceController  →  markAsPaid method
+    //    (Add this to your existing InvoiceController)
+    // ══════════════════════════════════════════════════════
+ 
+
+    public function markAsPaid(Request $request, Invoice $invoice)
+    {
+        $request->validate([
+            'payment_method' => 'required|in:cash,cheque,bacs,money_order',
+            'cheque_number'  => 'nullable|required_if:payment_method,cheque',
+        ]);
+    
+        // 1. Update invoice
+        $invoice->update([
+            'status'  => 'paid',
+            'paid_at' => now(),
+        ]);
+    
+        // 2. Auto-create receipt
+        $receipt = ReceiptController::createFromInvoice(
+            $invoice,
+            $request->payment_method,
+            $request->cheque_number
+        );
+    
+        return redirect()
+            ->route('receipts.show', $receipt)
+            ->with('success', 'Invoice marked as paid. Receipt generated.');
     }
 }

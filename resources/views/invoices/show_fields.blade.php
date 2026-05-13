@@ -3,7 +3,7 @@
 <html>
 <head>
 <style>
-  body { font-family: Arial, sans-serif; font-size: 12px; margin: 40px; }
+  body { font-family: Arial, sans-serif; font-size: 12px; }
   .header { display: flex; justify-content: space-between; margin-bottom: 20px; }
   .client-info { width: 45%; padding-top: 20px;}
   .company-info { width: 45%; text-align: right; font-size: 11px; }

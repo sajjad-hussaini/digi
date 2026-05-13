@@ -1083,3 +1083,28 @@ textarea.form-control {
         padding: 12px 14px;
     }
 }
+
+/********** 1. Modern Gradient Header **********/
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #4e73df 0%, #224abe 100%);
+}
+/********** 2. Card Styling with "Shine" Effect **********/
+.shine {
+    position: relative;
+    overflow: hidden;
+}
+.shine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    animation: shineAnimation 5s infinite;
+}
+@keyframes shineAnimation {
+    0% { left: -75%; }
+    100% { left: 125%; }
+}

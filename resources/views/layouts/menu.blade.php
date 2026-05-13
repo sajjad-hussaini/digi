@@ -1,4 +1,4 @@
-<li class="{{ Request::is('admin/home*') ? 'active' : '' }}">
+<li class="{{ Request::is('admin/home*') ? 'active shine' : '' }}">
     <a href="{!! route('admin.dashboard') !!}"><i class="fa fa-home"></i><span>Home</span></a>
 </li>
 <!-- @can('read companies')
@@ -7,44 +7,44 @@
     </li>
 @endcan -->
 @can('read clients')
-    <li class="{{ Request::is('admin/clients*') ? 'active' : '' }}">
+    <li class="{{ Request::is('admin/clients*') ? 'active shine' : '' }}">
         <a href="{!! route('clients.index') !!}"><i class="fa fa-user"></i><span>Clients</span></a>
     </li>
 @endcan
 @can('read invoices')
-    <li class="{{ Request::is('admin/invoices*') ? 'active' : '' }}">
+    <li class="{{ Request::is('admin/invoices*') ? 'active shine' : '' }}">
         <a href="{!! route('invoices.index') !!}"><i class="fa fa-book"></i><span>Invoices</span></a>
     </li>
 @endcan
 @can('read invoices')
-    <li class="{{ Request::is('admin/receipts*') ? 'active' : '' }}">
+    <li class="{{ Request::is('admin/receipts*') ? 'active shine' : '' }}">
         <a href="{!! route('receipts.index') !!}"><i class="fa fa-money"></i><span>Receipts</span></a>
     </li>
 @endcan
 @can('read invoices')
-    <li class="{{ Request::is('admin/templates*') ? 'active' : '' }}">
+    <li class="{{ Request::is('admin/templates*') ? 'active shine' : '' }}">
         <a href="{!! route('templates.index') !!}"><i class="fa fa-address-book"></i><span>Templates</span></a>
     </li>
 @endcan
 @can('read users')
-    <li class="{{ Request::is('admin/users*') ? 'active' : '' }}">
+    <li class="{{ Request::is('admin/users*') ? 'active shine' : '' }}">
         <a href="{!! route('users.index') !!}"><i class="fa fa-users"></i><span>Users</span></a>
     </li>
 @endcan
 {{-- @can('read tags')
-    <li class="{{ Request::is('admin/tags*') ? 'active' : '' }}">
+    <li class="{{ Request::is('admin/tags*') ? 'active shine' : '' }}">
         <a href="{!! route('tags.index') !!}"><i
                 class="fa fa-tags"></i><span>{{ucfirst(config('settings.tags_label_plural'))}}</span></a>
     </li>
 @endcan --}}
 {{-- @can('viewAny',\App\Document::class)
-    <li class="{{ Request::is('admin/documents*') ? 'active' : '' }}">
+    <li class="{{ Request::is('admin/documents*') ? 'active shine' : '' }}">
         <a href="{!! route('documents.index') !!}"><i
                 class="fa fa-file"></i><span>{{ucfirst(config('settings.document_label_plural'))}}</span></a>
     </li>
 @endcan --}}
 {{-- @if(auth()->user()->is_super_admin)
-    <li class="treeview {{ Request::is('admin/advanced*') ? 'active' : '' }}">
+    <li class="treeview {{ Request::is('admin/advanced*') ? 'active shine' : '' }}">
         <a href="#">
             <i class="fa fa-info-circle"></i>
             <span>Advanced Settings</span>
@@ -53,14 +53,14 @@
             </span>
         </a>
         <ul class="treeview-menu">
-            <li class="{{ Request::is('admin/advanced/settings*') ? 'active' : '' }}">
+            <li class="{{ Request::is('admin/advanced/settings*') ? 'active shine' : '' }}">
                 <a href="{!! route('settings.index') !!}"><i class="fa fa-gear"></i><span>Settings</span></a>
             </li>
-            <li class="{{ Request::is('admin/advanced/custom-fields*') ? 'active' : '' }}">
+            <li class="{{ Request::is('admin/advanced/custom-fields*') ? 'active shine' : '' }}">
                 <a href="{!! route('customFields.index') !!}"><i
                         class="fa fa-file-text-o"></i><span>Custom Fields</span></a>
             </li>
-            <li class="{{ Request::is('admin/advanced/file-types*') ? 'active' : '' }}">
+            <li class="{{ Request::is('admin/advanced/file-types*') ? 'active shine' : '' }}">
                 <a href="{!! route('fileTypes.index') !!}"><i class="fa fa-file-o"></i><span>{{ucfirst(config('settings.file_label_singular'))}} Types</span></a>
             </li>
         </ul>

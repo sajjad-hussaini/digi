@@ -14,6 +14,13 @@
              <a href="{{ route('invoices.pdf', $invoice->id) }}" class="btn btn-primary btn-sm">
                 <i class="fa fa-file-pdf-o"></i> Download PDF
             </a>
+           {{-- ── BUTTON (opens modal) ─────────────────────────────────────── --}}
+            <button type="button"
+                    class="btn btn-success btn-sm"
+                    data-toggle="modal"
+                    data-target="#markPaidModal">
+                <i class="fa fa-file-text-o"></i> Create Receipt
+            </button>
         </span>
         </h1>
     </section>
@@ -41,4 +48,76 @@
             </div>
         </div>
     </div>
+    {{-- ── MODAL ────────────────────────────────────────────────────── --}}
+<div class="modal fade" id="markPaidModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+ 
+            <div class="modal-header">
+                <h5 class="modal-title">Mark Invoice as Paid</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+ 
+            <form action="{{ route('invoices.markPaid', $invoice->id) }}"
+                  method="POST">
+                @csrf
+                @method('PATCH')
+ 
+                <div class="modal-body">
+ 
+                    <div class="form-group">
+                        <label><strong>Payment Method</strong></label>
+                        <select name="payment_method" class="form-control" required
+                                id="paymentMethodSelect">
+                            <option value="">-- Select Payment Method --</option>
+                            <option value="cash">Cash</option>
+                            <option value="cheque">Cheque</option>
+                            <option value="bacs">BACS</option>
+                            <option value="money_order">Money Order</option>
+                        </select>
+                    </div>
+ 
+                    {{-- Cheque number field (hidden by default) --}}
+                    <div class="form-group" id="chequeNumberGroup" style="display:none;">
+                        <label>Cheque Number</label>
+                        <input type="text"
+                               name="cheque_number"
+                               class="form-control"
+                               placeholder="Enter cheque number">
+                    </div>
+ 
+                    <div class="alert alert-info" style="font-size:13px; margin-bottom:0;">
+                        <strong>Invoice:</strong> #{{ str_pad($invoice->invoice_no, 4, '0', STR_PAD_LEFT) }}<br>
+                        <strong>Client:</strong> {{ $invoice->client->first_name }}<br>
+                        <strong>Amount:</strong> £{{ number_format($invoice->total_due, 2) }}
+                    </div>
+ 
+                </div>
+ 
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa fa-check"></i> Confirm & Generate Receipt
+                    </button>
+                </div>
+ 
+            </form>
+ 
+        </div>
+    </div>
+</div>
+ 
+{{-- ── JS: show/hide cheque field ─────────────────────────────── --}}
+<script>
+document.getElementById('paymentMethodSelect').addEventListener('change', function () {
+    var chequeGroup = document.getElementById('chequeNumberGroup');
+    chequeGroup.style.display = this.value === 'cheque' ? 'block' : 'none';
+});
+</script>
+
+{{-- ── JS: print invoice ─────────────────────────────────────── --}}
 @endsection
