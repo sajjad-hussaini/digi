@@ -69,13 +69,20 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
     Route::get('/users-block/{user}',[UserController::class,'blockUnblock'])->name('users.blockUnblock');
     Route::resource('tags', TagController::class);
     Route::resource('companies', CompanyController::class);
+
     Route::resource('clients', ClientController::class);
+    Route::post('/clients/make-permanent/{id}', [ClientController::class, 'makePermanent'])
+        ->name('clients.make-permanent');
+    Route::get('/get-client-reference/{id}', [ClientController::class, 'getReferenceNumber'])->name('clients.get-reference');
+
     Route::resource('invoices', InvoiceController::class);
     Route::resource('templates', TemplateController::class);
     Route::resource('receipts', ReceiptController::class);
     // // routes/web.php
     Route::patch('invoices/{invoice}/mark-paid', [InvoiceController::class, 'markAsPaid'])
          ->name('invoices.markPaid');
+    Route::get('generate-invoice/{client}', [InvoiceController::class, 'generateInvoiceForClient'])
+         ->name('invoices.generateForClient');
  
     // ── Receipts (new) ───────────────────────────────
     Route::resource('receipts', ReceiptController::class)->only(['index', 'show', 'create', 'store']);

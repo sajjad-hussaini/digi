@@ -34,6 +34,13 @@
      {!! $errors->first('gender','<span class="help-blocks">:message</span>') !!}
 </div>
 
+<!-- Post Code -->
+<div class="form-group col-sm-6 {{ $errors->has('type') ? 'has-error' :'' }}">
+    {!! Form::label('post_code', 'Post Code:') !!}
+    {!! Form::text('post_code', null, ['class' => 'form-control']) !!}
+</div>
+
+
 <!-- Nationality -->
 <div class="form-group col-sm-6 {{ $errors->has('type') ? 'has-error' :'' }}">
     {!! Form::label('country', 'Country:') !!}
@@ -138,11 +145,6 @@
         'High Court' => 'High Court',
         'Tribunal' => 'Tribunal',
     ], null, ['class' => 'form-control']) !!}
-</div>
-<!-- Post Code -->
-<div class="form-group col-sm-6 {{ $errors->has('type') ? 'has-error' :'' }}">
-    {!! Form::label('post_code', 'Post Code:') !!}
-    {!! Form::text('post_code', null, ['class' => 'form-control']) !!}
 </div>
 
 <!-- Submit -->

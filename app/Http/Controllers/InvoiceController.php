@@ -119,4 +119,13 @@ class InvoiceController extends Controller
             ->route('receipts.show', $receipt)
             ->with('success', 'Invoice marked as paid. Receipt generated.');
     }
+
+
+    public function generateInvoiceForClient(Client $client)
+    {   
+        $customFields = CustomField::all();
+        $clients = Client::all();
+        $invoiceNo = 'INV-' . str_pad(Invoice::max('id') + 1, 4, '0', STR_PAD_LEFT);
+        return view('invoices.create', compact('clients', 'customFields', 'invoiceNo', 'client'));
+    }
 }

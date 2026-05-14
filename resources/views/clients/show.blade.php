@@ -53,6 +53,12 @@
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<script src="
+https://cdn.jsdelivr.net/npm/sweetalert2@11.26.24/dist/sweetalert2.all.min.js
+"></script>
+<link href="
+https://cdn.jsdelivr.net/npm/sweetalert2@11.26.24/dist/sweetalert2.min.css
+" rel="stylesheet">
 
 <script>
 let selectedTemplateId = null;
@@ -60,75 +66,75 @@ let selectedTemplateTitle = '';
 
 $(document).ready(function() {
 
-$('#initialInstructionModal').on('show.bs.modal', function(event) {
-    const button = $(event.relatedTarget); // Button that triggered the modal
-    const targetType = button.data('template-type'); // Get 'Initial Instruction' or others
-    const matterType = button.data('matter-type'); // Get 'Initial Instruction' or others
-    
-    // Reset UI
-    resetEditor();
-
-    $('#templateSelect').show();
-    $('#templatesLoading').hide();
-    $('#loadTemplateBtn').show();
-
-    if (targetType) {
-        // 1. Set the hidden/visible dropdown to the correct type
-        $('#templates_load').val(targetType);
+    $('#initialInstructionModal').on('show.bs.modal', function(event) {
+        const button = $(event.relatedTarget); // Button that triggered the modal
+        const targetType = button.data('template-type'); // Get 'Initial Instruction' or others
+        const matterType = button.data('matter-type'); // Get 'Initial Instruction' or others
         
-        // 2. Hide the "Templates Type" label and select 
-        // so the user only sees "Existing Templates"
-        $('label[for="templates_load"]').hide();
-        $('#templates_load').hide();
+        // Reset UI
+        resetEditor();
 
-        // 3. Automatically trigger the AJAX load for this type
-        loadTemplatesByType(targetType, matterType);
-    } else {
-        // If opened without a specific type, show the selection dropdown
-        $('label[for="templates_load"]').show();
-        $('#templates_load').show();
-    }
-});
+        $('#templateSelect').show();
+        $('#templatesLoading').hide();
+        $('#loadTemplateBtn').show();
 
-function loadTemplatesByType(type, matter_type) {
-    $('#templatesLoading').show();
-    $('#loadTemplateBtn').hide();
+        if (targetType) {
+            // 1. Set the hidden/visible dropdown to the correct type
+            $('#templates_load').val(targetType);
+            
+            // 2. Hide the "Templates Type" label and select 
+            // so the user only sees "Existing Templates"
+            $('label[for="templates_load"]').hide();
+            $('#templates_load').hide();
 
-    $.ajax({
-        url: "/admin/templates/list",
-        type: 'GET',
-        data: { type: type, matter_type: matter_type},   // ← yeh sabse important change
-        success: function(templates) {
-            $('#templateSelect').empty();
-            console.log(templates);
-            if (templates.length === 0) {
-                $('#templateSelect').append(
-                    '<option value="">No templates found for this type</option>'
-                );
-            } else {
-                $('#templateSelect')
-                    .append('<option value="">Choose a template</option>');
-                
-                templates.forEach(function(template) {
-                    $('#templateSelect').append(
-                        `<option value="${template.id}">${template.title}</option>`
-                    );
-                });
-            }
-
-            $('#templateSelect').show();
-            $('#templatesLoading').hide();
-            $('#loadTemplateBtn').show();
-        },
-        error: function() {
-            $('#templateSelect').empty().append(
-                '<option value="">Error loading templates</option>'
-            );
-            $('#templatesLoading').html('<span class="text-danger">Error</span>');
-            $('#loadTemplateBtn').hide();
+            // 3. Automatically trigger the AJAX load for this type
+            loadTemplatesByType(targetType, matterType);
+        } else {
+            // If opened without a specific type, show the selection dropdown
+            $('label[for="templates_load"]').show();
+            $('#templates_load').show();
         }
     });
-}
+
+    function loadTemplatesByType(type, matter_type) {
+        $('#templatesLoading').show();
+        $('#loadTemplateBtn').hide();
+
+        $.ajax({
+            url: "/admin/templates/list",
+            type: 'GET',
+            data: { type: type, matter_type: matter_type},   // ← yeh sabse important change
+            success: function(templates) {
+                $('#templateSelect').empty();
+                console.log(templates);
+                if (templates.length === 0) {
+                    $('#templateSelect').append(
+                        '<option value="">No templates found for this type</option>'
+                    );
+                } else {
+                    $('#templateSelect')
+                        .append('<option value="">Choose a template</option>');
+                    
+                    templates.forEach(function(template) {
+                        $('#templateSelect').append(
+                            `<option value="${template.id}">${template.title}</option>`
+                        );
+                    });
+                }
+
+                $('#templateSelect').show();
+                $('#templatesLoading').hide();
+                $('#loadTemplateBtn').show();
+            },
+            error: function() {
+                $('#templateSelect').empty().append(
+                    '<option value="">Error loading templates</option>'
+                );
+                $('#templatesLoading').html('<span class="text-danger">Error</span>');
+                $('#loadTemplateBtn').hide();
+            }
+        });
+    }
 
     // Base Template
     $('#baseTemplateBtn').click(function() {
@@ -201,6 +207,48 @@ function loadTemplatesByType(type, matter_type) {
     });
 });
 
+$(document).on('click', '#is_permanent', function () {
+   
+    // if (checkbox.is(':checked')) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to make this client permanent?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Make Permanent',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    url: "{{ route('clients.make-permanent', $client->id) }}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function (response) {
+                        $('.permanent_client_btn').html('<button class="btn btn-success btn-block" disabled>Permanent Client</button>');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message
+                        });
+                    },
+                    error: function () {
+                        checkbox.prop('checked', false);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong'
+                        });
+                    }
+                });
+            } else {
+                checkbox.prop('checked', false);
+            }
+        });
+    // }
+});
 
 // Load template content from DB
 function loadTemplateContent(templateId) {
@@ -414,6 +462,9 @@ function resetEditor() {
 
 .border-left-primary {
     border-left: 4px solid #4e73df !important;
+}
+#is_permanent:checked ~ label {
+    color: #28a745;
 }
 </style>
 @endsection

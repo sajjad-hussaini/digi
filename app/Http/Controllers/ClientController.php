@@ -417,4 +417,30 @@ class ClientController extends Controller
             'content' => base64_encode($content)
         ]);
     }
+
+    public function makePermanent($id)
+    {
+        $client = Client::findOrFail($id);
+        $client->ref_number = $this->generateRandomRefNumber();
+        $client->is_permanent = true;
+        $client->save();
+
+        return redirect()->route('clients.show', $client->id)->with('success', 'Client marked as permanent.');
+    }
+
+    public function generateRandomRefNumber()
+    {
+        $characters = '0123456789';
+        $refNumber = '';
+        for ($i = 0; $i < 6; $i++) {
+            $refNumber .= $characters[rand(0, strlen($characters) - 1)];
+        }
+        return $refNumber;
+    }
+
+    public function getReferenceNumber($id)
+    {
+        $client = Client::findOrFail($id);
+        return response()->json(['ref_number' => $client->ref_number]);
+    }
 }

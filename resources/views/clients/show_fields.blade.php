@@ -1,12 +1,12 @@
 <div class="container-fluid">
     <div class="row">
-  <div class="card-header bg-primary text-white" style="padding: 1px; margin-bottom: 15px; border-radius: 10px; border-bottom: 4px solid black;">
-                    <h4 class="mb-0">Client Details</h4>
-                </div>
+        <div class="card-header bg-primary text-white" style="padding: 1px; margin-bottom: 15px; border-radius: 10px; border-bottom: 4px solid black;">
+            <h4 class="mb-0">Client Details</h4>
+        </div>
         <!-- LEFT SIDE : Client Details -->
         <div class="col-md-8">
             <div class="card shadow-sm border-0 rounded-lg">
-              
+
 
                 <div class="card-body">
                     <div class="row">
@@ -92,18 +92,24 @@
                             <p class="text-dark">{{ $client->passport_no ?? 'N/A' }}</p>
                         </div>
 
+                        <!-- Reference Number -->
+                        <div class="col-md-6 mb-3">
+                            <label class="font-weight-bold text-muted">Reference Number:</label>
+                            <p class="text-dark">{{ $client->ref_number ?? 'N/A' }}</p>
+                        </div>
+
                         <!-- Status -->
                         <div class="col-md-6 mb-3">
                             <label class="font-weight-bold text-muted">Status:</label>
                             <p>
                                 @if ($client->status == 'Active')
-                                    <span class="badge badge-success">Active</span>
+                                <span class="badge badge-success">Active</span>
                                 @elseif($client->status == 'Closed')
-                                    <span class="badge badge-danger">Closed</span>
+                                <span class="badge badge-danger">Closed</span>
                                 @elseif($client->status == 'Pending')
-                                    <span class="badge badge-warning">Pending</span>
+                                <span class="badge badge-warning">Pending</span>
                                 @else
-                                    <span class="badge badge-secondary">{{ $client->status }}</span>
+                                <span class="badge badge-secondary">{{ $client->status }}</span>
                                 @endif
                             </p>
                         </div>
@@ -113,24 +119,24 @@
                             <label class="font-weight-bold text-muted">Priority:</label>
                             <p>
                                 @switch($client->priority)
-                                    @case('Urgent')
-                                        <span class="badge badge-danger">Urgent</span>
-                                    @break
+                                @case('Urgent')
+                                <span class="badge badge-danger">Urgent</span>
+                                @break
 
-                                    @case('High')
-                                        <span class="badge badge-warning">High</span>
-                                    @break
+                                @case('High')
+                                <span class="badge badge-warning">High</span>
+                                @break
 
-                                    @case('Medium')
-                                        <span class="badge badge-info">Medium</span>
-                                    @break
+                                @case('Medium')
+                                <span class="badge badge-info">Medium</span>
+                                @break
 
-                                    @case('Low')
-                                        <span class="badge badge-secondary">Low</span>
-                                    @break
+                                @case('Low')
+                                <span class="badge badge-secondary">Low</span>
+                                @break
 
-                                    @default
-                                        <span class="badge badge-light">N/A</span>
+                                @default
+                                <span class="badge badge-light">N/A</span>
                                 @endswitch
                             </p>
                         </div>
@@ -156,13 +162,37 @@
             <div class="card shadow-sm border-0 rounded-lg mt-4">
                 <div class="card-header bg-dark text-white">
                     {{-- <h5 class="mb-0">Generate Immigration Letters</h5> --}}
+                    <div class="mt-4 p-3 border rounded bg-light text-center permanent_client_btn" style="border-top: 1px solid #dee2e6; padding-bottom: 7px;">
+                        @if($client->is_permanent)
+
+                        <button class="btn btn-success btn-block" disabled>
+                            Permanent Client
+                        </button>
+                        @else
+                        <button type="button"
+                            class="btn btn-dark btn-block"
+                            id="is_permanent">
+                            Make It Permanent Client ?
+                        </button>
+                        <small class="text-muted d-block mt-2">
+                            This button to click the client as permanent and generate a reference number.
+                        </small>
+                        @endif
+                    </div>
+                    <div class=" text-center" style="border-top: 1px solid #dee2e6; padding-top: 4px;padding-bottom: 15px;">
+                        <a href="{{ route('invoices.generateForClient', $client->id) }}"
+                            class="btn btn-block btn btn-default mb-3"> Generate Invoice ?
+                        </a>
+                    </div>
+                    <hr>
                 </div>
 
                 <div class="card-body">
+
                     <a href="{{ route('clients.authority-letter', $client->id) }}"
                         class="btn btn-block btn btn-default mb-3" target="_blank">
                         Authority Letter
-                    </a> 
+                    </a>
 
                     <a href="javascript:void(0)"
                         class="btn btn-block btn btn-default mb-3"
@@ -196,7 +226,7 @@
                         data-matter-type="{{$client_matter_type}}"
                         data-template-type="Covering Letter"> Covering Letter
                     </a>
-                   
+
                 </div>
             </div>
         </div>
@@ -241,11 +271,11 @@
                         <option value="">Chose a template</option>
                     </select>
 
-                    <button type="button" 
-                            class="btn btn-block btn-outline-primary mt-2" 
-                            id="loadTemplateBtn" 
-                            style="display:none;" 
-                            disabled>
+                    <button type="button"
+                        class="btn btn-block btn-outline-primary mt-2"
+                        id="loadTemplateBtn"
+                        style="display:none;"
+                        disabled>
                         <i class="fa fa-eye"></i> Load & Edit Template
                     </button>
                 </div>
@@ -256,7 +286,7 @@
                         <button type="button" class="btn btn-sm btn-secondary" id="backToChoice">
                             <i class="fa fa-arrow-left"></i> Back
                         </button>
-                        
+
                         <div class="btn-group">
                             <button type="button" class="btn btn-sm btn-info" id="findReplaceBtn">
                                 <i class="fa fa-search"></i> Find & Replace
@@ -293,15 +323,15 @@
 
                     <!-- Template title -->
                     <div id="templateTitle" class="alert alert-light border mb-2">
-                        <i class="fa fa-file-word text-primary"></i> 
+                        <i class="fa fa-file-word text-primary"></i>
                         <strong id="templateTitleText"></strong>
                     </div>
 
                     <!-- Document Editor -->
-                    <div id="docxEditor" class="border bg-white p-4" 
-                         style="min-height: 500px; max-height: 600px; overflow-y: auto; 
+                    <div id="docxEditor" class="border bg-white p-4"
+                        style="min-height: 500px; max-height: 600px; overflow-y: auto; 
                                 box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-                        
+
                         <!-- Loading -->
                         <div id="editorLoading" class="text-center py-5">
                             <i class="fa fa-spinner fa-spin fa-2x"></i>
@@ -315,7 +345,7 @@
 
                     <div class="mt-2 alert alert-info py-2">
                         <small>
-                            <i class="fa fa-info-circle"></i> 
+                            <i class="fa fa-info-circle"></i>
                             Click anywhere to edit • Use Find & Replace for bulk changes
                         </small>
                     </div>
@@ -345,18 +375,18 @@
                     <div class="form-group">
                         <label><strong>Immigration History</strong></label>
                         <textarea name="immigration_history"
-                                  class="form-control"
-                                  rows="6"
-                                  placeholder="Enter immigration history..."
-                                  required></textarea>
+                            class="form-control"
+                            rows="6"
+                            placeholder="Enter immigration history..."
+                            required></textarea>
                     </div>
                     <div class="form-group">
                         <label><strong>Work and Family Information</strong></label>
                         <textarea name="work_family_info"
-                                  class="form-control"
-                                  rows="6"
-                                  placeholder="Enter Work and Family..."
-                                  required></textarea>
+                            class="form-control"
+                            rows="6"
+                            placeholder="Enter Work and Family..."
+                            required></textarea>
                     </div>
                     <div class="form-group">
                         {!! Form::bsTextarea('initial_instruction',null,['class'=>'form-control b-wysihtml5-editor']) !!}
@@ -394,7 +424,7 @@
 
                 <div class="modal-body">
                     <div class="form-group">
-                       {!! Form::bsTextarea('ILR vignette sticker',null,['class'=>'form-control b-wysihtml5-editor']) !!}
+                        {!! Form::bsTextarea('ILR vignette sticker',null,['class'=>'form-control b-wysihtml5-editor']) !!}
                     </div>
                     <div class="form-group">
                         {!! Form::bsTextarea('Instructions Received',null,['class'=>'form-control b-wysihtml5-editor']) !!}
@@ -431,5 +461,3 @@
         </form>
     </div>
 </div>
-
-
