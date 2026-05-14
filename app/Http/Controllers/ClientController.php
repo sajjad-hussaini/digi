@@ -130,7 +130,7 @@ class ClientController extends Controller
             'lawFirmAddress' => $lawFirmAddress,
             'phone'          => $phone,
             'email'          => $email,
-            'visaType'          =>  $client->visa_type,
+            'visaType'       =>  $client->visa_type,
             'today'          => $today,
         ];
 
