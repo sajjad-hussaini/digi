@@ -123,7 +123,7 @@ class ClientController extends Controller
             'client'         => $client,
             'clientName'     => $clientName,
             'clientFullName' => $clientFullName,
-            'dob'            => $client->dob ? \Carbon\Carbon::parse($client->dob)->format('d.m.Y') : '__________________',
+            'dob'            => $client->dob ? date('d.m.Y', strtotime($client->dob)) : '__________________',
             'nationality'    => $client->country ?? '__________________',
             'address'        => $client->address ?? '________________________________________________________________',
             'lawFirm'        => $lawFirm,
