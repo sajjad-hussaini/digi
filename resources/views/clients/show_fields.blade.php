@@ -166,7 +166,7 @@
                         @if($client->is_permanent)
 
                         <button class="btn btn-success btn-block" disabled>
-                            Permanent Client
+                            <i class="fa fa-check-square fa-1x fa-fw ml-4"></i>Permanent Client
                         </button>
                         @else
                         <button type="button"
@@ -181,10 +181,17 @@
                     </div>
                     <div class=" text-center" style="border-top: 1px solid #dee2e6; padding-top: 4px;padding-bottom: 15px;">
                         <a href="{{ route('invoices.generateForClient', $client->id) }}"
-                            class="btn btn-block btn btn-default mb-3"> Generate Invoice ?
+                            class="btn btn-outline-primary btn-block mb-3">
+                            <i class="fa fa-file-pdf-o mr-2"></i> Generate Invoice
                         </a>
+
+                        <div class="alert alert-info py-2">
+                            <small>
+                                <i class="fa fa-info-circle"></i>
+                                Choose a letter type, pick a template, edit if needed and download a polished PDF.
+                            </small>
+                        </div>
                     </div>
-                    <hr>
                 </div>
 
                 <div class="card-body">
