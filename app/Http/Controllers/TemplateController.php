@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\TemplateDataTable;
+use App\Http\Requests\StoreTemplateRequest;
+use App\Http\Requests\UpdateTemplateRequest;
 use App\Repositories\TemplateRepository;
 use App\Template;
 use Illuminate\Http\Request;
@@ -35,22 +37,16 @@ class TemplateController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {
-
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'doc_file' => 'required|file|mimes:docx',
-            'type' => 'required|in:Authority Letter,Initial Instruction,Client Care,Client Closure Letter,Covering Letter',
-            'visa_type' => 'required|in:Appeal,Work Visa,Student Visa,Spouse Visa,Visitor Visa,Settlement Visa',
-        ]);
+    public function store(StoreTemplateRequest $request) {
+        $data = $request->validated();
 
         $filePath = $request->file('doc_file')->getRealPath();
         $content = file_get_contents($filePath);
 
         $template = new Template();
-        $template->title = $request->title;
-        $template->type = $request->type;
-        $template->matter_type = $request->visa_type;
+        $template->title = $data['title'];
+        $template->type = $data['type'];
+        $template->matter_type = $data['visa_type'];
         $template->content = $content;
         $template->save();
 
@@ -95,31 +91,23 @@ class TemplateController extends Controller
     }
 
     // Update template
-    public function update(Request $request, Template $template)
+    public function update(UpdateTemplateRequest $request, Template $template)
     {
-
-        $request->validate([
-            'title' => 'required|string|max:255',
-        ]);
-
-        $template->title = $request->title;
+        $data = $request->validated();
+        $template->title = $data['title'];
 
         // Check if new file uploaded
         if ($request->hasFile('doc_file')) {
-            $request->validate([
-                'doc_file' => 'required|file|mimes:docx',
-            ]);
-
             $filePath = $request->file('doc_file')->getRealPath();
             $template->content = file_get_contents($filePath);
         } 
         // Check if edited HTML content exists
-        elseif ($request->filled('edited_html')) {
+        elseif (!empty($data['edited_html'])) {
             // Convert HTML back to DOCX
-            $template->content = $this->htmlToDocx($request->edited_html);
+            $template->content = $this->htmlToDocx($data['edited_html']);
         }
-        $template->type = $request->type;
-        $template->matter_type = $request->matter_type;
+        $template->type = $data['type'];
+        $template->matter_type = $data['matter_type'];
         $template->save();
 
         return redirect()->route('templates.index')->with('success', 'Template updated successfully');

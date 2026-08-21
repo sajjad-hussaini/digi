@@ -58,7 +58,7 @@
             <!-- Name Field -->
             <div class="form-group col-sm-6 {{ $errors->has('name') ? 'has-error' :'' }}">
                 {!! Form::label('name', 'Name:') !!}
-                {!! Form::text('name', null, ['class' => 'form-control']) !!}
+                {!! Form::text('name', null, ['class' => 'form-control', 'required' => true, 'minlength' => 2, 'maxlength' => 255, 'autocomplete' => 'name']) !!}
                 {!! $errors->first('name','<span class="help-block">:message</span>') !!}
             </div>
 
@@ -66,7 +66,7 @@
             <!-- Email Field -->
             <div class="form-group col-sm-6 {{ $errors->has('email') ? 'has-error' :'' }}">
                 {!! Form::label('email', 'Email:') !!}
-                {!! Form::email('email', null, ['class' => 'form-control']) !!}
+                {!! Form::email('email', null, ['class' => 'form-control', 'maxlength' => 255, 'autocomplete' => 'email']) !!}
                 {!! $errors->first('email','<span class="help-block">:message</span>') !!}
             </div>
 
@@ -74,7 +74,7 @@
             <!-- Username Field -->
             <div class="form-group col-sm-6 {{ $errors->has('username') ? 'has-error' :'' }}">
                 {!! Form::label('username', 'Username:') !!}
-                {!! Form::text('username', null, ['class' => 'form-control']) !!}
+                {!! Form::text('username', null, ['class' => 'form-control', 'required' => true, 'minlength' => 3, 'maxlength' => 50, 'pattern' => '[A-Za-z0-9_-]+', 'title' => 'Use 3-50 letters, numbers, hyphens, or underscores.', 'autocomplete' => 'username']) !!}
                 {!! $errors->first('username','<span class="help-block">:message</span>') !!}
             </div>
 
@@ -82,28 +82,35 @@
             <!-- Address Field -->
             <div class="form-group col-sm-6 {{ $errors->has('address') ? 'has-error' :'' }}">
                 {!! Form::label('address', 'Address:') !!}
-                {!! Form::text('address', null, ['class' => 'form-control']) !!}
+                {!! Form::text('address', null, ['class' => 'form-control', 'maxlength' => 500, 'autocomplete' => 'street-address']) !!}
                 {!! $errors->first('address','<span class="help-block">:message</span>') !!}
             </div>
 
             <!-- Password Field -->
             <div class="form-group col-sm-6 {{ $errors->has('password') ? 'has-error' :'' }}">
-                {!! Form::label('password', 'Password:') !!}
-                {!! Form::text('password', null, ['class' => 'form-control']) !!}
+                {!! Form::label('password', isset($user) ? 'Password (leave blank to keep current):' : 'Password:') !!}
+                {!! Form::password('password', ['class' => 'form-control', 'required' => !isset($user), 'minlength' => 8, 'maxlength' => 72, 'autocomplete' => isset($user) ? 'new-password' : 'new-password']) !!}
                 {!! $errors->first('password','<span class="help-block">:message</span>') !!}
+            </div>
+
+            <!-- Password Confirmation Field -->
+            <div class="form-group col-sm-6 {{ $errors->has('password_confirmation') ? 'has-error' :'' }}">
+                {!! Form::label('password_confirmation', 'Confirm Password:') !!}
+                {!! Form::password('password_confirmation', ['class' => 'form-control', 'required' => !isset($user), 'minlength' => 8, 'maxlength' => 72, 'autocomplete' => 'new-password']) !!}
+                {!! $errors->first('password_confirmation','<span class="help-block">:message</span>') !!}
             </div>
 
             {{--Status Filed--}}
             <div class="form-group col-sm-6 {{ $errors->has('status') ? 'has-error' :'' }}">
                 {!! Form::label('status', 'Status:') !!}
-                {!! Form::select('status', [config('constants.STATUS.ACTIVE') => config('constants.STATUS.ACTIVE'), config('constants.STATUS.BLOCK') => config('constants.STATUS.BLOCK')],null, ['class'=>'form-control']); !!}
+                {!! Form::select('status', [config('constants.STATUS.ACTIVE') => config('constants.STATUS.ACTIVE'), config('constants.STATUS.BLOCK') => config('constants.STATUS.BLOCK')],null, ['class'=>'form-control', 'required' => true]); !!}
                 {!! $errors->first('status','<span class="help-block">:message</span>') !!}
             </div>
 
             <!-- Description Field -->
             <div class="form-group col-sm-12 col-lg-12 {{ $errors->has('description') ? 'has-error' :'' }}">
                 {!! Form::label('description', 'Description(Additional Information):') !!}
-                {!! Form::textarea('description', null, ['class' => 'form-control b-wysihtml5-editor']) !!}
+                {!! Form::textarea('description', null, ['class' => 'form-control b-wysihtml5-editor', 'maxlength' => 60000]) !!}
                 {!! $errors->first('description','<span class="help-block">:message</span>') !!}
             </div>
         </div>

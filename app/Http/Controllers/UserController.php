@@ -63,7 +63,7 @@ class UserController extends AppBaseController
     public function store(CreateUserRequest $request)
     {
         $this->authorize('create', User::class);
-        $input = $request->all();
+        $input = $request->validated();
         $input['password'] = bcrypt($input['password']);
 
         /** @var User $user */
@@ -167,7 +167,7 @@ class UserController extends AppBaseController
             return redirect(route('users.index'));
         }
 
-        $data = $request->all();
+        $data = $request->validated();
         if (empty($data['password'])) {
             unset($data['password']);
         } else {

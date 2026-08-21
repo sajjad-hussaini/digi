@@ -59,7 +59,7 @@
                                             'Client Care' => 'Client Care',
                                             'Client Closure Letter' => 'Client Closure Letter',
                                             'Covering Letter' => 'Covering Letter',
-                                        ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type']) !!}
+                                        ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type', 'required' => true]) !!}
                                         {!! $errors->first('type','<span class="help-block">:message</span>') !!}
                                     </div>
                                 </div>
@@ -72,7 +72,7 @@
                                         'Spouse Visa' => 'Spouse Visa',
                                         'Visitor Visa' => 'Visitor Visa',
                                         'Settlement Visa' => 'Settlement Visa'
-                                    ], null, ['class' => 'form-control', 'placeholder' => 'Select Type']) !!}
+                                    ], null, ['class' => 'form-control', 'placeholder' => 'Select Type', 'required' => true]) !!}
                                     {!! $errors->first('matter_type','<span class="help-block">:message</span>') !!}
                                 </div>
                                 <div class="col-md-6 text-right d-flex align-items-end">
@@ -161,7 +161,7 @@
                                         'Client Care' => 'Client Care',
                                         'Client Closure Letter' => 'Client Closure Letter',
                                         'Covering Letter' => 'Covering Letter',
-                                    ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type']) !!}
+                                    ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type', 'required' => true]) !!}
                                     {!! $errors->first('type','<span class="help-block">:message</span>') !!}
                                 </div>
                             </div>
@@ -175,7 +175,7 @@
                                     'Spouse Visa' => 'Spouse Visa',
                                     'Visitor Visa' => 'Visitor Visa',
                                     'Settlement Visa' => 'Settlement Visa'
-                                ], null, ['class' => 'form-control', 'placeholder' => 'Select Type']) !!}
+                                ], null, ['class' => 'form-control', 'placeholder' => 'Select Type', 'required' => true]) !!}
                                 {!! $errors->first('matter_type','<span class="help-block">:message</span>') !!}
                             </div>
 

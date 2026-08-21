@@ -7,6 +7,8 @@ use App\Company;
 use App\CustomField;
 // use Barryvdh\DomPDF\PDF;
 use App\DataTables\ClientDataTable;
+use App\Http\Requests\StoreClientRequest;
+use App\Http\Requests\UpdateClientRequest;
 use App\Repositories\ClientRepository;
 use App\Repositories\PermissionRepository;
 use App\Template;
@@ -50,7 +52,7 @@ class ClientController extends Controller
         return view('clients.create', compact('customFields', 'companies', 'selectedCompany', 'countries'));
     }
 
-    public function store(Request $request)
+    public function store(StoreClientRequest $request)
     {
         // store client
         $client = $this->clientRepository->store($request);
@@ -72,29 +74,9 @@ class ClientController extends Controller
         return view('clients.edit', compact('client', 'companies', 'countries'));
     }
 
-    public function update(Request $request, Client $client)
+    public function update(UpdateClientRequest $request, Client $client)
     {
-        // update client
-        $client->update([
-            'first_name' => $request->input('first_name'),
-            'sir_name' => $request->input('sir_name'),
-            'email' => $request->input('email'),
-            'company_id' => $request->input('company_id') ?? 1,
-            'phone' => $request->input('phone'),
-            'passport_no' => $request->input('passport_no'),
-            'visa_type' => $request->input('visa_type'),
-            'visa_expiry_date' => $request->input('visa_expiry_date'),
-            'dob' => $request->input('dob'),
-            'country' => $request->input('country'),
-            'address' => $request->input('address'),
-            'status' => $request->input('status'),
-            'priority' => $request->input('priority'),
-            'court_type' => $request->input('court_type'),
-            'color' => $request->input('color'),
-            'city' => $request->input('city'),
-            'gender' => $request->input('gender'),
-            'visa_issued_date' => $request->input('visa_issued_date'),
-        ]);
+        $client->update($request->validated());
         return redirect()->route('clients.index')->with('success', 'Client updated successfully.');
     }
 

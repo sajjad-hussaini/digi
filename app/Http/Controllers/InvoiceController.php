@@ -8,9 +8,11 @@ use App\DataTables\InvoiceDataTable;
 use App\Http\Controllers\ReceiptController;
 use App\Invoice;
 use App\InvoiceItem;
+use App\Http\Requests\StoreInvoiceRequest;
 use App\Repositories\InvoiceRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceController extends Controller
 {
@@ -38,29 +40,35 @@ class InvoiceController extends Controller
         return view('invoices.create', compact('clients', 'customFields', 'invoiceNo'));
     }
 
-    public function store(Request $request)
+    public function store(StoreInvoiceRequest $request)
     {
-        // Step 1: Invoice save karein
-        $invoice = Invoice::create([
-            'client_id'    => $request->client_id,
-            'invoice_no'   => $request->invoice_no,
-            'invoice_date' => $request->invoice_date,
-            'our_ref'      => $request->our_ref,
-            'vat'          => $request->vat ?? 0,
-            'total_due'    => $request->total_due,
-            'amount'    => 2,
-            'status'       => 'unpaid',
-        ]);
+        $data = $request->validated();
+        $invoice = DB::transaction(function () use ($data) {
+            $subtotal = collect($data['items'])->sum(fn ($item) => (float) $item['fees']);
+            $vat = (float) ($data['vat'] ?? 0);
 
-        // Step 2: Invoice items save karein
-        foreach ($request->items as $index => $item) {
-            InvoiceItem::create([
-                'invoice_id'  => $invoice->id,
-                'sr_no'       => $index + 1,
-                'description' => $item['description'],
-                'fees'        => $item['fees'],
+            $invoice = Invoice::create([
+                'client_id' => $data['client_id'],
+                'invoice_no' => $data['invoice_no'],
+                'invoice_date' => $data['invoice_date'],
+                'our_ref' => $data['our_ref'] ?? null,
+                'vat' => $vat,
+                'total_due' => $subtotal + $vat,
+                'amount' => $subtotal,
+                'status' => 'unpaid',
             ]);
-        }
+
+            foreach ($data['items'] as $index => $item) {
+                InvoiceItem::create([
+                    'invoice_id' => $invoice->id,
+                    'sr_no' => $index + 1,
+                    'description' => $item['description'],
+                    'fees' => $item['fees'],
+                ]);
+            }
+
+            return $invoice;
+        });
 
         return redirect()->route('invoices.show', $invoice->id)
                ->with('success', 'Invoice successfully created!');

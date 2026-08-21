@@ -6,7 +6,7 @@
         old('client_id', $client->id ?? null),
         [
             'class' => 'form-control select2',
-            'placeholder' => 'Select Client'
+            'placeholder' => 'Select Client', 'required' => true
         ]
     ) !!}
     {!! $errors->first('client_id', '<span class="help-block">:message</span>') !!}
@@ -17,7 +17,7 @@
     {!! Form::label('invoice_no', 'Invoice Number:') !!}
     {!! Form::text('invoice_no', old('invoice_no', $invoiceNo ?? null), [
     'class' => 'form-control',
-    'placeholder' => 'INV-001'
+    'placeholder' => 'INV-001', 'required' => true, 'maxlength' => 50
     ]) !!}
     {!! $errors->first('invoice_no', '<span class="help-block">:message</span>') !!}
 </div>
@@ -27,7 +27,7 @@
     {!! Form::label('our_ref', 'Our Ref:') !!}
     {!! Form::text('our_ref', old('our_ref', $client->ref_number ?? ''), [
     'class' => 'form-control',
-    'placeholder' => 'e.g. 0074'
+    'placeholder' => 'e.g. 0074', 'maxlength' => 100
     ]) !!}
     {!! $errors->first('our_ref', '<span class="help-block">:message</span>') !!}
 </div>
@@ -36,7 +36,7 @@
 <div class="form-group col-sm-6 {{ $errors->has('invoice_date') ? 'has-error' : '' }}">
     {!! Form::label('invoice_date', 'Invoice Date:') !!}
     {!! Form::date('invoice_date', old('invoice_date', now()->toDateString()), [
-    'class' => 'form-control'
+    'class' => 'form-control', 'required' => true
     ]) !!}
     {!! $errors->first('invoice_date', '<span class="help-block">:message</span>') !!}
 </div>
@@ -62,7 +62,7 @@
                             class="form-control desc-input"
                             name="items[0][description]"
                             placeholder="Enter description..."
-                            value="{{ old('items.0.description') }}">
+                            value="{{ old('items.0.description') }}" required maxlength="1000">
                         {{-- required nahi --}}
                     </td>
                     <td>
@@ -70,7 +70,7 @@
                             class="form-control fee-input"
                             name="items[0][fees]"
                             placeholder="0.00"
-                            min="0"
+                            min="0" max="99999999.99" step="0.01" required
                             value="{{ old('items.0.fees') }}">
                     </td>
                     <td class="text-center">
@@ -103,7 +103,7 @@
                         name="vat"
                         id="vat"
                         class="form-control"
-                        min="0"
+                        min="0" max="99999999.99" step="0.01"
                         placeholder="0.00">
                 </td>
             </tr>
@@ -205,7 +205,7 @@
                         <input type="text"
                             class="form-control desc-input"
                             name="items[${rowCount}][description]"
-                            placeholder="Enter description...">
+                            placeholder="Enter description..." required maxlength="1000">
                     </td>
                     <td>
                         <input type="number"
@@ -213,7 +213,7 @@
                             name="items[${rowCount}][fees]"
                             placeholder="0.00"
                             step="0.01"
-                            min="0">
+                            min="0" max="99999999.99" required>
                     </td>
                     <td class="text-center">
                         <button type="button" class="btn btn-danger btn-sm btn-remove">
@@ -229,7 +229,7 @@
         // ----- Remove Row -----
         $(document).on('click', '.btn-remove', function() {
             if ($('#items-body tr').length <= 1) {
-                alert('Kam az kam ek item zaroori hai!');
+                alert('At least one item is required.');
                 return;
             }
             $(this).closest('tr').fadeOut(150, function() {
