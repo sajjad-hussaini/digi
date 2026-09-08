@@ -2,7 +2,7 @@
 
 namespace App\DataTables;
 
-use App\invoice;
+use App\Invoice;
 use App\Tag;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Services\DataTable;

@@ -20,6 +20,7 @@ class Client extends Model
         'company_id',
         'address',
         'city',
+        'national',
         'country',
         'passport_no',
         'visa_type',

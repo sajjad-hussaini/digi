@@ -63,6 +63,8 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.26.24/dist/sweetalert2.min.css
 <script>
 let selectedTemplateId = null;
 let selectedTemplateTitle = '';
+let currentMatterType = null;   // NEW
+let currentTargetType = null;   // NEW
 
 $(document).ready(function() {
 
@@ -71,6 +73,9 @@ $(document).ready(function() {
         const targetType = button.data('template-type'); // Get 'Initial Instruction' or others
         const matterType = button.data('matter-type'); // Get 'Initial Instruction' or others
         
+        currentTargetType = targetType;
+        currentMatterType = matterType;
+        console.log(currentTargetType);
         // Reset UI
         resetEditor();
 
@@ -198,12 +203,12 @@ $(document).ready(function() {
 
     // Generate DOCX
     $('#generateDocxBtn').click(function() {
-        generateDocument('docx');
+        generateDocument('docx', currentTargetType);
     });
 
     // Generate PDF
     $('#generatePdfBtn').click(function() {
-        generateDocument('pdf');
+        generateDocument('pdf', currentTargetType);
     });
 });
 
@@ -303,9 +308,13 @@ function autoReplaceClientData(html) {
         '[CITY]'              : '{{ $client->city ?? "" }}',
         '[CLIENT_EMAIL]'      : '{{ $client->email ?? "" }}',
         '[CLIENT_PHONE]'      : '{{ $client->phone ?? "" }}',
-        '[CLIENT_ADDRESS]'      : '{{ $client->address ?? "" }}',
         '[CLIENT_DOB]'      : '{{ $client->dob ?? "" }}',
-        '[DATE]'              : '{{ now()->format("jS F Y") }}'
+        '[DATE]'              : '{{ now()->format("jS F Y") }}',
+        '[ADDRESS_1]'      : '{{ $client->address1 ?? "" }}',
+        '[ADDRESS_2]'      : '{{ $client->color ?? "" }}',
+        '[NATIONALITY]'      : '{{ $client->country ?? "" }}',
+        '[COUNTRY]'      : '{{ $client->national ?? "" }}',
+        
     };
 
     Object.keys(replacements).forEach(function(key) {
@@ -317,7 +326,7 @@ function autoReplaceClientData(html) {
 }
 
 // Generate document
-function generateDocument(format) {
+function generateDocument(format, currentTargetType) {
     let htmlContent = $('#documentContent').html();
     let btnId = format === 'docx' ? '#generateDocxBtn' : '#generatePdfBtn';
     let icon = format === 'docx' ? 'fa-file-word' : 'fa-file-pdf';
@@ -343,7 +352,9 @@ function generateDocument(format) {
             let ext = format === 'docx' ? '.docx' : '.pdf';
             let link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
-            link.download = 'Initial_Instruction_{{ $client->first_name }}' + ext;
+            // link.download = 'Initial_Instruction_{{ $client->first_name }}' + ext;
+             // Download filename
+            link.download = `${currentTargetType}_${'{{ $client->first_name }}'}${ext}`;
             link.click();
 
             $(btnId).prop('disabled', false)

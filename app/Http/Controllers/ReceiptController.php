@@ -86,18 +86,14 @@ class ReceiptController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'invoice_id'     => ['required', 'integer', 'exists:invoices,id'],
-            'client_id'      => ['required', 'integer', 'exists:clients,id'],
+            'invoice_id'     => 'required|exists:invoices,id',
+            'client_id'      => 'required|exists:clients,id',
             'amount_paid'    => 'required|numeric|min:0.01',
             'payment_method' => 'required|in:cash,cheque,bacs,money_order',
-            'cheque_number'  => ['nullable', 'string', 'max:50', 'required_if:payment_method,cheque'],
+            'cheque_number'  => 'nullable|string|max:50',
             'payment_date'   => 'required|date',
             'payment_for'    => 'required|string|max:500',
         ]);
-
-        if (!Invoice::whereKey($validated['invoice_id'])->where('client_id', $validated['client_id'])->exists()) {
-            return back()->withInput()->withErrors(['invoice_id' => 'The selected invoice does not belong to this client.']);
-        }
 
         $receipt = Receipt::create([
             ...$validated,

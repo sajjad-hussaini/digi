@@ -42,7 +42,7 @@
 <script>
     $(document).ready(function () {
         $('.select2').select2({
-            placeholder: "Select Country",
+            placeholder: "Select Nationality",
             allowClear: true
         });
 

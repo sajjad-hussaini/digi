@@ -7,10 +7,10 @@ use App\Company;
 use App\CustomField;
 // use Barryvdh\DomPDF\PDF;
 use App\DataTables\ClientDataTable;
-use App\Http\Requests\StoreClientRequest;
-use App\Http\Requests\UpdateClientRequest;
 use App\Repositories\ClientRepository;
 use App\Repositories\PermissionRepository;
+use App\Http\Requests\StoreClientRequest;
+use App\Http\Requests\UpdateClientRequest;
 use App\Template;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -49,10 +49,15 @@ class ClientController extends Controller
         $companies = Company::get();
         $selectedCompany = $companies->first()->id ?? null;
         $countries = include base_path('vendor/umpirsky/country-list/data/en/country.php');
+        // Make full country name the key and value
+        $countries = array_combine(
+            array_values($countries),
+            array_values($countries)
+        );
         return view('clients.create', compact('customFields', 'companies', 'selectedCompany', 'countries'));
     }
 
-    public function store(StoreClientRequest $request)
+    public function store(Request $request)
     {
         // store client
         $client = $this->clientRepository->store($request);
@@ -70,13 +75,38 @@ class ClientController extends Controller
     public function edit(Client $client)
     {
         $countries = include base_path('vendor/umpirsky/country-list/data/en/country.php');
+          $countries = array_combine(
+            array_values($countries),
+            array_values($countries)
+        );
         $companies = Company::select('id', 'company_name')->get();
         return view('clients.edit', compact('client', 'companies', 'countries'));
     }
 
-    public function update(UpdateClientRequest $request, Client $client)
+    public function update(Request $request, Client $client)
     {
-        $client->update($request->validated());
+        // update client
+        $client->update([
+            'first_name' => $request->input('first_name'),
+            'sir_name' => $request->input('sir_name'),
+            'email' => $request->input('email'),
+            'company_id' => $request->input('company_id') ?? 1,
+            'phone' => $request->input('phone'),
+            'passport_no' => $request->input('passport_no'),
+            'visa_type' => $request->input('visa_type'),
+            'visa_expiry_date' => $request->input('visa_expiry_date'),
+            'dob' => $request->input('dob'),
+            'country' => $request->input('country'),
+            'national'          => $request->input('national') ?? null,
+            'address' => $request->input('address'),
+            'status' => $request->input('status'),
+            'priority' => $request->input('priority'),
+            'court_type' => $request->input('court_type'),
+            'color' => $request->input('color'),
+            'city' => $request->input('city'),
+            'gender' => $request->input('gender'),
+            'visa_issued_date' => $request->input('visa_issued_date'),
+        ]);
         return redirect()->route('clients.index')->with('success', 'Client updated successfully.');
     }
 
@@ -105,13 +135,16 @@ class ClientController extends Controller
             'client'         => $client,
             'clientName'     => $clientName,
             'clientFullName' => $clientFullName,
-            'dob'            => $client->dob ? date('d.m.Y', strtotime($client->dob)) : '__________________',
+            'dob'            => $client->dob ? $client->dob : '__________________',
             'nationality'    => $client->country ?? '__________________',
             'address'        => $client->address ?? '________________________________________________________________',
             'lawFirm'        => $lawFirm,
             'lawFirmAddress' => $lawFirmAddress,
             'phone'          => $phone,
             'email'          => $email,
+            'city'          =>  $client->city ?? ' ',
+            'address2'      =>  $client->color ?? ' ',
+            'national'      =>  $client->national ?? ' ',
             'visaType'       =>  $client->visa_type,
             'today'          => $today,
         ];

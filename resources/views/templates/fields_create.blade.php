@@ -6,7 +6,7 @@
     {!! Form::text('title', $title ?? null, [
         'class' => 'form-control',
         'placeholder' => 'Title',
-        'required' => true, 'minlength' => 3, 'maxlength' => 255
+        'required' => true
     ]) !!}
     {!! $errors->first('title','<span class="help-block">:message</span>') !!}
 </div>
@@ -19,7 +19,7 @@
         'Client Care' => 'Client Care',
         'Client Closure Letter' => 'Client Closure Letter',
         'Covering Letter' => 'Covering Letter',
-    ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type', 'required' => true]) !!}
+    ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type']) !!}
     {!! $errors->first('type','<span class="help-block">:message</span>') !!}
 </div>
 
@@ -32,7 +32,7 @@
         'Spouse Visa' => 'Spouse Visa',
         'Visitor Visa' => 'Visitor Visa',
         'Settlement Visa' => 'Settlement Visa'
-    ], null, ['class' => 'form-control', 'placeholder' => 'Select Type', 'required' => true]) !!}
+    ], null, ['class' => 'form-control', 'placeholder' => 'Select Type']) !!}
     {!! $errors->first('visa_type','<span class="help-block">:message</span>') !!}
 </div>
 
@@ -42,7 +42,7 @@
     {!! Form::file('doc_file', null, [
         'class' => 'form-control',
         'rows' => 3,
-        'placeholder' => 'doc file...', 'required' => true, 'accept' => '.docx'
+        'placeholder' => 'doc file...'
     ]) !!}
     {!! $errors->first('doc_file','<span class="help-block">:message</span>') !!}
 </div>

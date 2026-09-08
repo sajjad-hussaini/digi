@@ -62,27 +62,35 @@ class ClientRepository extends BaseRepository
         $request->validate([
             'first_name' => 'required',
             'sir_name' => 'required',
-            'email' => 'required|email',
-            'phone' => 'required',
-            'gender' => 'required',
             'visa_type' => 'required',
         ]);
 
         $client = Client::create([
+            'dob' => !empty($request->dob)
+            ? Carbon::createFromFormat('d/m/Y', $request->dob)->format('Y-m-d')
+            : null,
+        
+        'visa_issue_date' => !empty($request->visa_issue_date)
+            ? Carbon::createFromFormat('d/m/Y', $request->visa_issue_date)->format('Y-m-d')
+            : null,
+        
+        'visa_expiry_date' => !empty($request->visa_expiry_date)
+            ? Carbon::createFromFormat('d/m/Y', $request->visa_expiry_date)->format('Y-m-d')
+            : null,
+            
             'first_name'        => $request->first_name,
             'sir_name'           => $request->sir_name,
-            'dob'               => Carbon::createFromFormat('d/m/Y', $request->dob)->format('Y-m-d'),
             'gender'            => $request->gender,
             'email'             => $request->email,
             'phone'             => $request->phone,
             'company_id'        => $request->company_id ?? 1,
             'address'           => $request->address,
+            'color'           => $request->color,
             'city'              => $request->city,
             'country'           => $request->country,
+            'national'          => $request->national ?? null,
             'passport_no'   => $request->passport_no,
             'visa_type'         => $request->visa_type,
-            'visa_issue_date'   => Carbon::createFromFormat('d/m/Y', $request->visa_issue_date)->format('Y-m-d'),
-            'visa_expiry_date'  => Carbon::createFromFormat('d/m/Y', $request->visa_expiry_date)->format('Y-m-d'),
             'status'            => $request->status,
             'priority'          => $request->priority,
             'court_type'        => $request->court_type,

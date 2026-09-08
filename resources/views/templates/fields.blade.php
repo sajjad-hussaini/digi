@@ -11,9 +11,12 @@
                 <p>[CITY] => For Client City</p>
                 <p>[CLIENT_EMAIL] => For Client Email</p>
                 <p>[CLIENT_PHONE] => For Client Phone</p>
-                <p>[CLIENT_ADDRESS] => For Client Address</p>
                 <p>[CLIENT_DOB] => For Client Date of Birth</p>
                 <p>[DATE] => For Current Date</p>
+                <p>[ADDRESS_1] => For address 1</p>
+                <p>[ADDRESS_2] => For address 2</p>
+                <p>[NATIONALITY] => For Nationality</p>
+                <p>[COUNTRY] => For country</p>
                 <div class="card-body">
                     <!-- Tab Navigation -->
                     <ul class="nav nav-tabs mb-3" role="tablist">
@@ -59,7 +62,7 @@
                                             'Client Care' => 'Client Care',
                                             'Client Closure Letter' => 'Client Closure Letter',
                                             'Covering Letter' => 'Covering Letter',
-                                        ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type', 'required' => true]) !!}
+                                        ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type']) !!}
                                         {!! $errors->first('type','<span class="help-block">:message</span>') !!}
                                     </div>
                                 </div>
@@ -72,7 +75,7 @@
                                         'Spouse Visa' => 'Spouse Visa',
                                         'Visitor Visa' => 'Visitor Visa',
                                         'Settlement Visa' => 'Settlement Visa'
-                                    ], null, ['class' => 'form-control', 'placeholder' => 'Select Type', 'required' => true]) !!}
+                                    ], null, ['class' => 'form-control', 'placeholder' => 'Select Type']) !!}
                                     {!! $errors->first('matter_type','<span class="help-block">:message</span>') !!}
                                 </div>
                                 <div class="col-md-6 text-right d-flex align-items-end">
@@ -161,7 +164,7 @@
                                         'Client Care' => 'Client Care',
                                         'Client Closure Letter' => 'Client Closure Letter',
                                         'Covering Letter' => 'Covering Letter',
-                                    ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type', 'required' => true]) !!}
+                                    ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type']) !!}
                                     {!! $errors->first('type','<span class="help-block">:message</span>') !!}
                                 </div>
                             </div>
@@ -175,7 +178,7 @@
                                     'Spouse Visa' => 'Spouse Visa',
                                     'Visitor Visa' => 'Visitor Visa',
                                     'Settlement Visa' => 'Settlement Visa'
-                                ], null, ['class' => 'form-control', 'placeholder' => 'Select Type', 'required' => true]) !!}
+                                ], null, ['class' => 'form-control', 'placeholder' => 'Select Type']) !!}
                                 {!! $errors->first('matter_type','<span class="help-block">:message</span>') !!}
                             </div>
 

@@ -76,10 +76,10 @@
             I, <span class="highlight">{{ $clientFullName }}</span>, 
             date of birth <span class="highlight">{{ $dob }}</span>, 
             national <span class="highlight">{{ $nationality }}</span>, 
-            currently residing at <span class="highlight">{{ $address }}</span> 
+            currently residing at <span class="highlight">{{ $address }} {{ $address2 }} {{ $city }} {{ $national}}</span> 
             hereby authorise and instruct <span class="highlight">{{ $lawFirm }}</span>, 
             <span class="highlight">{{ $lawFirmAddress }}</span> 
-            in relation to my <strong>{{$visaType ?? 'Other'}}</strong>.
+            in relation to my <strong>{{$visaType ?? 'Other'}}{{ ' / Immigration matter' }}</strong>.
         </p>
 
         <p class="lead-line">
@@ -99,11 +99,7 @@
                 <div class="col-6">
                     <p><strong>Print Name</strong> : <span class="highlight">{{ $clientFullName }}</span></p>
                     <p><strong>Dated</strong> : {{ $today }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Exact Footer as per Screenshot -->
+                      <!-- Exact Footer as per Screenshot -->
         <div class="footer-container">
             <div class="footer-line" style="margin-bottom: 1px"></div>
             <div class="footer-line"></div>
@@ -113,15 +109,19 @@
             </div>
             <div class="footer-contact">
                 {{ $lawFirmAddress }}, Ph. {{ $phone }}, Email: {{ $email }}
-            </div>
-
             <!-- Right side logo with "Immigration Advice Authority" -->
             <img src="{{ public_path('images/footer.jpg') }}" alt="Immigration Advice Authority" class="footer-logo">
             <!-- Agar image mein text included nahi hai to neeche text bhi add kar sakte ho -->
             <!-- <div style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); font-size: 10px; color: #666;">
                 Immigration<br>Advice Authority
             </div> -->
+            </div>
         </div>
+                </div>
+            </div>
+        </div>
+
+      
     </div>
 </body>
 </html>
