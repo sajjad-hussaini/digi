@@ -149,7 +149,8 @@ class ClientController extends Controller
             'today'          => $today,
         ];
 
-        $pdf = Pdf::loadView('clients.authority-letter', $data);
+        $pdf = Pdf::loadView('clients.authority-letter', $data)
+            ->setPaper('a4', 'portrait');
 
         return $pdf->stream('Authority_Letter_' . str_replace(' ', '_', $clientFullName) . '.pdf');
     }
@@ -170,7 +171,7 @@ class ClientController extends Controller
         $pdf = Pdf::loadView('clients.client_clouser_letter', [
             'client' => $client,
             'today'  => now()->format('jS F Y')
-        ]);
+        ])->setPaper('a4', 'portrait');
 
         // Download or show in browser
         return $pdf->stream('care_Letter_' . $client->first_name . '.pdf');
@@ -195,7 +196,7 @@ class ClientController extends Controller
             'client' => $client,
             'request' => $request,
             'today'  => now()->format('jS F Y')
-        ]);
+        ])->setPaper('a4', 'portrait');
 
         // Download or show in browser
         return $pdf->stream('care_Letter_' . $client->first_name . '.pdf');
@@ -220,7 +221,7 @@ class ClientController extends Controller
             'client' => $client,
             'request' => $request,
             'today'  => now()->format('jS F Y')
-        ]);
+        ])->setPaper('a4', 'portrait');
 
         // Download or show in browser
         return $pdf->stream('care_Letter_' . $client->first_name . '.pdf');
@@ -243,7 +244,7 @@ class ClientController extends Controller
         $pdf = Pdf::loadView('clients.client_covering_letter', [
             'client' => $client,
             'today'  => now()->format('jS F Y')
-        ]);
+        ])->setPaper('a4', 'portrait');
 
         // Download or show in browser
         return $pdf->stream('care_Letter_' . $client->first_name . '.pdf');
@@ -276,33 +277,32 @@ class ClientController extends Controller
     private function generateDocx($htmlContent, $client)
     {
         $phpWord = new PhpWord();
+        [$docxHtml, $temporaryImages] = $this->prepareDocxHtml($htmlContent);
 
-        // Add section
         $section = $phpWord->addSection([
+            'pageSizeW' => 11906,
+            'pageSizeH' => 16838,
             'marginLeft' => 1440,
             'marginRight' => 1440,
             'marginTop' => 1440,
             'marginBottom' => 1440,
         ]);
 
-        // Convert HTML to Word (basic conversion)
-        // Remove HTML tags and create paragraphs
-        $dom = new \DOMDocument();
-        @$dom->loadHTML(mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8'));
-
-        $paragraphs = $dom->getElementsByTagName('p');
-
-        foreach ($paragraphs as $p) {
-            $text = $p->textContent;
-            if (!empty(trim($text))) {
-                $section->addText($text, ['size' => 11, 'name' => 'Calibri']);
-            }
-        }
+        \PhpOffice\PhpWord\Shared\Html::addHtml(
+            $section,
+            $docxHtml,
+            false,
+            false
+        );
 
         // Save to temp file
         $tempFile = tempnam(sys_get_temp_dir(), 'docx_');
         $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
         $objWriter->save($tempFile);
+
+        foreach ($temporaryImages as $temporaryImage) {
+            @unlink($temporaryImage);
+        }
 
         return response()->download($tempFile, 'Initial_Instruction_' . $client->first_name . '.docx')
             ->deleteFileAfterSend(true);
@@ -310,25 +310,114 @@ class ClientController extends Controller
 
     private function generatePdf($htmlContent, $client)
     {
-        // Clean HTML for PDF
         $html = '
         <!DOCTYPE html>
         <html>
         <head>
             <meta charset="utf-8">
             <style>
-                body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.5; }
+                @page { size: A4; margin: 18mm 18mm 18mm 18mm; }
+                body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.5; margin: 0; }
                 p { margin: 10px 0; }
+                img:first-of-type { display: block; float: right; margin-left: auto; margin-right: 0; max-width: 140px; height: auto; }
             </style>
         </head>
         <body>
-            ' . $htmlContent . '
+            ' . $this->prepareLetterHtml($htmlContent) . '
         </body>
         </html>';
 
-        $pdf = Pdf::loadHTML($html);
+        $pdf = Pdf::loadHTML($html)->setPaper('a4', 'portrait');
 
         return $pdf->download('Initial_Instruction_' . $client->first_name . '.pdf');
+    }
+
+    private function prepareLetterHtml(string $html): string
+    {
+        if (preg_match('/<body[^>]*>(.*?)<\/body>/is', $html, $matches)) {
+            $html = $matches[1];
+        }
+
+        $footerAdded = false;
+        if (stripos($html, 'qureshisalim@yahoo.com') === false) {
+            $footerAdded = true;
+            $footerLogo = public_path('images/footer.jpg');
+            $footerLogoHtml = is_file($footerLogo)
+                ? '<img src="' . $footerLogo . '" width="85" style="width:85px; max-width:85px; height:auto;">'
+                : '';
+
+            $html .= '<table width="100%" style="border-top:1px solid #999; margin-top:24px;">'
+                . '<tr><td align="center">'
+                . '<strong>UK Immigration Law</strong><br>'
+                . '1st Floor, 236 ST. Helens Road, Bolton BL3 4EB, Ph. 07777328028, Email: qureshisalim@yahoo.com'
+                . '</td><td width="100" align="right">' . $footerLogoHtml . '</td></tr>'
+                . '</table>';
+        }
+
+        $imageCount = preg_match_all('/<img\b[^>]*>/i', $html);
+        $imageIndex = 0;
+
+        $html = preg_replace_callback('/<img\b([^>]*)>/i', function ($matches) use (&$imageIndex) {
+            $imageIndex++;
+            $attributes = $matches[1];
+            $width = $imageIndex === 1 ? '70px' : '85px';
+            $style = 'float:right; display:block; margin-left:auto; margin-right:0; width:' . $width . '; max-width:' . $width . '; height:auto;';
+
+            if (preg_match('/\sstyle=["\']([^"\']*)["\']/i', $attributes, $styleMatch)) {
+                $style .= ' ' . $styleMatch[1];
+                $attributes = preg_replace('/\sstyle=["\'][^"\']*["\']/i', '', $attributes, 1);
+            }
+
+            $attributes = preg_replace('/\s(width|height)=["\'][^"\']*["\']/i', '', $attributes);
+            $attributes .= ' width="' . ($imageIndex === 1 ? '70' : '85') . '"';
+
+            return '<img' . $attributes . ' style="' . $style . '">';
+        }, $html);
+
+        if (!$footerAdded && $imageCount < 2) {
+            $footerLogo = public_path('images/footer.jpg');
+            if (is_file($footerLogo)) {
+                $html .= '<p align="right"><img src="' . $footerLogo . '" width="85" style="width:85px; max-width:85px; height:auto;"></p>';
+            }
+        }
+
+        return $html;
+    }
+
+    private function prepareDocxHtml(string $html): array
+    {
+        $temporaryImages = [];
+        $html = $this->prepareLetterHtml($html);
+
+        $html = preg_replace_callback('/<img\b([^>]*)>/i', function ($matches) use (&$temporaryImages) {
+            $attributes = $matches[1];
+
+            if (!preg_match('/\ssrc=["\']data:([^;]+);base64,([^"\']+)["\']/i', $attributes, $imageMatch)) {
+                return $matches[0];
+            }
+
+            $extension = explode('/', strtolower($imageMatch[1]))[1] ?? 'png';
+            $temporaryImage = tempnam(sys_get_temp_dir(), 'letter_image_');
+            @unlink($temporaryImage);
+            $temporaryImage .= '.' . preg_replace('/[^a-z0-9]/', '', $extension);
+            file_put_contents($temporaryImage, base64_decode($imageMatch[2], true));
+            $temporaryImages[] = $temporaryImage;
+
+            $attributes = preg_replace(
+                '/\ssrc=["\']data:[^;]+;base64,[^"\']+["\']/i',
+                ' src="' . $temporaryImage . '"',
+                $attributes,
+                1
+            );
+
+            return '<img' . $attributes . '>';
+        }, $html);
+
+        $html = preg_replace_callback('/<img\b[^>]*>/i', function ($matches) {
+            return '<p align="right">' . $matches[0] . '</p>';
+        }, $html);
+
+        return [$html, $temporaryImages];
     }
 
     // Base template method (existing)

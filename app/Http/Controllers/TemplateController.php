@@ -131,7 +131,45 @@ class TemplateController extends Controller
         $html = $this->cleanHtmlForWord($html);
 
         $phpWord = new \PhpOffice\PhpWord\PhpWord();
-        $section = $phpWord->addSection();
+        $section = $phpWord->addSection([
+            'pageSizeW' => 11906,
+            'pageSizeH' => 16838,
+            'marginLeft' => 1440,
+            'marginRight' => 1440,
+            'marginTop' => 1440,
+            'marginBottom' => 1440,
+            'footerDistance' => 720,
+        ]);
+
+        $footer = $section->addFooter();
+        $footerTable = $footer->addTable([
+            'borderTopSize' => 6,
+            'borderTopColor' => '999999',
+            'cellMarginTop' => 40,
+            'cellMarginBottom' => 20,
+        ]);
+        $footerTable->addRow(900);
+
+        $footerTextCell = $footerTable->addCell(8500);
+        $footerTextCell->addText(
+            'UK Immigration Law',
+            ['bold' => true, 'name' => 'Arial', 'size' => 9],
+            ['alignment' => 'center']
+        );
+        $footerTextCell->addText(
+            '1st Floor, 236 ST. Helens Road, Bolton BL3 4EB, Ph. 07777328028, Email: qureshisalim@yahoo.com',
+            ['name' => 'Arial', 'size' => 8],
+            ['alignment' => 'center']
+        );
+
+        $footerLogoCell = $footerTable->addCell(1800);
+        $footerLogo = public_path('images/footer.jpg');
+        if (is_file($footerLogo)) {
+            $footerLogoCell->addImage($footerLogo, [
+                'width' => 55,
+                'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT,
+            ]);
+        }
 
         try {
             \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html, false, false);
