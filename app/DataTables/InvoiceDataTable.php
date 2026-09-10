@@ -28,7 +28,7 @@ class InvoiceDataTable extends DataTable
                 return $query->whereRaw("select count(*) from invoices where lower(invoices.name) like ? and invoices.id=invoices.created_by",["%$keyword%"]);
             })
             ->addColumn('client', function($invoice){
-                  return $invoice->client ? $invoice->client->name : '';
+                  return $invoice->client ? $invoice->client->first_name. ' ' . $invoice->client->sir_name : 'default client';
             });
 
         return $dataTable;

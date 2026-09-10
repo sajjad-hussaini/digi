@@ -28,7 +28,6 @@ class InvoiceController extends Controller
    public function index(InvoiceDataTable $invoiceDataTable)
     {
         $this->authorize('viewAny', Invoice::class);
-        $clients = Client::orderBy('first_name')->orderBy('sir_name')->get();
         return $invoiceDataTable->render('invoices.index');
     }
 
