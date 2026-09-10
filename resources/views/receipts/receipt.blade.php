@@ -326,7 +326,7 @@
     <div class="amount-row">
         <div class="amount-box">
             <span class="amount-label">Amount</span>
-            <span class="amount-value">£{{ number_format($receipt->amount_paid, 2) }}</span>
+            <span class="amount-value">£{{ number_format($receipt->amount_paid, 0) }}</span>
         </div>
     </div>
 
@@ -337,7 +337,7 @@
     <div class="detail-section">
         <div class="detail-row">
             <span class="detail-label">Received From</span>
-            <span class="detail-value">{{ $receipt->client->title ?? '' }} {{ $receipt->client->name }}</span>
+            <span class="detail-value">{{ trim(($receipt->client->first_name ?? '') . ' ' . ($receipt->client->sir_name ?? '')) }}</span>
         </div>
         <div class="detail-row">
             <span class="detail-label">Amount</span>
@@ -348,7 +348,7 @@
     {{-- For Payment Of --}}
     <div class="payment-of-row">
         <span class="detail-label" style="padding-top:2px;">For Payment of</span>
-        <span class="payment-of-value">{{ $receipt->payment_for }}</span>
+        <span class="payment-of-value">{{ $receipt->payment_for ?? 'Legal Consultancy Fees' }}</span>
     </div>
 
     {{-- Blue divider --}}

@@ -68,8 +68,48 @@ class ClientController extends Controller
     {
         $customFields = CustomField::get();
         $client_matter_type = $client->visa_type;
+        $client->load(['invoices.items', 'invoices.receipts']);
 
-        return view('clients.show', compact('client', 'customFields', 'client_matter_type'));
+        $totalInvoiced = (float) $client->invoices->sum(function ($invoice) {
+            return $invoice->total_due ?: $invoice->amount;
+        });
+        $totalPaid = (float) $client->invoices->flatMap->receipts->sum('amount_paid');
+        $totalRemaining = max(0, round($totalInvoiced - $totalPaid, 2));
+        $ledger = collect();
+
+        foreach ($client->invoices as $invoice) {
+            $ledger->push([
+                'date' => $invoice->invoice_date ?: $invoice->created_at,
+                'type' => 'Invoice',
+                'reference' => $invoice->invoice_no,
+                'description' => 'Invoice issued',
+                'debit' => (float) ($invoice->total_due ?: $invoice->amount),
+                'credit' => 0,
+            ]);
+
+            foreach ($invoice->receipts as $receipt) {
+                $ledger->push([
+                    'date' => $receipt->payment_date ?: $receipt->created_at,
+                    'type' => 'Payment',
+                    'reference' => $receipt->receipt_number,
+                    'description' => ucfirst($receipt->payment_method) . ' payment',
+                    'debit' => 0,
+                    'credit' => (float) $receipt->amount_paid,
+                ]);
+            }
+        }
+
+        $runningBalance = 0;
+        $ledger = $ledger->sortBy('date')->values()->map(function ($entry) use (&$runningBalance) {
+            $runningBalance += $entry['debit'] - $entry['credit'];
+            $entry['balance'] = round($runningBalance, 2);
+            return $entry;
+        });
+
+        return view('clients.show', compact(
+            'client', 'customFields', 'client_matter_type',
+            'totalInvoiced', 'totalPaid', 'totalRemaining', 'ledger'
+        ));
     }
 
     public function edit(Client $client)

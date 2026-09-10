@@ -183,7 +183,7 @@
     <tr>
         <td style="width: 50%; vertical-align: top;">
             <div class="client-info">
-                <strong>{{ $invoice->client->first_name }} {{ $invoice->client->last_name ?? '' }}</strong><br>
+                <strong>{{ $invoice->client->first_name ?? '' }} {{ $invoice->client->sir_name ?? '' }}</strong><br>
                 @if($invoice->client->street)
                     {{ $invoice->client->street }}<br>
                 @endif
@@ -248,7 +248,7 @@
         <tr>
             <td class="text-center">{{ $item->sr_no }}</td>
             <td>{{ $item->description }}</td>
-            <td class="text-right">£{{ number_format($item->fees, 2) }}</td>
+            <td class="text-right">£{{ number_format($item->fees, 0) }}</td>
         </tr>
         @endforeach
 
@@ -266,7 +266,7 @@
             <td colspan="2" style="text-align: right; border: 1px solid #ccc;">
                 <strong>VAT</strong>
             </td>
-            <td class="text-right">£{{ number_format($invoice->vat, 2) }}</td>
+            <td class="text-right">£{{ number_format($invoice->vat, 0) }}</td>
         </tr>
 
         {{-- Total Due --}}
@@ -275,7 +275,7 @@
                 <strong>Total Due</strong>
             </td>
             <td class="text-right">
-                <strong>£{{ number_format($invoice->total_due, 2) }}</strong>
+                <strong>£{{ number_format($invoice->total_due, 0) }}</strong>
             </td>
         </tr>
 

@@ -233,6 +233,102 @@
 
     </div>
 </div>
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-calculator"></i> Client Ledger</h3>
+                <span class="pull-right text-muted">Live account summary</span>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="small-box bg-aqua">
+                            <div class="inner"><h3>£{{ number_format($totalInvoiced, 2) }}</h3><p>Total Invoiced</p></div>
+                            <div class="icon"><i class="fa fa-file-text-o"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="small-box bg-green">
+                            <div class="inner"><h3>£{{ number_format($totalPaid, 2) }}</h3><p>Total Paid</p></div>
+                            <div class="icon"><i class="fa fa-check-circle"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="small-box bg-yellow">
+                            <div class="inner"><h3>£{{ number_format($totalRemaining, 2) }}</h3><p>Remaining Balance</p></div>
+                            <div class="icon"><i class="fa fa-balance-scale"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Reference</th>
+                                <th>Description</th>
+                                <th class="text-right">Debit</th>
+                                <th class="text-right">Credit</th>
+                                <th class="text-right">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($ledger as $entry)
+                                <tr>
+                                    <td>{{ \Carbon\Carbon::parse($entry['date'])->format('d M Y') }}</td>
+                                    <td>
+                                        @if($entry['type'] === 'Invoice')
+                                            <span class="label label-info">Invoice</span>
+                                        @else
+                                            <span class="label label-success">Payment</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $entry['reference'] }}</td>
+                                    <td>{{ $entry['description'] }}</td>
+                                    <td class="text-right">{{ $entry['debit'] ? '£' . number_format($entry['debit'], 2) : '-' }}</td>
+                                    <td class="text-right">{{ $entry['credit'] ? '£' . number_format($entry['credit'], 2) : '-' }}</td>
+                                    <td class="text-right"><strong>£{{ number_format($entry['balance'], 2) }}</strong></td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="7" class="text-center text-muted">No invoices or payments recorded for this client.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                @if($client->invoices->isNotEmpty())
+                    <h4 class="text-muted">Invoice Status</h4>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead><tr><th>Invoice</th><th>Date</th><th>Total</th><th>Paid</th><th>Remaining</th><th>Status</th><th></th></tr></thead>
+                            <tbody>
+                            @foreach($client->invoices as $invoice)
+                                @php
+                                    $invoiceTotal = (float) ($invoice->total_due ?: $invoice->amount);
+                                    $invoicePaid = (float) $invoice->receipts->sum('amount_paid');
+                                    $invoiceRemaining = max(0, round($invoiceTotal - $invoicePaid, 2));
+                                @endphp
+                                <tr>
+                                    <td>{{ $invoice->invoice_no }}</td>
+                                    <td>{{ $invoice->invoice_date ? \Carbon\Carbon::parse($invoice->invoice_date)->format('d M Y') : 'N/A' }}</td>
+                                    <td>£{{ number_format($invoiceTotal, 2) }}</td>
+                                    <td class="text-success">£{{ number_format($invoicePaid, 2) }}</td>
+                                    <td class="{{ $invoiceRemaining > 0 ? 'text-danger' : 'text-success' }}">£{{ number_format($invoiceRemaining, 2) }}</td>
+                                    <td><span class="label label-{{ $invoice->status === 'paid' ? 'success' : ($invoice->status === 'partial' ? 'warning' : 'danger') }}">{{ ucfirst($invoice->status) }}</span></td>
+                                    <td><a href="{{ route('invoices.show', $invoice->id) }}" class="btn btn-xs btn-default"><i class="fa fa-eye"></i> View</a></td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Initial Instruction Modal -->
 <div class="modal fade" id="initialInstructionModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">

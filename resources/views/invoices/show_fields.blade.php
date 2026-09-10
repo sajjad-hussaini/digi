@@ -63,7 +63,7 @@
     <tr>
       <td>{{ $item->sr_no }}</td>
       <td>{{ $item->description }}</td>
-      <td>£{{ number_format($item->fees, 2) }}</td>
+      <td>£{{ number_format($item->fees, 0) }}</td>
     </tr>
     @endforeach
 
@@ -74,11 +74,11 @@
 
     <tr>
       <td colspan="2" align="right"><strong>VAT</strong></td>
-      <td>£{{ number_format($invoice->vat, 2) }}</td>
+      <td>£{{ number_format($invoice->vat, 0) }}</td>
     </tr>
     <tr class="total-row">
       <td colspan="2" align="right"><strong>Total Due</strong></td>
-      <td><strong>£{{ number_format($invoice->total_due, 2) }}</strong></td>
+      <td><strong>£{{ number_format($invoice->total_due, 0) }}</strong></td>
     </tr>
   </tbody>
 </table>

@@ -15,12 +15,14 @@
                 <i class="fa fa-file-pdf-o"></i> Download PDF
             </a>
            {{-- ── BUTTON (opens modal) ─────────────────────────────────────── --}}
+            @if($remainingAmount > 0)
             <button type="button"
                     class="btn btn-success btn-sm"
                     data-toggle="modal"
                     data-target="#markPaidModal">
                 <i class="fa fa-file-text-o"></i> Create Receipt
             </button>
+            @endif
         </span>
         </h1>
     </section>
@@ -66,6 +68,17 @@
                 @method('PATCH')
  
                 <div class="modal-body">
+
+                    <div class="form-group">
+                        <label><strong>Payment Amount</strong></label>
+                        <div class="input-group">
+                            <div class="input-group-addon">£</div>
+                            <input type="number" name="amount_paid" class="form-control"
+                                   min="0.01" max="{{ number_format($remainingAmount, 2, '.', '') }}"
+                                   step="0.01" value="{{ number_format($remainingAmount, 2, '.', '') }}" required>
+                        </div>
+                        <small class="text-muted">Maximum remaining balance: £{{ number_format($remainingAmount, 2) }}</small>
+                    </div>
  
                     <div class="form-group">
                         <label><strong>Payment Method</strong></label>
@@ -91,7 +104,9 @@
                     <div class="alert alert-info" style="font-size:13px; margin-bottom:0;">
                         <strong>Invoice:</strong> #{{ str_pad($invoice->invoice_no, 4, '0', STR_PAD_LEFT) }}<br>
                         <strong>Client:</strong> {{ $invoice->client->first_name }}<br>
-                        <strong>Amount:</strong> £{{ number_format($invoice->total_due, 2) }}
+                        <strong>Total:</strong> £{{ number_format($totalDue, 2) }}<br>
+                        <strong>Paid:</strong> £{{ number_format($paidAmount, 2) }}<br>
+                        <strong>Remaining:</strong> £{{ number_format($remainingAmount, 2) }}
                     </div>
  
                 </div>

@@ -10,6 +10,8 @@ use App\Receipt;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ReceiptController extends Controller
 {
@@ -34,7 +36,7 @@ class ReceiptController extends Controller
             ->latest('payment_date')
             ->paginate(20);
 
-        $clients = Client::orderBy('name')->get();
+        $clients = Client::orderBy('first_name')->orderBy('sir_name')->get();
 
         return view('receipts.index', compact('receipts', 'clients'));
     }
@@ -74,8 +76,8 @@ class ReceiptController extends Controller
     // ─────────────────────────────────────────
     public function create()
     {
-        $clients  = Client::orderBy('name')->get();
-        $invoices = Invoice::with('client')->where('status', 'paid')->orWhere('status', 'partial')->get();
+        $clients  = Client::orderBy('first_name')->orderBy('sir_name')->get();
+        $invoices = Invoice::with('client')->whereIn('status', ['unpaid', 'partial'])->get();
 
         return view('receipts.create', compact('clients', 'invoices'));
     }
@@ -95,12 +97,21 @@ class ReceiptController extends Controller
             'payment_for'    => 'required|string|max:500',
         ]);
 
-        $receipt = Receipt::create([
-            ...$validated,
-            'receipt_number'  => $this->generateReceiptNumber(),
-            'amount_in_words' => $this->numberToWords($validated['amount_paid']),
-            'created_by'      => auth()->id(),
-        ]);
+        $invoice = Invoice::findOrFail($validated['invoice_id']);
+        if ((int) $invoice->client_id !== (int) $validated['client_id']) {
+            throw ValidationException::withMessages([
+                'client_id' => 'The selected invoice does not belong to this client.',
+            ]);
+        }
+
+        $receipt = self::createFromInvoice(
+            $invoice,
+            $validated['payment_method'],
+            $validated['cheque_number'] ?? null,
+            (float) $validated['amount_paid'],
+            $validated['payment_for'],
+            $validated['payment_date']
+        );
 
         return redirect()
             ->route('receipts.show', $receipt)
@@ -111,20 +122,49 @@ class ReceiptController extends Controller
     // Auto-create receipt when invoice marked paid
     // (called from InvoiceController)
     // ─────────────────────────────────────────
-    public static function createFromInvoice(Invoice $invoice, string $paymentMethod = 'bacs', $chequeNumber = null): Receipt
+    public static function createFromInvoice(
+        Invoice $invoice,
+        string $paymentMethod = 'bacs',
+        $chequeNumber = null,
+        ?float $amountPaid = null,
+        ?string $paymentFor = null,
+        ?string $paymentDate = null
+    ): Receipt
     {
-        return Receipt::create([
-            'invoice_id'      => $invoice->id,
-            'client_id'       => $invoice->client_id,
-            'receipt_number'  => self::generateReceiptNumberStatic(),
-            'ref_number'      => $invoice->invoice_no,
-            'amount_paid'     => $invoice->total_due,
-            'amount_in_words' => self::numberToWordsStatic($invoice->total_due),
-            'payment_method'  => $paymentMethod,
-            'payment_date'    => Carbon::now(),
-            'payment_for'     => $invoice->description ?? 'Legal Consultancy Fees',
-            'created_by'      => auth()->id(),
-        ]);
+        return DB::transaction(function () use ($invoice, $paymentMethod, $chequeNumber, $amountPaid, $paymentFor, $paymentDate) {
+            $invoice = Invoice::with('receipts')->lockForUpdate()->findOrFail($invoice->id);
+            $totalDue = (float) ($invoice->total_due ?: $invoice->amount);
+            $paid = (float) $invoice->receipts->sum('amount_paid');
+            $remaining = round($totalDue - $paid, 2);
+            $amount = round($amountPaid ?? $remaining, 2);
+
+            if ($amount <= 0 || $amount > $remaining) {
+                throw ValidationException::withMessages([
+                    'amount_paid' => 'Payment must be greater than zero and no more than the remaining balance of £' . number_format($remaining, 2) . '.',
+                ]);
+            }
+
+            $receipt = Receipt::create([
+                'invoice_id'      => $invoice->id,
+                'client_id'       => $invoice->client_id,
+                'receipt_number'  => self::generateReceiptNumberStatic(),
+                'ref_number'      => $invoice->invoice_no,
+                'amount_paid'     => $amount,
+                'amount_in_words' => self::numberToWordsStatic($amount),
+                'payment_method'  => $paymentMethod,
+                'cheque_number'   => $chequeNumber,
+                'payment_date'    => $paymentDate ?: Carbon::now(),
+                'payment_for'     => $paymentFor ?: ($invoice->description ?? 'Legal Consultancy Fees'),
+                'created_by'      => auth()->id(),
+            ]);
+
+            $newPaid = round($paid + $amount, 2);
+            $invoice->update([
+                'status' => $newPaid >= $totalDue ? 'paid' : 'partial',
+            ]);
+
+            return $receipt;
+        });
     }
 
     // ─────────────────────────────────────────

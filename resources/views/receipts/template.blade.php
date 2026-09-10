@@ -190,7 +190,7 @@
     {{-- ===== AMOUNT BOX ===== --}}
     <div style="text-align: right; margin-bottom: 12px;">
         <span class="amount-box">
-            Amount &nbsp; £{{ number_format($receipt->amount, 2) }}
+            Amount &nbsp; £{{ number_format($receipt->amount_paid, 0) }}
         </span>
     </div>
 
@@ -199,7 +199,7 @@
         <tr>
             <td class="info-label">Received From</td>
             <td class="info-value">
-                {{ $receipt->client->first_name }} {{ $receipt->client->last_name ?? '' }}
+                {{ $receipt->client->first_name ?? '' }} {{ $receipt->client->sir_name ?? '' }}
             </td>
         </tr>
         <tr>
@@ -208,7 +208,7 @@
         </tr>
         <tr>
             <td class="info-label">For Payment of</td>
-            <td class="info-value">{{ $receipt->for_payment_of }}</td>
+            <td class="info-value">{{ $receipt->payment_for ?? 'Legal Consultancy Fees' }}</td>
         </tr>
     </table>
 

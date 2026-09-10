@@ -27,7 +27,8 @@ class InvoiceController extends Controller
      */
    public function index(InvoiceDataTable $invoiceDataTable)
     {
-         $this->authorize('viewAny', Invoice::class);
+        $this->authorize('viewAny', Invoice::class);
+        $clients = Client::orderBy('first_name')->orderBy('sir_name')->get();
         return $invoiceDataTable->render('invoices.index');
     }
 
@@ -49,7 +50,7 @@ class InvoiceController extends Controller
             'our_ref'      => $request->our_ref,
             'vat'          => $request->vat ?? 0,
             'total_due'    => $request->total_due,
-            'amount'    => 2,
+            'amount'    => $request->total_due,
             'status'       => 'unpaid',
         ]);
 
@@ -79,8 +80,11 @@ class InvoiceController extends Controller
     }
 
     public function show($id) {
-        $invoice = Invoice::with(['client', 'items',])->findOrFail($id);
-        return view('invoices.show', compact('invoice'));
+        $invoice = Invoice::with(['client', 'items', 'receipts'])->findOrFail($id);
+        $totalDue = (float) ($invoice->total_due ?: $invoice->amount);
+        $paidAmount = (float) $invoice->receipts->sum('amount_paid');
+        $remainingAmount = max(0, round($totalDue - $paidAmount, 2));
+        return view('invoices.show', compact('invoice', 'totalDue', 'paidAmount', 'remainingAmount'));
     }
 
     public function downloadPdf($id) {
@@ -99,21 +103,16 @@ class InvoiceController extends Controller
     public function markAsPaid(Request $request, Invoice $invoice)
     {
         $request->validate([
+            'amount_paid'    => 'required|numeric|min:0.01',
             'payment_method' => 'required|in:cash,cheque,bacs,money_order',
             'cheque_number'  => 'nullable|required_if:payment_method,cheque',
         ]);
-    
-        // 1. Update invoice
-        $invoice->update([
-            'status'  => 'paid',
-            'paid_at' => now(),
-        ]);
-    
-        // 2. Auto-create receipt
+
         $receipt = ReceiptController::createFromInvoice(
             $invoice,
             $request->payment_method,
-            $request->cheque_number
+            $request->cheque_number,
+            (float) $request->amount_paid
         );
     
         return redirect()

@@ -69,8 +69,9 @@
                         <input type="number"
                             class="form-control fee-input"
                             name="items[0][fees]"
-                            placeholder="0.00"
+                            placeholder="0"
                             min="0"
+                            step="1"
                             value="{{ old('items.0.fees') }}">
                     </td>
                     <td class="text-center">
@@ -104,7 +105,8 @@
                         id="vat"
                         class="form-control"
                         min="0"
-                        placeholder="0.00">
+                        placeholder="0"
+                        step="1">
                 </td>
             </tr>
             <tr class="active">
@@ -151,7 +153,7 @@
             let vat = (20 / 100) * subtotal;
 
             // Agar VAT empty hai tabhi auto set karo
-            $('#vat').val(vat.toFixed(2));
+            $('#vat').val(Math.round(vat));
             if (vat == 0.00) {
                 $('#vat').val('');
             }
@@ -160,9 +162,9 @@
 
             const total = subtotal + vat;
 
-            $('#subtotal-display').text('£' + subtotal.toFixed(2));
-            $('#total-display').text('£' + total.toFixed(2));
-            $('#total_due').val(total.toFixed(2));
+            $('#subtotal-display').text('£' + Math.round(subtotal));
+            $('#total-display').text('£' + Math.round(total));
+            $('#total_due').val(Math.round(total));
         }
 
         function updateTotalOnly() {
@@ -176,9 +178,9 @@
             const vat = parseFloat($('#vat').val()) || 0;
             const total = subtotal + vat;
 
-            $('#subtotal-display').text('£' + subtotal.toFixed(2));
-            $('#total-display').text('£' + total.toFixed(2));
-            $('#total_due').val(total.toFixed(2));
+            $('#subtotal-display').text('£' + Math.round(subtotal));
+            $('#total-display').text('£' + Math.round(total));
+            $('#total_due').val(Math.round(total));
         }
 
         // ----- Serial Numbers Update -----
@@ -211,8 +213,8 @@
                         <input type="number"
                             class="form-control fee-input"
                             name="items[${rowCount}][fees]"
-                            placeholder="0.00"
-                            step="0.01"
+                            placeholder="0"
+                            step="1"
                             min="0">
                     </td>
                     <td class="text-center">

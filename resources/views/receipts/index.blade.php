@@ -54,7 +54,7 @@
                 <td style="padding:9px 12px;">
                     {{ str_pad($receipt->receipt_number, 4, '0', STR_PAD_LEFT) }}
                 </td>
-                <td style="padding:9px 12px;">{{ $receipt->client->name }}</td>
+                    <td style="padding:9px 12px;">{{ trim(($receipt->client->first_name ?? '') . ' ' . ($receipt->client->sir_name ?? '')) }}</td>
                 <td style="padding:9px 12px;">
                     {{ str_pad($receipt->invoice->invoice_number ?? '-', 4, '0', STR_PAD_LEFT) }}
                 </td>
