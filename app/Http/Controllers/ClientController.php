@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\PhpWord;
 use setasign\Fpdi\Fpdi;
+use ZipArchive;
 
 class ClientController extends Controller
 {
@@ -306,7 +307,8 @@ class ClientController extends Controller
 
         try {
             if ($format === 'docx') {
-                return $this->generateDocx($editedHtml, $client);
+                $template = Template::findOrFail($request->input('template_id'));
+                return $this->generateDocxFromTemplate($template, $client);
             } else {
                 return $this->generatePdf($editedHtml, $client);
             }
@@ -348,6 +350,53 @@ class ClientController extends Controller
 
         return response()->download($tempFile, 'Initial_Instruction_' . $client->first_name . '.docx')
             ->deleteFileAfterSend(true);
+    }
+
+    private function generateDocxFromTemplate(Template $template, Client $client)
+    {
+        $temporaryFile = tempnam(sys_get_temp_dir(), 'template_') . '.docx';
+        file_put_contents($temporaryFile, $template->content);
+
+        $zip = new ZipArchive();
+        if ($zip->open($temporaryFile) !== true) {
+            @unlink($temporaryFile);
+            throw new \RuntimeException('Unable to open the DOCX template.');
+        }
+
+        $salutation = match (strtolower((string) $client->gender)) {
+            'female', 'f' => 'Mrs',
+            'male', 'm' => 'Mr',
+            default => '',
+        };
+        $replacements = [
+            '[REFERENCE_NUMBER]' => $client->ref_number ?? '',
+            '{{ref_number}}' => $client->ref_number ?? '',
+            '[SALUTATION]' => $salutation,
+        ];
+
+        for ($index = 0; $index < $zip->numFiles; $index++) {
+            $entryName = $zip->getNameIndex($index);
+            if (!preg_match('#^word/(document|header\d+|footer\d+)\.xml$#', $entryName)) {
+                continue;
+            }
+
+            $xml = $zip->getFromIndex($index);
+            foreach ($replacements as $placeholder => $replacement) {
+                $xml = str_replace(
+                    htmlspecialchars($placeholder, ENT_XML1, 'UTF-8'),
+                    htmlspecialchars($replacement, ENT_XML1, 'UTF-8'),
+                    $xml
+                );
+            }
+            $zip->addFromString($entryName, $xml);
+        }
+
+        $zip->close();
+
+        return response()->download(
+            $temporaryFile,
+            'Initial_Instruction_' . $client->first_name . '.docx'
+        )->deleteFileAfterSend(true);
     }
 
     private function generatePdf($htmlContent, $client)
