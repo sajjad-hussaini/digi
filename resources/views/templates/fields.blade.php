@@ -17,6 +17,8 @@
                 <p>[ADDRESS_2] => For address 2</p>
                 <p>[NATIONALITY] => For Nationality</p>
                 <p>[COUNTRY] => For country</p>
+                <p>[REFERENCE_NUMBER] => For Client Reference Number</p>
+                <p>[SALUTATION] => Mr for Male, Mrs for Female</p>
                 <div class="card-body">
                     <!-- Tab Navigation -->
                     <ul class="nav nav-tabs mb-3" role="tablist">

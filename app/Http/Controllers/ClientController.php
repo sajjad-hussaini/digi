@@ -14,6 +14,7 @@ use App\Http\Requests\UpdateClientRequest;
 use App\Template;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\PhpWord;
@@ -301,6 +302,7 @@ class ClientController extends Controller
 
         $editedHtml = $request->edited_html;
         $format = $request->format;
+        $editedHtml = $this->replaceClientPlaceholders($editedHtml, $client);
 
         try {
             if ($format === 'docx') {
@@ -370,6 +372,21 @@ class ClientController extends Controller
         $pdf = Pdf::loadHTML($html)->setPaper('a4', 'portrait');
 
         return $pdf->download('Initial_Instruction_' . $client->first_name . '.pdf');
+    }
+
+    private function replaceClientPlaceholders(string $html, Client $client): string
+    {
+        $salutation = match (strtolower((string) $client->gender)) {
+            'female', 'f' => 'Mrs',
+            'male', 'm' => 'Mr',
+            default => '',
+        };
+
+        return str_replace(
+            ['[REFERENCE_NUMBER]', '{{ref_number}}', '[SALUTATION]'],
+            [$client->ref_number ?? '', $client->ref_number ?? '', $salutation],
+            $html
+        );
     }
 
     private function prepareLetterHtml(string $html): string
@@ -565,21 +582,31 @@ class ClientController extends Controller
     public function makePermanent($id)
     {
         $client = Client::findOrFail($id);
-        $client->ref_number = $this->generateRandomRefNumber();
-        $client->is_permanent = true;
-        $client->save();
+
+        if (!$client->is_permanent || !$client->ref_number) {
+            DB::transaction(function () use ($client) {
+                if (!$client->ref_number) {
+                    $client->ref_number = $this->generateRandomRefNumber();
+                }
+
+                $client->is_permanent = true;
+                $client->save();
+            });
+        }
 
         return redirect()->route('clients.show', $client->id)->with('success', 'Client marked as permanent.');
     }
 
     public function generateRandomRefNumber()
     {
-        $characters = '0123456789';
-        $refNumber = '';
-        for ($i = 0; $i < 6; $i++) {
-            $refNumber .= $characters[rand(0, strlen($characters) - 1)];
-        }
-        return $refNumber;
+        $lastReference = Client::query()
+            ->whereNotNull('ref_number')
+            ->lockForUpdate()
+            ->pluck('ref_number')
+            ->map(fn ($reference) => (int) $reference)
+            ->max() ?? 0;
+
+        return str_pad((string) ($lastReference + 1), 6, '0', STR_PAD_LEFT);
     }
 
     public function getReferenceNumber($id)

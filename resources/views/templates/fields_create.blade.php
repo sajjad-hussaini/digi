@@ -38,6 +38,7 @@
 
 <!-- doc file -->
 <div class="form-group col-sm-12 {{ $errors->has('doc_file') ? 'has-error' : '' }}">
+    <small class="form-text text-muted mb-2">Use <strong>[REFERENCE_NUMBER]</strong> for the client's permanent reference number or <strong>[SALUTATION]</strong> for Mr/Mrs based on gender.</small>
     {!! Form::label('doc_file', 'Upload Document:') !!}
     {!! Form::file('doc_file', null, [
         'class' => 'form-control',

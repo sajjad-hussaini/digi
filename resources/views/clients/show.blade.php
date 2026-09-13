@@ -314,6 +314,8 @@ function autoReplaceClientData(html) {
         '[ADDRESS_2]'      : '{{ $client->color ?? "" }}',
         '[NATIONALITY]'      : '{{ $client->country ?? "" }}',
         '[COUNTRY]'      : '{{ $client->national ?? "" }}',
+        '[REFERENCE_NUMBER]' : '{{ $client->ref_number ?? "" }}',
+        '[SALUTATION]' : '{{ strtolower((string) ($client->gender ?? "")) === "female" ? "Mrs" : (strtolower((string) ($client->gender ?? "")) === "male" ? "Mr" : "") }}',
         
     };
 
