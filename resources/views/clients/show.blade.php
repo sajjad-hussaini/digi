@@ -177,6 +177,68 @@ $(document).ready(function() {
         $('#findReplacePanel').slideToggle();
     });
 
+    $(document).on('click', '.format-command', function() {
+        $('#documentContent').focus();
+        document.execCommand($(this).data('command'), false, null);
+    });
+
+    $('#documentFont').change(function() {
+        $('#documentContent').focus();
+        document.execCommand('fontName', false, $(this).val());
+    });
+
+    $('#documentFontSize').change(function() {
+        $('#documentContent').focus();
+        document.execCommand('fontSize', false, $(this).val());
+    });
+
+    $('#documentTextColor').change(function() {
+        $('#documentContent').focus();
+        document.execCommand('foreColor', false, $(this).val());
+    });
+
+    $('#documentLineSpacing').change(function() {
+        const selection = window.getSelection();
+        let node = selection.rangeCount ? selection.getRangeAt(0).commonAncestorContainer : $('#documentContent')[0];
+        node = node.nodeType === 3 ? node.parentElement : node;
+        const block = $(node).closest('p, div, li, td, th, h1, h2, h3, h4, h5, h6', $('#documentContent')[0])[0] || $('#documentContent')[0];
+        $(block).css('line-height', $(this).val());
+    });
+
+    let selectedDocumentImage = null;
+    $(document).on('click', '#documentContent img', function(event) {
+        event.stopPropagation();
+        selectedDocumentImage = this;
+        $('#documentContent img').removeClass('selected-document-image');
+        $(this).addClass('selected-document-image');
+    });
+
+    $(document).on('click', '.image-command', function() {
+        if (!selectedDocumentImage) {
+            alert('Click a logo or image first.');
+            return;
+        }
+
+        const position = $(this).data('position');
+        selectedDocumentImage.style.display = 'block';
+        selectedDocumentImage.style.marginLeft = position === 'right' ? 'auto' : '0';
+        selectedDocumentImage.style.marginRight = position === 'left' ? 'auto' : '0';
+        selectedDocumentImage.style.float = position === 'center' ? 'none' : position;
+        selectedDocumentImage.parentElement.style.textAlign = position;
+    });
+
+    $(document).on('click', '.image-size-command', function() {
+        if (!selectedDocumentImage) {
+            alert('Click a logo or image first.');
+            return;
+        }
+
+        const size = $(this).data('size') + 'px';
+        selectedDocumentImage.style.width = size;
+        selectedDocumentImage.style.maxWidth = size;
+        selectedDocumentImage.removeAttribute('width');
+    });
+
     // Replace All
     $('#replaceAllBtn').click(function() {
         let findText = $('#findText').val().trim();
@@ -281,6 +343,7 @@ function loadTemplateContent(templateId) {
                     
                     // Auto replace client placeholders
                     html = autoReplaceClientData(html);
+                    html = ensureDocumentFooter(html);
                     
                     $('#documentContent').html(html);
                     $('#editorLoading').hide();
@@ -327,6 +390,25 @@ function autoReplaceClientData(html) {
     return html;
 }
 
+function ensureDocumentFooter(html) {
+    if (html.toLowerCase().indexOf('qureshisalim@yahoo.com') !== -1) {
+        return html;
+    }
+
+    return html + `
+        <table class="document-footer" style="width:100%; border-top:1px solid #999; margin-top:24px;">
+            <tr>
+                <td style="text-align:center; vertical-align:top;">
+                    <strong>UK Immigration Law</strong><br>
+                    1st Floor, 236 ST. Helens Road, Bolton BL3 4EB, Ph. 07777328028, Email: qureshisalim@yahoo.com
+                </td>
+                <td style="width:85px; text-align:right; vertical-align:top;">
+                    <img src="{{ asset('images/footer.jpg') }}" width="85" style="width:85px; max-width:85px; height:auto;">
+                </td>
+            </tr>
+        </table>`;
+}
+
 // Generate document
 function generateDocument(format, currentTargetType) {
     let htmlContent = $('#documentContent').html();
@@ -363,7 +445,22 @@ function generateDocument(format, currentTargetType) {
                     .html(`<i class="fa ${icon}"></i> Generate ${format.toUpperCase()}`);
         },
         error: function(xhr) {
-            alert('Error generating document');
+            if (xhr.response instanceof Blob) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    let message = 'Error generating document';
+                    try {
+                        const response = JSON.parse(reader.result);
+                        message = response.error || message;
+                    } catch (error) {
+                        // Keep the generic message when the server response is not JSON.
+                    }
+                    alert(message);
+                };
+                reader.readAsText(xhr.response);
+            } else {
+                alert(xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : 'Error generating document');
+            }
             $(btnId).prop('disabled', false)
                     .html(`<i class="fa ${icon}"></i> Generate ${format.toUpperCase()}`);
         }
@@ -387,13 +484,42 @@ function resetEditor() {
 #documentContent {
     font-family: 'Calibri', Arial, sans-serif;
     font-size: 11pt;
-    line-height: 1.6;
+    line-height: 1.15;
     color: #000;
-    min-height: 400px;
+    min-height: 250mm;
+    width: 210mm;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 18mm;
+    margin: 0 auto;
+    background: #fff;
+    overflow-wrap: break-word;
 }
-#documentContent p { margin: 0 0 8px 0; }
+#documentContent p { margin: 0 0 4px 0; }
 #documentContent table { border-collapse: collapse; width: 100%; margin: 10px 0; }
 #documentContent td, #documentContent th { border: 1px solid #ddd; padding: 6px; }
+.document-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 8px; background: #f5f6f8; border: 1px solid #ddd; }
+.document-toolbar-select { width: auto; min-width: 120px; }
+.document-color { width: 34px; height: 30px; padding: 2px; border: 1px solid #ccc; }
+.selected-document-image { outline: 2px solid #337ab7; outline-offset: 3px; }
+.document-modal-dialog { width: calc(100vw - 30px); max-width: 1400px; margin: 15px auto; }
+.document-modal-dialog .modal-content { max-height: calc(100vh - 30px); display: flex; flex-direction: column; }
+.document-modal-dialog .modal-header { flex: 0 0 auto; }
+.document-modal-dialog .modal-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+.document-editor { background: #e9ecef !important; padding: 18px; overflow: visible !important; }
+.document-editor #documentContent { flex: 0 0 210mm; }
+@media (min-width: 992px) {
+    .document-modal-dialog { width: calc(100vw - 60px); }
+}
+@media (max-width: 768px) {
+    .document-modal-dialog { width: calc(100vw - 16px); margin: 8px auto; }
+    #documentContent { width: 100%; padding: 12mm 8mm; }
+    .document-editor { padding: 8px; }
+}
+@media print {
+    @page { size: A4 portrait; margin: 0; }
+    #documentContent { width: 210mm; min-height: 297mm; padding: 18mm; }
+}
 
 /* Modern Gradient Header */
 .bg-gradient-primary {

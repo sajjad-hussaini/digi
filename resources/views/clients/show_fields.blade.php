@@ -331,7 +331,7 @@
 </div>
 <!-- Initial Instruction Modal -->
 <div class="modal fade" id="initialInstructionModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog document-modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title">Client Letters</h5>
@@ -396,6 +396,51 @@
                         </div>
                     </div>
 
+                        <div id="documentToolbar" class="document-toolbar mb-3" role="toolbar" aria-label="Document formatting">
+                            <div class="btn-group btn-group-sm mr-2">
+                                <button type="button" class="btn btn-default format-command" data-command="bold" title="Bold"><i class="fa fa-bold"></i></button>
+                                <button type="button" class="btn btn-default format-command" data-command="italic" title="Italic"><i class="fa fa-italic"></i></button>
+                                <button type="button" class="btn btn-default format-command" data-command="underline" title="Underline"><i class="fa fa-underline"></i></button>
+                            </div>
+                            <div class="btn-group btn-group-sm mr-2">
+                                <button type="button" class="btn btn-default format-command" data-command="justifyLeft" title="Align left"><i class="fa fa-align-left"></i></button>
+                                <button type="button" class="btn btn-default format-command" data-command="justifyCenter" title="Align center"><i class="fa fa-align-center"></i></button>
+                                <button type="button" class="btn btn-default format-command" data-command="justifyRight" title="Align right"><i class="fa fa-align-right"></i></button>
+                                <button type="button" class="btn btn-default format-command" data-command="justifyFull" title="Justify"><i class="fa fa-align-justify"></i></button>
+                            </div>
+                            <select id="documentFont" class="form-control form-control-sm document-toolbar-select" title="Font family">
+                                <option value="Arial">Arial</option>
+                                <option value="Calibri">Calibri</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Times New Roman">Times New Roman</option>
+                            </select>
+                            <select id="documentFontSize" class="form-control form-control-sm document-toolbar-select" title="Font size">
+                                <option value="2">10 pt</option>
+                                <option value="3" selected>12 pt</option>
+                                <option value="4">14 pt</option>
+                                <option value="5">18 pt</option>
+                                <option value="6">24 pt</option>
+                            </select>
+                            <select id="documentLineSpacing" class="form-control form-control-sm document-toolbar-select" title="Line spacing">
+                                <option value="1">Single spacing</option>
+                                <option value="1.15">1.15 spacing</option>
+                                <option value="1.5">1.5 spacing</option>
+                                <option value="2">Double spacing</option>
+                            </select>
+                            <input type="color" id="documentTextColor" class="document-color" value="#000000" title="Text color">
+                            <div class="btn-group btn-group-sm ml-2">
+                                <button type="button" class="btn btn-default image-command" data-position="left" title="Move selected logo left"><i class="fa fa-arrow-left"></i> Logo</button>
+                                <button type="button" class="btn btn-default image-command" data-position="center" title="Center selected logo"><i class="fa fa-arrows-h"></i></button>
+                                <button type="button" class="btn btn-default image-command" data-position="right" title="Move selected logo right"><i class="fa fa-arrow-right"></i></button>
+                            </div>
+                            <div class="btn-group btn-group-sm ml-2">
+                                <button type="button" class="btn btn-default image-size-command" data-size="70" title="Small logo">S</button>
+                                <button type="button" class="btn btn-default image-size-command" data-size="100" title="Medium logo">M</button>
+                                <button type="button" class="btn btn-default image-size-command" data-size="140" title="Large logo">L</button>
+                            </div>
+                            <button type="button" class="btn btn-default btn-sm ml-2 format-command" data-command="removeFormat" title="Clear formatting"><i class="fa fa-eraser"></i></button>
+                        </div>
+
                     <!-- Find & Replace Panel -->
                     <div id="findReplacePanel" class="card mb-3" style="display:none;">
                         <div class="card-body py-2">
@@ -424,9 +469,8 @@
                     </div>
 
                     <!-- Document Editor -->
-                    <div id="docxEditor" class="border bg-white p-4"
-                        style="min-height: 500px; max-height: 600px; overflow-y: auto; 
-                                box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                    <div id="docxEditor" class="document-editor border bg-white"
+                        style="min-height: 500px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
 
                         <!-- Loading -->
                         <div id="editorLoading" class="text-center py-5">

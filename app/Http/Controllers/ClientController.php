@@ -301,20 +301,24 @@ class ClientController extends Controller
         //     'format' => 'required|in:docx,pdf'
         // ]);
 
-        $editedHtml = $request->edited_html;
-        $format = $request->format;
+        $request->validate([
+            'edited_html' => 'required|string',
+            'format' => 'required|in:docx,pdf',
+        ]);
+
+        $editedHtml = $request->input('edited_html');
+        $format = $request->input('format');
         $editedHtml = $this->replaceClientPlaceholders($editedHtml, $client);
 
         try {
             if ($format === 'docx') {
-                $template = Template::findOrFail($request->input('template_id'));
-                return $this->generateDocxFromTemplate($template, $client);
+                return $this->generateDocx($editedHtml, $client);
             } else {
                 return $this->generatePdf($editedHtml, $client);
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Document Generation Error: ' . $e->getMessage());
-            return response()->json(['error' => 'Generation failed'], 500);
+            return response()->json(['error' => 'DOCX/PDF generation failed: ' . $e->getMessage()], 500);
         }
     }
 
@@ -326,15 +330,15 @@ class ClientController extends Controller
         $section = $phpWord->addSection([
             'pageSizeW' => 11906,
             'pageSizeH' => 16838,
-            'marginLeft' => 1440,
-            'marginRight' => 1440,
-            'marginTop' => 1440,
-            'marginBottom' => 1440,
+            'marginLeft' => 1020,
+            'marginRight' => 1020,
+            'marginTop' => 1020,
+            'marginBottom' => 1020,
         ]);
 
         \PhpOffice\PhpWord\Shared\Html::addHtml(
             $section,
-            $docxHtml,
+            '<!DOCTYPE html><html><body>' . $docxHtml . '</body></html>',
             false,
             false
         );
@@ -407,14 +411,16 @@ class ClientController extends Controller
         <head>
             <meta charset="utf-8">
             <style>
-                @page { size: A4; margin: 18mm 18mm 18mm 18mm; }
-                body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.5; margin: 0; }
-                p { margin: 10px 0; }
-                img:first-of-type { display: block; float: right; margin-left: auto; margin-right: 0; max-width: 140px; height: auto; }
+                @page { size: A4; margin: 18mm; }
+                body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.15; margin: 0; }
+                .document-page { width: auto; min-height: 0; box-sizing: border-box; padding: 0; overflow: visible; overflow-wrap: break-word; }
+                .document-page p { margin: 0 0 4px; }
+                .document-page table { max-width: 100%; }
+                .document-page img { max-width: 100%; height: auto; }
             </style>
         </head>
         <body>
-            ' . $this->prepareLetterHtml($htmlContent) . '
+            <div class="document-page">' . $this->prepareLetterHtml($htmlContent, false) . '</div>
         </body>
         </html>';
 
@@ -438,14 +444,14 @@ class ClientController extends Controller
         );
     }
 
-    private function prepareLetterHtml(string $html): string
+    private function prepareLetterHtml(string $html, bool $addFooter = true): string
     {
         if (preg_match('/<body[^>]*>(.*?)<\/body>/is', $html, $matches)) {
             $html = $matches[1];
         }
 
         $footerAdded = false;
-        if (stripos($html, 'qureshisalim@yahoo.com') === false) {
+        if ($addFooter && stripos($html, 'qureshisalim@yahoo.com') === false) {
             $footerAdded = true;
             $footerLogo = public_path('images/footer.jpg');
             $footerLogoHtml = is_file($footerLogo)
@@ -467,7 +473,7 @@ class ClientController extends Controller
             $imageIndex++;
             $attributes = $matches[1];
             $width = $imageIndex === 1 ? '70px' : '85px';
-            $style = 'float:right; display:block; margin-left:auto; margin-right:0; width:' . $width . '; max-width:' . $width . '; height:auto;';
+            $style = 'display:block; width:' . $width . '; max-width:' . $width . '; height:auto;';
 
             if (preg_match('/\sstyle=["\']([^"\']*)["\']/i', $attributes, $styleMatch)) {
                 $style .= ' ' . $styleMatch[1];
@@ -480,7 +486,7 @@ class ClientController extends Controller
             return '<img' . $attributes . ' style="' . $style . '">';
         }, $html);
 
-        if (!$footerAdded && $imageCount < 2) {
+        if ($addFooter && !$footerAdded && $imageCount < 2) {
             $footerLogo = public_path('images/footer.jpg');
             if (is_file($footerLogo)) {
                 $html .= '<p align="right"><img src="' . $footerLogo . '" width="85" style="width:85px; max-width:85px; height:auto;"></p>';
@@ -493,24 +499,45 @@ class ClientController extends Controller
     private function prepareDocxHtml(string $html): array
     {
         $temporaryImages = [];
-        $html = $this->prepareLetterHtml($html);
+        $html = $this->prepareLetterHtml($html, false);
+        $html = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $html);
+        $html = preg_replace('/<style\b[^>]*>.*?<\/style>/is', '', $html);
+        $html = preg_replace('/<!--.*?-->/s', '', $html);
 
         $html = preg_replace_callback('/<img\b([^>]*)>/i', function ($matches) use (&$temporaryImages) {
             $attributes = $matches[1];
+            $imagePath = null;
+            $imageExtension = 'png';
 
-            if (!preg_match('/\ssrc=["\']data:([^;]+);base64,([^"\']+)["\']/i', $attributes, $imageMatch)) {
+            if (preg_match('/\ssrc=["\']data:([^;]+);base64,([^"\']+)["\']/i', $attributes, $imageMatch)) {
+                $imageExtension = explode('/', strtolower($imageMatch[1]))[1] ?? 'png';
+                $imagePath = tempnam(sys_get_temp_dir(), 'letter_source_');
+                file_put_contents($imagePath, base64_decode($imageMatch[2], true));
+            } elseif (preg_match('/\ssrc=["\']([^"\']+)["\']/i', $attributes, $sourceMatch)) {
+                $relativePath = parse_url($sourceMatch[1], PHP_URL_PATH) ?: $sourceMatch[1];
+                $candidatePath = public_path(ltrim(str_replace('/', DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR));
+                if (!is_file($candidatePath)) {
+                    $candidatePath = public_path('images' . DIRECTORY_SEPARATOR . basename($relativePath));
+                }
+
+                if (is_file($candidatePath)) {
+                    $imageExtension = pathinfo($candidatePath, PATHINFO_EXTENSION) ?: 'png';
+                    $imagePath = $candidatePath;
+                }
+            }
+
+            if (!$imagePath) {
                 return $matches[0];
             }
 
-            $extension = explode('/', strtolower($imageMatch[1]))[1] ?? 'png';
             $temporaryImage = tempnam(sys_get_temp_dir(), 'letter_image_');
             @unlink($temporaryImage);
-            $temporaryImage .= '.' . preg_replace('/[^a-z0-9]/', '', $extension);
-            file_put_contents($temporaryImage, base64_decode($imageMatch[2], true));
+            $temporaryImage .= '.' . preg_replace('/[^a-z0-9]/i', '', $imageExtension);
+            copy($imagePath, $temporaryImage);
             $temporaryImages[] = $temporaryImage;
 
             $attributes = preg_replace(
-                '/\ssrc=["\']data:[^;]+;base64,[^"\']+["\']/i',
+                '/\ssrc=["\'][^"\']+["\']/i',
                 ' src="' . $temporaryImage . '"',
                 $attributes,
                 1
@@ -519,8 +546,21 @@ class ClientController extends Controller
             return '<img' . $attributes . '>';
         }, $html);
 
-        $html = preg_replace_callback('/<img\b[^>]*>/i', function ($matches) {
-            return '<p align="right">' . $matches[0] . '</p>';
+        $html = preg_replace('/\s(?:class|id)=["\'][^"\']*["\']/i', '', $html);
+        $html = preg_replace_callback('/\sstyle=["\']([^"\']*)["\']/i', function ($matches) {
+            $allowed = [];
+            foreach (explode(';', $matches[1]) as $declaration) {
+                [$property, $value] = array_pad(explode(':', $declaration, 2), 2, null);
+                $property = strtolower(trim((string) $property));
+                if ($value !== null && in_array($property, [
+                    'text-align', 'font-family', 'font-size', 'font-weight', 'font-style',
+                    'text-decoration', 'line-height', 'width', 'height', 'border', 'padding'
+                ], true)) {
+                    $allowed[] = $property . ':' . trim($value);
+                }
+            }
+
+            return $allowed ? ' style="' . implode(';', $allowed) . '"' : '';
         }, $html);
 
         return [$html, $temporaryImages];
