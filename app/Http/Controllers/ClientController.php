@@ -455,7 +455,7 @@ class ClientController extends Controller
             $footerAdded = true;
             $footerLogo = public_path('images/footer.jpg');
             $footerLogoHtml = is_file($footerLogo)
-                ? '<img src="' . $footerLogo . '" width="85" style="width:85px; max-width:85px; height:auto;">'
+                ? '<img src="' . $footerLogo . '" width="120" style="width:120px; max-width:100%; height:auto;">'
                 : '';
 
             $html .= '<table width="100%" style="border-top:1px solid #999; margin-top:24px;">'
@@ -467,21 +467,15 @@ class ClientController extends Controller
         }
 
         $imageCount = preg_match_all('/<img\b[^>]*>/i', $html);
-        $imageIndex = 0;
 
-        $html = preg_replace_callback('/<img\b([^>]*)>/i', function ($matches) use (&$imageIndex) {
-            $imageIndex++;
+        $html = preg_replace_callback('/<img\b([^>]*)>/i', function ($matches) {
             $attributes = $matches[1];
-            $width = $imageIndex === 1 ? '70px' : '85px';
-            $style = 'display:block; width:' . $width . '; max-width:' . $width . '; height:auto;';
+            $style = 'max-width:100%; height:auto;';
 
             if (preg_match('/\sstyle=["\']([^"\']*)["\']/i', $attributes, $styleMatch)) {
                 $style .= ' ' . $styleMatch[1];
                 $attributes = preg_replace('/\sstyle=["\'][^"\']*["\']/i', '', $attributes, 1);
             }
-
-            $attributes = preg_replace('/\s(width|height)=["\'][^"\']*["\']/i', '', $attributes);
-            $attributes .= ' width="' . ($imageIndex === 1 ? '70' : '85') . '"';
 
             return '<img' . $attributes . ' style="' . $style . '">';
         }, $html);
@@ -489,7 +483,7 @@ class ClientController extends Controller
         if ($addFooter && !$footerAdded && $imageCount < 2) {
             $footerLogo = public_path('images/footer.jpg');
             if (is_file($footerLogo)) {
-                $html .= '<p align="right"><img src="' . $footerLogo . '" width="85" style="width:85px; max-width:85px; height:auto;"></p>';
+                $html .= '<p align="right"><img src="' . $footerLogo . '" width="120" style="width:120px; max-width:100%; height:auto;"></p>';
             }
         }
 

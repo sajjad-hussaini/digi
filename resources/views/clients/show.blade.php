@@ -346,6 +346,7 @@ function loadTemplateContent(templateId) {
                     html = ensureDocumentFooter(html);
                     
                     $('#documentContent').html(html);
+                    formatTemplateImages();
                     $('#editorLoading').hide();
                     $('#documentContent').show();
                 })
@@ -358,6 +359,22 @@ function loadTemplateContent(templateId) {
             console.error('Error:', xhr);
             $('#editorLoading').html('<span class="text-danger">Error loading template</span>');
         }
+    });
+}
+
+function formatTemplateImages() {
+    $('#documentContent img').each(function() {
+        $(this).css({
+            display: 'block',
+            width: '85px',
+            maxWidth: '85px',
+            height: 'auto',
+            marginLeft: '8px',
+            marginRight: '0',
+            float: 'right'
+        });
+
+        $(this).parent().css('text-align', 'left');
     });
 }
 
@@ -498,6 +515,7 @@ function resetEditor() {
 #documentContent p { margin: 0 0 4px 0; }
 #documentContent table { border-collapse: collapse; width: 100%; margin: 10px 0; }
 #documentContent td, #documentContent th { border: 1px solid #ddd; padding: 6px; }
+#documentContent img { max-width: 100%; height: auto; }
 .document-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 8px; background: #f5f6f8; border: 1px solid #ddd; }
 .document-toolbar-select { width: auto; min-width: 120px; }
 .document-color { width: 34px; height: 30px; padding: 2px; border: 1px solid #ccc; }
