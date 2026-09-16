@@ -343,6 +343,7 @@ function loadTemplateContent(templateId) {
                     
                     // Auto replace client placeholders
                     html = autoReplaceClientData(html);
+                    html = ensureDocumentHeader(html);
                     html = ensureDocumentFooter(html);
                     
                     $('#documentContent').html(html);
@@ -363,7 +364,7 @@ function loadTemplateContent(templateId) {
 }
 
 function formatTemplateImages() {
-    $('#documentContent img').each(function() {
+    $('#documentContent img').not('.document-header img, .document-footer img').each(function() {
         $(this).css({
             display: 'block',
             width: '85px',
@@ -376,6 +377,19 @@ function formatTemplateImages() {
 
         $(this).parent().css('text-align', 'left');
     });
+}
+
+function ensureDocumentHeader(html) {
+    if (html.toLowerCase().indexOf('document-header') !== -1) {
+        return html;
+    }
+
+    return `
+        <table class="document-header" style="width:100%; margin:0 0 18px; border-collapse:collapse;">
+            <tr><td style="text-align:right; border:0; padding:0;">
+                <img src="{{ asset('images/logo_imigration_law.png') }}" alt="UK Immigration Law" style="width:159px; max-width:159px; height:auto;">
+            </td></tr>
+        </table>` + html;
 }
 
 // Auto replace client placeholders
@@ -513,9 +527,18 @@ function resetEditor() {
     overflow-wrap: break-word;
 }
 #documentContent p { margin: 0 0 4px 0; }
-#documentContent table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+#documentContent h1 { font-size: 16pt !important; line-height: 1.15; margin: 8px 0 4px; }
+#documentContent h2 { font-size: 14pt !important; line-height: 1.15; margin: 7px 0 4px; }
+#documentContent h3 { font-size: 13pt !important; line-height: 1.15; margin: 6px 0 4px; }
+#documentContent h4 { font-size: 12pt !important; line-height: 1.15; margin: 5px 0 4px; }
+#documentContent h5, #documentContent h6 { font-size: 11pt !important; line-height: 1.15; margin: 4px 0; }
+#documentContent table { border-collapse: collapse; max-width: 100%; margin: 10px 0; }
 #documentContent td, #documentContent th { border: 1px solid #ddd; padding: 6px; }
 #documentContent img { max-width: 100%; height: auto; }
+#documentContent .document-header,
+#documentContent .document-footer { width: 100% !important; }
+#documentContent .document-header td,
+#documentContent .document-footer td { border: 0; }
 .document-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 8px; background: #f5f6f8; border: 1px solid #ddd; }
 .document-toolbar-select { width: auto; min-width: 120px; }
 .document-color { width: 34px; height: 30px; padding: 2px; border: 1px solid #ccc; }

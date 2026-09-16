@@ -304,6 +304,7 @@ class ClientController extends Controller
         $request->validate([
             'edited_html' => 'required|string',
             'format' => 'required|in:docx,pdf',
+            'template_id' => 'nullable|integer|exists:templates,id',
         ]);
 
         $editedHtml = $request->input('edited_html');
@@ -312,8 +313,24 @@ class ClientController extends Controller
 
         try {
             if ($format === 'docx') {
+                if ($request->filled('template_id')) {
+                    return $this->generateDocxFromTemplate(
+                        Template::findOrFail($request->input('template_id')),
+                        $client
+                    );
+                }
+
                 return $this->generateDocx($editedHtml, $client);
             } else {
+                if ($request->filled('template_id')) {
+                    // Convert the personalized DOCX itself. Rebuilding it as
+                    // HTML loses the original Word header, footer and layout.
+                    return $this->generatePdfFromTemplate(
+                        Template::findOrFail($request->input('template_id')),
+                        $client
+                    );
+                }
+
                 return $this->generatePdf($editedHtml, $client);
             }
         } catch (\Throwable $e) {
@@ -376,6 +393,19 @@ class ClientController extends Controller
             '[REFERENCE_NUMBER]' => $client->ref_number ?? '',
             '{{ref_number}}' => $client->ref_number ?? '',
             '[SALUTATION]' => $salutation,
+            '[CLIENT_FIRST_NAME]' => $client->first_name ?? '',
+            '[CLIENT_SURNAME]' => $client->sir_name ?? '',
+            '[CLIENT_GENDER]' => $client->gender ?? '',
+            '[CLIENT_PASSPORT_NO]' => $client->passport_no ?? '',
+            '[CITY]' => $client->city ?? '',
+            '[CLIENT_EMAIL]' => $client->email ?? '',
+            '[CLIENT_PHONE]' => $client->phone ?? '',
+            '[CLIENT_DOB]' => $client->dob ?? '',
+            '[ADDRESS_1]' => $client->address1 ?? '',
+            '[ADDRESS_2]' => $client->color ?? '',
+            '[NATIONALITY]' => $client->country ?? '',
+            '[COUNTRY]' => $client->national ?? '',
+            '[DATE]' => now()->format('jS F Y'),
         ];
 
         for ($index = 0; $index < $zip->numFiles; $index++) {
@@ -405,28 +435,183 @@ class ClientController extends Controller
 
     private function generatePdf($htmlContent, $client)
     {
+        // The browser editor cannot render a DOCX header/footer.  Keep those
+        // elements outside the editable HTML so Dompdf repeats them on every
+        // page and the document body keeps its own alignment.
+        $htmlContent = $this->removeGeneratedDocumentChrome($htmlContent);
+        $headerLogo = public_path('images/logo_imigration_law.png');
+        $headerLogoHtml = is_file($headerLogo)
+            ? '<img src="' . $headerLogo . '" style="width:42mm; height:auto;">'
+            : '';
+        $footerLogo = public_path('images/footer.jpg');
+        $footerLogoHtml = is_file($footerLogo)
+            ? '<img src="' . $footerLogo . '" style="width:55px; height:auto;">'
+            : '';
+        $documentHeader = '<table class="pdf-header" width="100%"><tr>'
+            . '<td align="right">' . $headerLogoHtml . '</td>'
+            . '</tr></table>';
+        $documentFooter = '<table class="pdf-footer" width="100%"><tr>'
+            . '<td class="pdf-footer-text" align="center"><strong>UK Immigration Law</strong><br>'
+            . '1st Floor, 236 ST. Helens Road, Bolton BL3 4EB, Ph. 07777328028, '
+            . 'Email: qureshisalim@yahoo.com</td>'
+            . '<td class="pdf-footer-logo" align="right">' . $footerLogoHtml . '</td>'
+            . '</tr></table>';
+
         $html = '
         <!DOCTYPE html>
         <html>
         <head>
             <meta charset="utf-8">
             <style>
-                @page { size: A4; margin: 18mm; }
+                @page { size: A4; margin: 30mm 18mm 30mm; }
                 body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.15; margin: 0; }
-                .document-page { width: auto; min-height: 0; box-sizing: border-box; padding: 0; overflow: visible; overflow-wrap: break-word; }
+                .document-page { width: auto; box-sizing: border-box; padding: 0 0 8mm; overflow: visible; overflow-wrap: break-word; }
                 .document-page p { margin: 0 0 4px; }
+                .document-page h1 { font-size: 16pt !important; line-height: 1.15 !important; margin: 8px 0 4px !important; }
+                .document-page h2 { font-size: 14pt !important; line-height: 1.15 !important; margin: 7px 0 4px !important; }
+                .document-page h3 { font-size: 13pt !important; line-height: 1.15 !important; margin: 6px 0 4px !important; }
+                .document-page h4 { font-size: 12pt !important; line-height: 1.15 !important; margin: 5px 0 4px !important; }
+                .document-page h5, .document-page h6 { font-size: 11pt !important; line-height: 1.15 !important; margin: 4px 0 !important; }
                 .document-page table { max-width: 100%; }
                 .document-page img { max-width: 100%; height: auto; }
+                .pdf-header { position: fixed; left: 0; right: 0; top: -23mm; border-collapse: collapse; }
+                .pdf-footer { position: fixed; left: 0; right: 0; bottom: -22mm; border-top: 1px solid #999; border-collapse: collapse; padding-top: 2mm; font-family: Arial, sans-serif; font-size: 8pt; }
+                .pdf-footer-text { width: 82%; vertical-align: top; }
+                .pdf-footer-logo { width: 18%; vertical-align: top; }
             </style>
         </head>
         <body>
-            <div class="document-page">' . $this->prepareLetterHtml($htmlContent, false) . '</div>
+            ' . $documentHeader . '
+            <div class="document-page">' . $this->prepareLetterHtml($htmlContent, false) . '</div>'
+            . $documentFooter . '
         </body>
         </html>';
 
         $pdf = Pdf::loadHTML($html)->setPaper('a4', 'portrait');
 
         return $pdf->download('Initial_Instruction_' . $client->first_name . '.pdf');
+    }
+
+    private function generatePdfFromTemplate(Template $template, Client $client)
+    {
+        $temporaryFile = $this->createPersonalizedTemplateFile($template, $client);
+        $pdfFile = tempnam(sys_get_temp_dir(), 'template_pdf_');
+        @unlink($pdfFile);
+        $pdfFile .= '.pdf';
+
+        try {
+            $this->convertDocxToPdfWithWord($temporaryFile, $pdfFile);
+
+            return response()->download(
+                $pdfFile,
+                'Initial_Instruction_' . $client->first_name . '.pdf'
+            )->deleteFileAfterSend(true);
+        } finally {
+            @unlink($temporaryFile);
+        }
+    }
+
+    private function convertDocxToPdfWithWord(string $docxFile, string $pdfFile): void
+    {
+        if (DIRECTORY_SEPARATOR !== '\\') {
+            throw new \RuntimeException('Original Word-layout PDF conversion is available only on the Windows document server.');
+        }
+
+        $wordExecutable = 'C:\\Program Files\\Microsoft Office\\Office16\\WINWORD.EXE';
+        if (!is_file($wordExecutable)) {
+            throw new \RuntimeException('Microsoft Word is required to create a PDF with the original template layout.');
+        }
+
+        $quotePowerShell = static function (string $path): string {
+            return "'" . str_replace("'", "''", $path) . "'";
+        };
+        $input = $quotePowerShell($docxFile);
+        $output = $quotePowerShell($pdfFile);
+        $script = "\$ErrorActionPreference = 'Stop'; "
+            . "\$word = New-Object -ComObject Word.Application; "
+            . "\$word.Visible = \$false; \$word.DisplayAlerts = 0; "
+            . "try { \$document = \$word.Documents.Open($input, \$false, \$true); "
+            . "\$document.ExportAsFixedFormat($output, 17); \$document.Close(); } "
+            . "finally { \$word.Quit(); [void][Runtime.InteropServices.Marshal]::ReleaseComObject(\$word); }";
+
+        $command = 'powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command '
+            . escapeshellarg($script);
+        $process = proc_open($command, [
+            1 => ['pipe', 'w'],
+            2 => ['pipe', 'w'],
+        ], $pipes);
+
+        if (!is_resource($process)) {
+            throw new \RuntimeException('Unable to start Microsoft Word PDF conversion.');
+        }
+
+        $standardOutput = stream_get_contents($pipes[1]);
+        $standardError = stream_get_contents($pipes[2]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        $exitCode = proc_close($process);
+
+        if ($exitCode !== 0 || !is_file($pdfFile)) {
+            @unlink($pdfFile);
+            throw new \RuntimeException('Word could not convert the original template to PDF. ' . trim($standardError ?: $standardOutput));
+        }
+    }
+
+    private function createPersonalizedTemplateFile(Template $template, Client $client): string
+    {
+        $temporaryFile = tempnam(sys_get_temp_dir(), 'template_') . '.docx';
+        file_put_contents($temporaryFile, $template->content);
+
+        $zip = new ZipArchive();
+        if ($zip->open($temporaryFile) !== true) {
+            @unlink($temporaryFile);
+            throw new \RuntimeException('Unable to open the DOCX template.');
+        }
+
+        $salutation = match (strtolower((string) $client->gender)) {
+            'female', 'f' => 'Mrs',
+            'male', 'm' => 'Mr',
+            default => '',
+        };
+        $replacements = [
+            '[REFERENCE_NUMBER]' => $client->ref_number ?? '',
+            '{{ref_number}}' => $client->ref_number ?? '',
+            '[SALUTATION]' => $salutation,
+            '[CLIENT_FIRST_NAME]' => $client->first_name ?? '',
+            '[CLIENT_SURNAME]' => $client->sir_name ?? '',
+            '[CLIENT_GENDER]' => $client->gender ?? '',
+            '[CLIENT_PASSPORT_NO]' => $client->passport_no ?? '',
+            '[CITY]' => $client->city ?? '',
+            '[CLIENT_EMAIL]' => $client->email ?? '',
+            '[CLIENT_PHONE]' => $client->phone ?? '',
+            '[CLIENT_DOB]' => $client->dob ?? '',
+            '[ADDRESS_1]' => $client->address1 ?? '',
+            '[ADDRESS_2]' => $client->color ?? '',
+            '[NATIONALITY]' => $client->country ?? '',
+            '[COUNTRY]' => $client->national ?? '',
+            '[DATE]' => now()->format('jS F Y'),
+        ];
+
+        for ($index = 0; $index < $zip->numFiles; $index++) {
+            $entryName = $zip->getNameIndex($index);
+            if (!preg_match('#^word/(document|header\d+|footer\d+)\.xml$#', $entryName)) {
+                continue;
+            }
+
+            $xml = $zip->getFromIndex($index);
+            foreach ($replacements as $placeholder => $replacement) {
+                $xml = str_replace(
+                    htmlspecialchars($placeholder, ENT_XML1, 'UTF-8'),
+                    htmlspecialchars($replacement, ENT_XML1, 'UTF-8'),
+                    $xml
+                );
+            }
+            $zip->addFromString($entryName, $xml);
+        }
+
+        $zip->close();
+
+        return $temporaryFile;
     }
 
     private function replaceClientPlaceholders(string $html, Client $client): string
@@ -488,6 +673,16 @@ class ClientController extends Controller
         }
 
         return $html;
+    }
+
+    private function removeGeneratedDocumentChrome(string $html): string
+    {
+        // Header/footer shown by the web editor are previews only. They must
+        // not stay in the HTML, otherwise a footer can appear in the document
+        // flow in addition to the fixed PDF footer.
+        $html = preg_replace('/<table\b[^>]*class=["\'][^"\']*document-(?:header|footer)[^"\']*["\'][^>]*>.*?<\/table>/is', '', $html);
+
+        return $html ?? '';
     }
 
     private function prepareDocxHtml(string $html): array

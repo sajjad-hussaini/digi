@@ -141,6 +141,18 @@ class TemplateController extends Controller
             'footerDistance' => 720,
         ]);
 
+        // Mammoth does not bring DOCX headers into the online editor. Add the
+        // firm logo while saving so the generated DOCX and PDF have the same
+        // branding on every page.
+        $headerLogo = public_path('images/logo_imigration_law.png');
+        if (is_file($headerLogo)) {
+            $header = $section->addHeader();
+            $header->addImage($headerLogo, [
+                'width' => 159,
+                'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT,
+            ]);
+        }
+
         $footer = $section->addFooter();
         $footerTable = $footer->addTable([
             'borderTopSize' => 6,
@@ -214,7 +226,7 @@ class TemplateController extends Controller
         $allowedTags = '<p><br><strong><em><b><i><u><ul><ol><li><h1><h2><h3><h4><h5><h6><table><tr><td><th><thead><tbody><span><a><sup><sub><img>';
         $html = strip_tags($html, $allowedTags);
 
-        $html = preg_replace('/\s+style=["\'][^"\']*["\']/i', '', $html);
+        // Keep inline styles because Mammoth uses them for the original layout.
         $html = preg_replace('/\s+/', ' ', $html);
         $html = preg_replace('/<p>\s*<\/p>/i', '', $html);
         $html = preg_replace('/<br>/i', '<br/>', $html);
