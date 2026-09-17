@@ -340,6 +340,12 @@ function loadTemplateContent(templateId) {
             mammoth.convertToHtml({arrayBuffer: bytes.buffer})
                 .then(function(result) {
                     let html = result.value;
+
+                    // Remove logos embedded in the uploaded template. Branding
+                    // is added once by the generated header and footer below.
+                    const templateContent = $('<div>').html(html);
+                    templateContent.find('img').remove();
+                    html = templateContent.html();
                     
                     // Auto replace client placeholders
                     html = autoReplaceClientData(html);

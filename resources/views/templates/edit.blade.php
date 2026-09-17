@@ -41,37 +41,54 @@
                 $('#findReplacePanel').slideToggle();
             });
 
-                    // Base64 to ArrayBuffer
-                    let binaryStr = atob(response.content);
-                    let bytes = new Uint8Array(binaryStr.length);
+            $('#documentContent').on('input', function() {
+                $('#editedHtml').val($(this).html());
+            });
 
-                    for (let i = 0; i < binaryStr.length; i++) {
-                        bytes[i] = binaryStr.charCodeAt(i);
+            $('#editOnlineForm').on('submit', function() {
+                $('#editedHtml').val($('#documentContent').html());
+            });
+
+        function loadTemplateContent() {
+            $('#editorLoading').show();
+            $('#documentContent').hide();
+
+            $.ajax({
+                url: "{{ route('templates.content', $template->id) }}",
+                type: 'GET',
+                success: function(response) {
+                    const binaryString = atob(response.content);
+                    const bytes = new Uint8Array(binaryString.length);
+
+                    for (let index = 0; index < binaryString.length; index++) {
+                        bytes[index] = binaryString.charCodeAt(index);
                     }
 
-                    // Mammoth: DOCX to HTML
-                    mammoth.convertToHtml({
-                            arrayBuffer: bytes.buffer
-                        })
+                    mammoth.convertToHtml({ arrayBuffer: bytes.buffer })
                         .then(function(result) {
                             $('#documentContent').html(result.value);
+                            $('#editedHtml').val(result.value);
                             $('#editorLoading').hide();
                             $('#documentContent').show();
                             $('#documentFooterPreview').show();
-                            
                         })
-                        .catch(function(err) {
-                            console.error('Error:', err);
+                        .catch(function(error) {
+                            console.error('Mammoth error:', error);
                             $('#editorLoading').html(
-                                '<span class="text-danger">Error loading document</span>');
+                                '<span class="text-danger">Error loading document</span>'
+                            );
                         });
                 },
                 error: function(xhr) {
-                    console.error('Error:', xhr);
-                    $('#editorLoading').html('<span class="text-danger">Error loading template</span>');
+                    console.error('Template content error:', xhr);
+                    $('#editorLoading').html(
+                        '<span class="text-danger">Error loading template</span>'
+                    );
                 }
             });
         }
+
+        });
     </script>
 
     <style>

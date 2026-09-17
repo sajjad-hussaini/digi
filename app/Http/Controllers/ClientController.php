@@ -323,12 +323,9 @@ class ClientController extends Controller
                 return $this->generateDocx($editedHtml, $client);
             } else {
                 if ($request->filled('template_id')) {
-                    // Convert the personalized DOCX itself. Rebuilding it as
-                    // HTML loses the original Word header, footer and layout.
-                    return $this->generatePdfFromTemplate(
-                        Template::findOrFail($request->input('template_id')),
-                        $client
-                    );
+                    // Use the same cleaned editor HTML shown to the user so
+                    // embedded template logos do not reappear in the PDF.
+                    return $this->generatePdf($editedHtml, $client);
                 }
 
                 return $this->generatePdf($editedHtml, $client);
@@ -441,11 +438,11 @@ class ClientController extends Controller
         $htmlContent = $this->removeGeneratedDocumentChrome($htmlContent);
         $headerLogo = public_path('images/logo_imigration_law.png');
         $headerLogoHtml = is_file($headerLogo)
-            ? '<img src="' . $headerLogo . '" style="width:42mm; height:auto;">'
+            ? '<img src="' . $headerLogo . '" style="width:30mm; height:auto;">'
             : '';
         $footerLogo = public_path('images/footer.jpg');
         $footerLogoHtml = is_file($footerLogo)
-            ? '<img src="' . $footerLogo . '" style="width:55px; height:auto;">'
+            ? '<img src="' . $footerLogo . '" style="width:38px; height:auto;">'
             : '';
         $documentHeader = '<table class="pdf-header" width="100%"><tr>'
             . '<td align="right">' . $headerLogoHtml . '</td>'
@@ -481,10 +478,11 @@ class ClientController extends Controller
                 .document-page h6 { font-weight: bold; }
                 .document-page table { max-width: 100%; }
                 .document-page img { max-width: 100%; height: auto; }
-                .pdf-header { position: fixed; left: 0; right: 0; top: -23mm; border-collapse: collapse; }
-                .pdf-footer { position: fixed; left: 0; right: 0; bottom: -22mm; border-top: 1px solid #999; border-collapse: collapse; padding-top: 2mm; font-family: Arial, sans-serif; font-size: 8pt; }
+                .pdf-header { position: absolute; left: 0; right: 0; top: -18mm; border-collapse: collapse; }
+                .pdf-footer { position: fixed; left: 0; right: 0; bottom: 0; height: 16mm; border-top: 1px solid #999; border-collapse: collapse; padding-top: 1mm; background: #fff; font-family: Arial, sans-serif; font-size: 8pt; }
                 .pdf-footer-text { width: 82%; vertical-align: top; }
-                .pdf-footer-logo { width: 18%; vertical-align: top; }
+                .pdf-footer-logo { width: 18%; vertical-align: middle; }
+                .pdf-footer-logo img { width: 38px; height: auto; }
             </style>
         </head>
         <body>

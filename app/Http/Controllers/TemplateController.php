@@ -115,11 +115,19 @@ class TemplateController extends Controller
         // Check if new file uploaded
         if ($request->hasFile('doc_file')) {
             $request->validate([
-                'doc_file' => 'required|file|mimes:docx',
+                'doc_file' => 'required|file|mimes:docx|max:10240',
             ]);
 
-            $filePath = $request->file('doc_file')->getRealPath();
-            $template->content = file_get_contents($filePath);
+            $uploadedFile = $request->file('doc_file');
+            if (!$uploadedFile || !$uploadedFile->isValid()) {
+                $message = $uploadedFile
+                    ? $uploadedFile->getErrorMessage()
+                    : 'Please select a valid DOCX file.';
+
+                return back()->withErrors(['doc_file' => $message])->withInput();
+            }
+
+            $template->content = $uploadedFile->get();
         } 
         // Check if edited HTML content exists
         elseif ($request->filled('edited_html')) {
@@ -194,15 +202,28 @@ class TemplateController extends Controller
         try {
             \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html, false, false);
         } catch (\Throwable $e) {
-            dd($html); // yahan dekh lo exact HTML
+            throw new \RuntimeException(
+                'Template HTML could not be converted to DOCX: ' . $e->getMessage(),
+                0,
+                $e
+            );
         }
-        
-        $tempFile = tempnam(sys_get_temp_dir(), 'docx_');
+
+        $phpWordTempDir = storage_path('app/phpword');
+        if (!is_dir($phpWordTempDir)) {
+            mkdir($phpWordTempDir, 0755, true);
+        }
+        \PhpOffice\PhpWord\Settings::setTempDir($phpWordTempDir);
+
+        $tempFile = tempnam($phpWordTempDir, 'docx_');
+        if ($tempFile === false) {
+            throw new \RuntimeException('Unable to create a temporary DOCX file.');
+        }
         $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
         $objWriter->save($tempFile);
         
         $content = file_get_contents($tempFile);
-        unlink($tempFile);
+        @unlink($tempFile);
         
         return $content;
     }
@@ -239,9 +260,14 @@ class TemplateController extends Controller
         $html = preg_replace('/<p>\s*<\/p>/i', '', $html);
         $html = preg_replace('/<br>/i', '<br/>', $html);
 
-        $html = htmlspecialchars_decode(
-            mb_convert_encoding($html, 'UTF-8', 'UTF-8')
-        );
+        $html = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
+
+        $html = preg_replace_callback('/<img\b([^>]*)>/i', function ($matches) {
+            $attributes = preg_replace('/\s*\/\s*$/', '', $matches[1]);
+            return '<img' . $attributes . ' />';
+        }, $html);
+
+        $html = preg_replace('/<img\b[^>]*\bsrc=["\']\s*["\'][^>]*>/i', '', $html);
 
         return trim($html);
     }
