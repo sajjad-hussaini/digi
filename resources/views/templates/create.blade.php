@@ -11,7 +11,12 @@
 
             <div class="box-body">
                 <div class="row">
-                    {!! Form::open(['route' => 'templates.store', 'files' => true]) !!}
+                    {!! Form::open([
+                        'route' => 'templates.store',
+                        'method' => 'post',
+                        'files' => true,
+                        'enctype' => 'multipart/form-data',
+                    ]) !!}
 
                         @include('templates.fields_create')
 

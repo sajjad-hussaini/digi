@@ -414,7 +414,19 @@ class ClientController extends Controller
                 @page { size: A4; margin: 18mm; }
                 body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.15; margin: 0; }
                 .document-page { width: auto; min-height: 0; box-sizing: border-box; padding: 0; overflow: visible; overflow-wrap: break-word; }
-                .document-page p { margin: 0 0 4px; }
+                .document-page h1,
+                .document-page h2,
+                .document-page h3,
+                .document-page h4,
+                .document-page h5,
+                .document-page h6,
+                .document-page p { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.15; margin: 0 0 8px; }
+                .document-page h1,
+                .document-page h2,
+                .document-page h3,
+                .document-page h4,
+                .document-page h5,
+                .document-page h6 { font-weight: bold; }
                 .document-page table { max-width: 100%; }
                 .document-page img { max-width: 100%; height: auto; }
             </style>

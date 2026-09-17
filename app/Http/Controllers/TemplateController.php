@@ -39,13 +39,21 @@ class TemplateController extends Controller
 
         $request->validate([
             'title' => 'required|string|max:255',
-            'doc_file' => 'required|file|mimes:docx',
+            'doc_file' => 'required|file|mimes:docx|max:10240',
             'type' => 'required|in:Authority Letter,Initial Instruction,Client Care,Client Closure Letter,Covering Letter',
             'visa_type' => 'required|in:Appeal,Work Visa,Student Visa,Spouse Visa,Visitor Visa,Settlement Visa',
         ]);
 
-        $filePath = $request->file('doc_file')->getRealPath();
-        $content = file_get_contents($filePath);
+        $uploadedFile = $request->file('doc_file');
+        if (!$uploadedFile || !$uploadedFile->isValid()) {
+            $message = $uploadedFile
+                ? $uploadedFile->getErrorMessage()
+                : 'Please select a valid DOCX file.';
+
+            return back()->withErrors(['doc_file' => $message])->withInput();
+        }
+
+        $content = $uploadedFile->get();
 
         $template = new Template();
         $template->title = $request->title;

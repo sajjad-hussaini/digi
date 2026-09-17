@@ -40,10 +40,10 @@
 <div class="form-group col-sm-12 {{ $errors->has('doc_file') ? 'has-error' : '' }}">
     <small class="form-text text-muted mb-2">Use <strong>[REFERENCE_NUMBER]</strong> for the client's permanent reference number or <strong>[SALUTATION]</strong> for Mr/Mrs based on gender.</small>
     {!! Form::label('doc_file', 'Upload Document:') !!}
-    {!! Form::file('doc_file', null, [
+    {!! Form::file('doc_file', [
         'class' => 'form-control',
-        'rows' => 3,
-        'placeholder' => 'doc file...'
+        'accept' => '.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'required' => true,
     ]) !!}
     {!! $errors->first('doc_file','<span class="help-block">:message</span>') !!}
 </div>

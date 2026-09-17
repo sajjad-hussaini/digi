@@ -512,9 +512,26 @@ function resetEditor() {
     background: #fff;
     overflow-wrap: break-word;
 }
-#documentContent p { margin: 0 0 4px 0; }
-#documentContent table { border-collapse: collapse; width: 100%; margin: 10px 0; }
-#documentContent td, #documentContent th { border: 1px solid #ddd; padding: 6px; }
+#documentContent h1,
+#documentContent h2,
+#documentContent h3,
+#documentContent h4,
+#documentContent h5,
+#documentContent h6,
+#documentContent p {
+    font-family: Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.15;
+    margin: 0 0 8px;
+}
+#documentContent h1,
+#documentContent h2,
+#documentContent h3,
+#documentContent h4,
+#documentContent h5,
+#documentContent h6 {
+    font-weight: bold;
+}
 #documentContent img { max-width: 100%; height: auto; }
 .document-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 8px; background: #f5f6f8; border: 1px solid #ddd; }
 .document-toolbar-select { width: auto; min-width: 120px; }

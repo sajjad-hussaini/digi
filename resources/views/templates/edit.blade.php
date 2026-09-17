@@ -116,28 +116,28 @@
 
     <style>
         #documentContent {
-            font-family: 'Calibri', Arial, sans-serif;
-            font-size: 11pt;
-            line-height: 1.6;
             color: #000;
             min-height: 400px;
         }
 
+        #documentContent h1,
+        #documentContent h2,
+        #documentContent h3,
+        #documentContent h4,
+        #documentContent h5,
+        #documentContent h6 {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.15;
+            margin: 0 0 8px;
+            font-weight: bold;
+        }
+
         #documentContent p {
-            margin: 0 0 8px 0;
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.15;
+            margin: 0 0 8px;
         }
-
-        #documentContent table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 10px 0;
-        }
-
-        #documentContent td,
-        #documentContent th {
-            border: 1px solid #ddd;
-            padding: 6px;
-        }
-        
     </style>
 @endsection
