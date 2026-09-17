@@ -433,14 +433,14 @@ function ensureDocumentFooter(html) {
     }
 
     return html + `
-        <table class="document-footer" style="width:100%; border-top:1px solid #999; margin-top:24px;">
+        <table class="document-footer">
             <tr>
-                <td style="text-align:center; vertical-align:top;">
+                <td class="document-footer-text">
                     <strong>UK Immigration Law</strong><br>
                     1st Floor, 236 ST. Helens Road, Bolton BL3 4EB, Ph. 07777328028, Email: qureshisalim@yahoo.com
                 </td>
-                <td style="width:85px; text-align:right; vertical-align:top;">
-                    <img src="{{ asset('images/footer.jpg') }}" width="85" style="width:85px; max-width:85px; height:auto;">
+                <td class="document-footer-logo">
+                    <img src="{{ asset('images/footer.jpg') }}" alt="Immigration Advice Authority">
                 </td>
             </tr>
         </table>`;
@@ -527,10 +527,11 @@ function resetEditor() {
     width: 210mm;
     max-width: 100%;
     box-sizing: border-box;
-    padding: 18mm;
+    padding: 18mm 18mm 24mm;
     margin: 0 auto;
     background: #fff;
     overflow-wrap: break-word;
+    position: relative;
 }
 #documentContent h1,
 #documentContent h2,
@@ -553,6 +554,38 @@ function resetEditor() {
     font-weight: bold;
 }
 #documentContent img { max-width: 100%; height: auto; }
+#documentContent .document-footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto !important;
+    height: 16mm;
+    margin: 0;
+    padding-top: 1mm;
+    border-top: 1px solid #999;
+    border-collapse: collapse;
+    background: #fff;
+    font-family: Arial, sans-serif;
+    font-size: 8pt;
+    z-index: 10;
+}
+#documentContent .document-footer-text {
+    width: 82%;
+    text-align: center;
+    vertical-align: top;
+    border: 0;
+}
+#documentContent .document-footer-logo {
+    width: 18%;
+    text-align: right;
+    vertical-align: middle;
+    border: 0;
+}
+#documentContent .document-footer-logo img {
+    width: 38px;
+    height: auto;
+}
 #documentContent .document-header,
 #documentContent .document-footer { width: 100% !important; }
 #documentContent .document-header td,
