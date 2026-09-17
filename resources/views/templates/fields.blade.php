@@ -122,6 +122,19 @@
                                 <div id="documentContent" contenteditable="true" style="outline: none; display:none;">
                                     <!-- Content will load here -->
                                 </div>
+                                <div id="documentFooterPreview" style="display:none;">
+                                    <div class="document-footer-line"></div>
+                                    <div class="document-footer-content">
+                                        <div>
+                                            <strong>UK Immigration Law</strong><br>
+                                            1st Floor, 236 ST. Helens Road, Bolton BL3 4EB, Ph. 07777328028,
+                                            Email: qureshisalim@yahoo.com
+                                        </div>
+                                        @if (is_file(public_path('images/footer.jpg')))
+                                            <img src="{{ asset('images/footer.jpg') }}" alt="UK Immigration Law">
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Hidden field for edited HTML -->

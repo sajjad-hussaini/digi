@@ -41,47 +41,6 @@
                 $('#findReplacePanel').slideToggle();
             });
 
-            // Replace All
-            $('#replaceAllBtn').click(function() {
-                let findText = $('#findText').val().trim();
-                let replaceText = $('#replaceText').val();
-
-                if (!findText) {
-                    alert('Please enter text to find');
-                    return;
-                }
-
-                let content = $('#documentContent').html();
-                let regex = new RegExp(findText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-                let count = (content.match(regex) || []).length;
-
-                if (count === 0) {
-                    alert('Text not found');
-                    return;
-                }
-
-                $('#documentContent').html(content.replace(regex, replaceText));
-                alert(`Replaced ${count} occurrence(s)`);
-            });
-
-
-            // Switch 'change' to 'input'
-            $('#documentContent').on('input', function() {
-                let htmlContent = $(this).html();
-                $('#editedHtml').val(htmlContent);
-            });
-
-        });
-
-        // Load template content from DB
-        function loadTemplateContent() {
-            $('#editorLoading').show();
-            $('#documentContent').hide();
-
-            $.ajax({
-                url: "{{ route('templates.content', $template->id) }}",
-                type: 'GET',
-                success: function(response) {
                     // Base64 to ArrayBuffer
                     let binaryStr = atob(response.content);
                     let bytes = new Uint8Array(binaryStr.length);
@@ -98,6 +57,7 @@
                             $('#documentContent').html(result.value);
                             $('#editorLoading').hide();
                             $('#documentContent').show();
+                            $('#documentFooterPreview').show();
                             
                         })
                         .catch(function(err) {
@@ -138,6 +98,34 @@
             font-size: 11pt;
             line-height: 1.15;
             margin: 0 0 8px;
+        }
+        #documentFooterPreview {
+            margin-top: 24px;
+            color: #000;
+            font-family: Arial, sans-serif;
+            font-size: 8pt;
+        }
+
+        .document-footer-line {
+            border-top: 1px solid #999;
+            margin-bottom: 6px;
+        }
+
+        .document-footer-content {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        .document-footer-content > div {
+            flex: 1;
+        }
+
+        .document-footer-content img {
+            width: 55px;
+            height: auto;
+            margin-left: 12px;
         }
     </style>
 @endsection
