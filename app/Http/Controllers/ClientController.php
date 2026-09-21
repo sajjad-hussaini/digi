@@ -171,24 +171,52 @@ class ClientController extends Controller
 
         // Safely access client fields
         $clientName = trim($client->first_name . ' ' . $client->sir_name);
-        $clientFullName = $clientName ?: '__________________'; // if name not available, blank line
+        $salutation = match (strtolower(trim((string) $client->gender))) {
+            'female', 'f' => 'Mrs',
+            'male', 'm' => 'Mr',
+            default => '',
+        };
+
+        if ($clientName !== '') {
+            if ($salutation && !preg_match('/^(mr|mrs|ms|miss)\b/i', $clientName)) {
+                $clientFullName = $salutation . ' ' . $clientName;
+            } else {
+                $clientFullName = $clientName;
+            }
+        } else {
+            $clientFullName = '__________________';
+        }
+
+        $addressParts = array_filter([
+            $client->address,
+            $client->color, // address line 2
+            $client->city,
+            $client->post_code,
+            $client->national, // country
+        ], fn($val) => !empty(trim((string)$val)));
+
+        $formattedAddress = !empty($addressParts)
+            ? implode(', ', $addressParts)
+            : '________________________________________________________________';
 
         $data = [
-            'client'         => $client,
-            'clientName'     => $clientName,
-            'clientFullName' => $clientFullName,
-            'dob'            => $client->dob ? $client->dob : '__________________',
-            'nationality'    => $client->country ?? '__________________',
-            'address'        => $client->address ?? '________________________________________________________________',
-            'lawFirm'        => $lawFirm,
-            'lawFirmAddress' => $lawFirmAddress,
-            'phone'          => $phone,
-            'email'          => $email,
-            'city'          =>  $client->city ?? ' ',
-            'address2'      =>  $client->color ?? ' ',
-            'national'      =>  $client->national ?? ' ',
-            'visaType'       =>  $client->visa_type,
-            'today'          => $today,
+            'client'           => $client,
+            'salutation'       => $salutation,
+            'clientName'       => $clientName,
+            'clientFullName'   => $clientFullName,
+            'dob'              => $client->dob ? $client->dob : '__________________',
+            'nationality'      => $client->country ?? '__________________',
+            'address'          => $client->address ?? '________________________________________________________________',
+            'formattedAddress' => $formattedAddress,
+            'lawFirm'          => $lawFirm,
+            'lawFirmAddress'   => $lawFirmAddress,
+            'phone'            => $phone,
+            'email'            => $email,
+            'city'             => $client->city ?? ' ',
+            'address2'         => $client->color ?? ' ',
+            'national'         => $client->national ?? ' ',
+            'visaType'         => $client->visa_type,
+            'today'            => $today,
         ];
 
         $pdf = Pdf::loadView('clients.authority-letter', $data)
