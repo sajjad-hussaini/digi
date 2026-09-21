@@ -460,7 +460,7 @@ class ClientController extends Controller
         <head>
             <meta charset="utf-8">
             <style>
-                @page { size: A4; margin: 30mm 18mm 30mm; }
+                @page { size: A4 portrait; margin-top: 30mm; margin-right: 18mm; margin-bottom: 24mm; margin-left: 18mm; }
                 body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.15; margin: 0; }
                 .document-page { width: auto; min-height: 0; box-sizing: border-box; padding: 0; overflow: visible; overflow-wrap: break-word; }
                 .document-page h1,
@@ -479,7 +479,7 @@ class ClientController extends Controller
                 .document-page table { max-width: 100%; }
                 .document-page img { max-width: 100%; height: auto; }
                 .pdf-header { position: absolute; left: 0; right: 0; top: -18mm; border-collapse: collapse; }
-                .pdf-footer { position: fixed; left: 0; right: 0; bottom: 0; height: 16mm; border-top: 1px solid #999; border-collapse: collapse; padding-top: 1mm; background: #fff; font-family: Arial, sans-serif; font-size: 8pt; }
+                .pdf-footer { position: fixed; left: 0; right: 0; bottom: -18mm; height: 14mm; border-top: 1px solid #999; border-collapse: collapse; padding-top: 1.5mm; font-family: Arial, sans-serif; font-size: 8pt; }
                 .pdf-footer-text { width: 82%; vertical-align: top; }
                 .pdf-footer-logo { width: 18%; vertical-align: middle; }
                 .pdf-footer-logo img { width: 38px; height: auto; }
@@ -487,8 +487,8 @@ class ClientController extends Controller
         </head>
         <body>
             ' . $documentHeader . '
-            <div class="document-page">' . $this->prepareLetterHtml($htmlContent, false) . '</div>'
-            . $documentFooter . '
+            ' . $documentFooter . '
+            <div class="document-page">' . $this->prepareLetterHtml($htmlContent, false) . '</div>
         </body>
         </html>';
 
@@ -686,6 +686,7 @@ class ClientController extends Controller
         // not stay in the HTML, otherwise a footer can appear in the document
         // flow in addition to the fixed PDF footer.
         $html = preg_replace('/<table\b[^>]*class=["\'][^"\']*document-(?:header|footer)[^"\']*["\'][^>]*>.*?<\/table>/is', '', $html);
+        $html = preg_replace('/<table\b[^>]*>[\s\S]*?qureshisalim@yahoo\.com[\s\S]*?<\/table>/is', '', $html);
 
         return $html ?? '';
     }
