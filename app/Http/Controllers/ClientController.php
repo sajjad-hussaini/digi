@@ -220,7 +220,7 @@ class ClientController extends Controller
         ];
 
         $pdf = Pdf::loadView('clients.authority-letter', $data)
-            ->setPaper('a4', 'portrait');
+            ->setPaper('letter', 'portrait');
 
         return $pdf->stream('Authority_Letter_' . str_replace(' ', '_', $clientFullName) . '.pdf');
     }

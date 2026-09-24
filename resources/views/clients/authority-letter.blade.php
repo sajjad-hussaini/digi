@@ -5,11 +5,11 @@
     <title>Form of Authority</title>
     <style>
         @page {
-            size: A4 portrait;
+            size: letter portrait;
             margin-top: 15mm;
-            margin-right: 20mm;
+            margin-right: 17.5mm;
             margin-bottom: 22mm;
-            margin-left: 20mm;
+            margin-left: 17.5mm;
         }
         body { 
             font-family: 'Times New Roman', Times, serif; 
@@ -61,29 +61,37 @@
             position: fixed;
             left: 0;
             right: 0;
-            bottom: -15mm;
+            bottom: -19.87mm;
             width: 100%;
+            text-align: center;
         }
-        .footer-line-top {
+        .footer-rules {
             border-top: 1px solid #000;
-            margin-bottom: 2px;
-        }
-        .footer-line-bottom {
-            border-top: 1px solid #000;
-            margin-bottom: 5px;
-        }
-        .footer-table {
-            width: 100%;
-            border-collapse: collapse;
+            border-bottom: 1px solid #000;
+            height: 1px;
+            margin: 0 0 2.3px;
         }
         .footer-firm {
             font-weight: bold;
-            font-size: 13px;
-            margin-bottom: 2px;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            line-height: 14px;
+            margin: 0;
         }
         .footer-address {
-            font-size: 10px;
-            color: #222;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11.83px;
+            line-height: 14px;
+            color: #000;
+            margin-top: 1.35px;
+            white-space: nowrap;
+        }
+        .footer-logo {
+            position: absolute;
+            top: -28.2px;
+            right: 0;
+            width: 70px;
+            text-align: right;
         }
     </style>
 </head>
@@ -97,22 +105,14 @@
 
     <!-- Fixed Footer -->
     <div class="footer">
-        <div class="footer-line-top"></div>
-        <div class="footer-line-bottom"></div>
-        <table class="footer-table" width="100%">
-            <tr>
-                <td width="75" style="width: 75px;"></td>
-                <td align="center" style="vertical-align: middle; text-align: center;">
-                    <div class="footer-firm">{{ $lawFirm }}</div>
-                    <div class="footer-address">{{ $lawFirmAddress }}, Ph. {{ $phone }}, Email: {{ $email }}</div>
-                </td>
-                <td width="75" align="right" style="width: 75px; vertical-align: middle; text-align: right;">
-                    @if(is_file(public_path('images/footer.jpg')))
-                        <img src="{{ public_path('images/footer.jpg') }}" alt="IAA Logo" style="width: 70px; height: auto; display: inline-block;">
-                    @endif
-                </td>
-            </tr>
-        </table>
+        <div class="footer-rules"></div>
+        <div class="footer-firm">{{ $lawFirm }}</div>
+        <div class="footer-address">{{ $lawFirmAddress }}, Ph. {{ $phone }}, Email: {{ $email }}</div>
+        <div class="footer-logo">
+            @if(is_file(public_path('images/footer.jpg')))
+                <img src="{{ public_path('images/footer.jpg') }}" alt="Immigration Advice Authority" style="width: 69.6px; height: 58px; display: block;">
+            @endif
+        </div>
     </div>
 
     <div class="letter-wrap">
