@@ -433,17 +433,14 @@ function ensureDocumentFooter(html) {
     }
 
     return html + `
-        <table class="document-footer">
-            <tr>
-                <td class="document-footer-text">
-                    <strong>UK Immigration Law</strong><br>
-                    1st Floor, 236 ST. Helens Road, Bolton BL3 4EB, Ph. 07777328028, Email: qureshisalim@yahoo.com
-                </td>
-                <td class="document-footer-logo">
-                    <img src="{{ asset('images/footer.jpg') }}" alt="Immigration Advice Authority">
-                </td>
-            </tr>
-        </table>`;
+        <div class="document-footer">
+            <div class="document-footer-rules"></div>
+            <div class="document-footer-firm">UK Immigration Law</div>
+            <div class="document-footer-address">1st floor, 236 ST. Helens Road, Bolton BL3 4EB, Ph. 07777328028, Email: qureshisalim@yahoo.com</div>
+            <div class="document-footer-logo">
+                <img src="{{ asset('images/footer.jpg') }}" alt="Immigration Advice Authority">
+            </div>
+        </div>`;
 }
 
 // Generate document
@@ -560,31 +557,41 @@ function resetEditor() {
     right: 0;
     bottom: 0;
     width: auto !important;
-    height: 16mm;
     margin: 0;
-    padding-top: 1mm;
-    border-top: 1px solid #999;
-    border-collapse: collapse;
     background: #fff;
-    font-family: Arial, sans-serif;
-    font-size: 8pt;
     z-index: 10;
-}
-#documentContent .document-footer-text {
-    width: 82%;
     text-align: center;
-    vertical-align: top;
-    border: 0;
+}
+#documentContent .document-footer-rules {
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+    height: 1px;
+    margin: 0 0 2px;
+}
+#documentContent .document-footer-firm {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 14px;
+}
+#documentContent .document-footer-address {
+    margin-top: 1px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 14px;
+    white-space: nowrap;
 }
 #documentContent .document-footer-logo {
-    width: 18%;
+    position: absolute;
+    top: -28px;
+    right: 0;
+    width: 70px;
     text-align: right;
-    vertical-align: middle;
-    border: 0;
 }
 #documentContent .document-footer-logo img {
-    width: 38px;
-    height: auto;
+    width: 69.6px;
+    height: 58px;
+    display: block;
 }
 #documentContent .document-header,
 #documentContent .document-footer { width: 100% !important; }

@@ -470,17 +470,17 @@ class ClientController extends Controller
             : '';
         $footerLogo = public_path('images/footer.jpg');
         $footerLogoHtml = is_file($footerLogo)
-            ? '<img src="' . $footerLogo . '" style="width:38px; height:auto;">'
+            ? '<img src="' . $footerLogo . '" style="width:69.6px; height:58px; display:block;">'
             : '';
         $documentHeader = '<table class="pdf-header" width="100%"><tr>'
             . '<td align="right">' . $headerLogoHtml . '</td>'
             . '</tr></table>';
-        $documentFooter = '<table class="pdf-footer" width="100%"><tr>'
-            . '<td class="pdf-footer-text" align="center"><strong>UK Immigration Law</strong><br>'
-            . '1st Floor, 236 ST. Helens Road, Bolton BL3 4EB, Ph. 07777328028, '
-            . 'Email: qureshisalim@yahoo.com</td>'
-            . '<td class="pdf-footer-logo" align="right">' . $footerLogoHtml . '</td>'
-            . '</tr></table>';
+        $documentFooter = '<div class="pdf-footer">'
+            . '<div class="pdf-footer-rules"></div>'
+            . '<div class="pdf-footer-firm">UK Immigration Law</div>'
+            . '<div class="pdf-footer-address">1st floor, 236 ST. Helens Road, Bolton BL3 4EB, Ph. 07777328028, Email: qureshisalim@yahoo.com</div>'
+            . '<div class="pdf-footer-logo">' . $footerLogoHtml . '</div>'
+            . '</div>';
 
         $html = '
         <!DOCTYPE html>
@@ -488,7 +488,7 @@ class ClientController extends Controller
         <head>
             <meta charset="utf-8">
             <style>
-                @page { size: A4 portrait; margin-top: 30mm; margin-right: 18mm; margin-bottom: 24mm; margin-left: 18mm; }
+                @page { size: letter portrait; margin-top: 30mm; margin-right: 17.5mm; margin-bottom: 22mm; margin-left: 17.5mm; }
                 body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.15; margin: 0; }
                 .document-page { width: auto; min-height: 0; box-sizing: border-box; padding: 0; overflow: visible; overflow-wrap: break-word; }
                 .document-page h1,
@@ -507,10 +507,11 @@ class ClientController extends Controller
                 .document-page table { max-width: 100%; }
                 .document-page img { max-width: 100%; height: auto; }
                 .pdf-header { position: absolute; left: 0; right: 0; top: -18mm; border-collapse: collapse; }
-                .pdf-footer { position: fixed; left: 0; right: 0; bottom: -18mm; height: 14mm; border-top: 1px solid #999; border-collapse: collapse; padding-top: 1.5mm; font-family: Arial, sans-serif; font-size: 8pt; }
-                .pdf-footer-text { width: 82%; vertical-align: top; }
-                .pdf-footer-logo { width: 18%; vertical-align: middle; }
-                .pdf-footer-logo img { width: 38px; height: auto; }
+                .pdf-footer { position: fixed; left: 0; right: 0; bottom: -19.87mm; width: 100%; text-align: center; }
+                .pdf-footer-rules { border-top: 1px solid #000; border-bottom: 1px solid #000; height: 1px; margin: 0 0 2.3px; }
+                .pdf-footer-firm { margin: 0; font-family: "Times New Roman", Times, serif; font-size: 14px; font-weight: bold; line-height: 14px; }
+                .pdf-footer-address { margin-top: 1.35px; color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 11.83px; line-height: 14px; white-space: nowrap; }
+                .pdf-footer-logo { position: absolute; top: -28.2px; right: 0; width: 69.6px; text-align: right; }
             </style>
         </head>
         <body>
@@ -520,7 +521,7 @@ class ClientController extends Controller
         </body>
         </html>';
 
-        $pdf = Pdf::loadHTML($html)->setPaper('a4', 'portrait');
+        $pdf = Pdf::loadHTML($html)->setPaper('letter', 'portrait');
 
         return $pdf->download('Initial_Instruction_' . $client->first_name . '.pdf');
     }
@@ -713,7 +714,7 @@ class ClientController extends Controller
         // Header/footer shown by the web editor are previews only. They must
         // not stay in the HTML, otherwise a footer can appear in the document
         // flow in addition to the fixed PDF footer.
-        $html = preg_replace('/<table\b[^>]*class=["\'][^"\']*document-(?:header|footer)[^"\']*["\'][^>]*>.*?<\/table>/is', '', $html);
+        $html = preg_replace('/<(table|div)\b[^>]*class=["\'][^"\']*document-(?:header|footer)[^"\']*["\'][^>]*>.*?<\/\1>/is', '', $html);
         $html = preg_replace('/<table\b[^>]*>[\s\S]*?qureshisalim@yahoo\.com[\s\S]*?<\/table>/is', '', $html);
 
         return $html ?? '';
