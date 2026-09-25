@@ -21,29 +21,29 @@
         .header-logo { 
             position: absolute; 
             top: 0; 
-            right: 0; 
-            width: 70px; 
+            right: 20px; 
+            width: 80px; 
             text-align: right;
         }
         .header-logo img {
-            width: 65px;
+            width: 90px;
             height: auto;
         }
         .letter-wrap { 
             width: 100%; 
-            line-height: 1.65; 
+            line-height: 2; 
         }
         .title { 
             text-align: center; 
-            font-size: 20px; 
+            font-size: 28px; 
             font-weight: bold; 
-            margin-top: 15px; 
+            margin-top: 180px; 
             margin-bottom: 25px; 
             text-transform: uppercase; 
             letter-spacing: 0.5px;
         }
         .lead-line { 
-            font-size: 14px; 
+            font-size: 18px; 
             margin-bottom: 16px; 
             text-align: justify; 
             line-height: 1.65; 
@@ -138,19 +138,19 @@
         <table class="signature-table" width="100%">
             <tr>
                 <td style="padding-bottom: 16px;">
-                    <p style="margin: 0 0 35px; font-size: 14px; font-weight: bold;">Signed :</p>
+                    <p style="margin: 0 0 35px; font-size: 18px; font-weight: bold;">Signed :</p>
                     <div style="border-bottom: 1px solid #000; width: 280px;"></div>
                     <p style="margin: 4px 0 0; font-size: 13px;">(Client's Signature)</p>
                 </td>
             </tr>
             <tr>
-                <td style="padding-bottom: 14px;">
-                    <p style="margin: 0; font-size: 14px;"><strong>Print Name :</strong> <span class="highlight">{{ $clientFullName }}</span></p>
+                <td style="padding-bottom: 18px;">
+                    <p style="margin: 0; font-size: 18px;"><strong>Print Name :</strong> <span class="highlight">{{ $clientFullName }}</span></p>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <p style="margin: 0; font-size: 14px;"><strong>Dated :</strong> {{ $today }}</p>
+                    <p style="margin: 0; font-size: 18px;"><strong>Dated :</strong> {{ $today }}</p>
                 </td>
             </tr>
         </table>
