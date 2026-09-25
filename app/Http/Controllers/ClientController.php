@@ -330,12 +330,12 @@ class ClientController extends Controller
         // ]);
 
         $request->validate([
-            'edited_html' => 'required|string',
+            'edited_html' => 'required_without:template_id|nullable|string',
             'format' => 'required|in:docx,pdf',
             'template_id' => 'nullable|integer|exists:templates,id',
         ]);
 
-        $editedHtml = $request->input('edited_html');
+        $editedHtml = $request->input('edited_html') ?? '';
         $format = $request->input('format');
         $editedHtml = $this->replaceClientPlaceholders($editedHtml, $client);
 
@@ -351,9 +351,10 @@ class ClientController extends Controller
                 return $this->generateDocx($editedHtml, $client);
             } else {
                 if ($request->filled('template_id')) {
-                    // Use the same cleaned editor HTML shown to the user so
-                    // embedded template logos do not reappear in the PDF.
-                    return $this->generatePdf($editedHtml, $client);
+                    return $this->generatePdfFromTemplate(
+                        Template::findOrFail($request->input('template_id')),
+                        $client
+                    );
                 }
 
                 return $this->generatePdf($editedHtml, $client);
@@ -400,57 +401,7 @@ class ClientController extends Controller
 
     private function generateDocxFromTemplate(Template $template, Client $client)
     {
-        $temporaryFile = tempnam(sys_get_temp_dir(), 'template_') . '.docx';
-        file_put_contents($temporaryFile, $template->content);
-
-        $zip = new ZipArchive();
-        if ($zip->open($temporaryFile) !== true) {
-            @unlink($temporaryFile);
-            throw new \RuntimeException('Unable to open the DOCX template.');
-        }
-
-        $salutation = match (strtolower((string) $client->gender)) {
-            'female', 'f' => 'Mrs',
-            'male', 'm' => 'Mr',
-            default => '',
-        };
-        $replacements = [
-            '[REFERENCE_NUMBER]' => $client->ref_number ?? '',
-            '{{ref_number}}' => $client->ref_number ?? '',
-            '[SALUTATION]' => $salutation,
-            '[CLIENT_FIRST_NAME]' => $client->first_name ?? '',
-            '[CLIENT_SURNAME]' => $client->sir_name ?? '',
-            '[CLIENT_GENDER]' => $client->gender ?? '',
-            '[CLIENT_PASSPORT_NO]' => $client->passport_no ?? '',
-            '[CITY]' => $client->city ?? '',
-            '[CLIENT_EMAIL]' => $client->email ?? '',
-            '[CLIENT_PHONE]' => $client->phone ?? '',
-            '[CLIENT_DOB]' => $client->dob ?? '',
-            '[ADDRESS_1]' => $client->address1 ?? '',
-            '[ADDRESS_2]' => $client->color ?? '',
-            '[NATIONALITY]' => $client->country ?? '',
-            '[COUNTRY]' => $client->national ?? '',
-            '[DATE]' => now()->format('jS F Y'),
-        ];
-
-        for ($index = 0; $index < $zip->numFiles; $index++) {
-            $entryName = $zip->getNameIndex($index);
-            if (!preg_match('#^word/(document|header\d+|footer\d+)\.xml$#', $entryName)) {
-                continue;
-            }
-
-            $xml = $zip->getFromIndex($index);
-            foreach ($replacements as $placeholder => $replacement) {
-                $xml = str_replace(
-                    htmlspecialchars($placeholder, ENT_XML1, 'UTF-8'),
-                    htmlspecialchars($replacement, ENT_XML1, 'UTF-8'),
-                    $xml
-                );
-            }
-            $zip->addFromString($entryName, $xml);
-        }
-
-        $zip->close();
+        $temporaryFile = $this->createPersonalizedTemplateFile($template, $client);
 
         return response()->download(
             $temporaryFile,
@@ -551,11 +502,6 @@ class ClientController extends Controller
             throw new \RuntimeException('Original Word-layout PDF conversion is available only on the Windows document server.');
         }
 
-        $wordExecutable = 'C:\\Program Files\\Microsoft Office\\Office16\\WINWORD.EXE';
-        if (!is_file($wordExecutable)) {
-            throw new \RuntimeException('Microsoft Word is required to create a PDF with the original template layout.');
-        }
-
         $quotePowerShell = static function (string $path): string {
             return "'" . str_replace("'", "''", $path) . "'";
         };
@@ -563,13 +509,20 @@ class ClientController extends Controller
         $output = $quotePowerShell($pdfFile);
         $script = "\$ErrorActionPreference = 'Stop'; "
             . "\$word = New-Object -ComObject Word.Application; "
-            . "\$word.Visible = \$false; \$word.DisplayAlerts = 0; "
+            . "\$word.Visible = \$false; \$word.DisplayAlerts = 0; \$word.AutomationSecurity = 3; "
             . "try { \$document = \$word.Documents.Open($input, \$false, \$true); "
             . "\$document.ExportAsFixedFormat($output, 17); \$document.Close(); } "
             . "finally { \$word.Quit(); [void][Runtime.InteropServices.Marshal]::ReleaseComObject(\$word); }";
 
-        $command = 'powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command '
-            . escapeshellarg($script);
+        // Web-server services may not inherit PowerShell's directory in PATH.
+        $windowsDirectory = getenv('SystemRoot') ?: (getenv('WINDIR') ?: 'C:\\Windows');
+        $powerShell = rtrim($windowsDirectory, '\\/') . '\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
+        if (!is_file($powerShell)) {
+            throw new \RuntimeException('Windows PowerShell was not found at: ' . $powerShell);
+        }
+
+        $command = [$powerShell, '-NoProfile', '-NonInteractive', '-WindowStyle', 'Hidden',
+            '-EncodedCommand', base64_encode(mb_convert_encoding($script, 'UTF-16LE', 'UTF-8'))];
         $process = proc_open($command, [
             1 => ['pipe', 'w'],
             2 => ['pipe', 'w'],
@@ -593,7 +546,7 @@ class ClientController extends Controller
 
     private function createPersonalizedTemplateFile(Template $template, Client $client): string
     {
-        $temporaryFile = tempnam(sys_get_temp_dir(), 'template_') . '.docx';
+        $temporaryFile = tempnam(sys_get_temp_dir(), 'template_');
         file_put_contents($temporaryFile, $template->content);
 
         $zip = new ZipArchive();
@@ -633,19 +586,57 @@ class ClientController extends Controller
             }
 
             $xml = $zip->getFromIndex($index);
-            foreach ($replacements as $placeholder => $replacement) {
-                $xml = str_replace(
-                    htmlspecialchars($placeholder, ENT_XML1, 'UTF-8'),
-                    htmlspecialchars($replacement, ENT_XML1, 'UTF-8'),
-                    $xml
-                );
-            }
+            $xml = $this->replaceTemplateXmlPlaceholders($xml, $replacements);
             $zip->addFromString($entryName, $xml);
         }
 
         $zip->close();
 
         return $temporaryFile;
+    }
+
+    private function replaceTemplateXmlPlaceholders(string $xml, array $replacements): string
+    {
+        // Escape literal ampersands in template text without double-encoding XML entities.
+        $xml = preg_replace('/&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)/', '&amp;', $xml);
+        $document = new \DOMDocument();
+        $document->preserveWhiteSpace = true;
+        if (!$document->loadXML($xml, LIBXML_NONET)) {
+            throw new \RuntimeException('The template contains invalid Word XML.');
+        }
+        $xpath = new \DOMXPath($document);
+        $changed = false;
+        $xpath->registerNamespace('w', 'http://schemas.openxmlformats.org/wordprocessingml/2006/main');
+        foreach ($xpath->query('//w:p') as $paragraph) {
+            $nodes = [];
+            $text = '';
+            foreach ($xpath->query('.//w:t', $paragraph) as $node) {
+                $nodes[] = ['node' => $node, 'start' => strlen($text), 'length' => strlen($node->textContent)];
+                $text .= $node->textContent;
+            }
+            $pattern = '/' . implode('|', array_map(static fn ($key) => preg_quote($key, '/'), array_keys($replacements))) . '/';
+            preg_match_all($pattern, $text, $matches, PREG_OFFSET_CAPTURE);
+            // Work backwards so offsets remain valid when replacement lengths differ.
+            foreach (array_reverse($matches[0]) as [$key, $start]) {
+                $changed = true;
+                $end = $start + strlen($key);
+                foreach ($nodes as $entry) {
+                    $nodeStart = $entry['start'];
+                    $nodeEnd = $nodeStart + $entry['length'];
+                    if ($nodeEnd <= $start || $nodeStart >= $end) {
+                        continue;
+                    }
+                    $node = $entry['node'];
+                    $value = substr($node->textContent, 0, max(0, $start - $nodeStart))
+                        . ($start >= $nodeStart ? (string) $replacements[$key] : '')
+                        . substr($node->textContent, min($entry['length'], $end - $nodeStart));
+                    $node->textContent = $value;
+                    $node->setAttributeNS('http://www.w3.org/XML/1998/namespace', 'xml:space', 'preserve');
+                }
+            }
+        }
+
+        return $changed ? $document->saveXML() : $xml;
     }
 
     private function replaceClientPlaceholders(string $html, Client $client): string

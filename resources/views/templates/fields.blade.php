@@ -1,226 +1,41 @@
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">Edit Template: {{ $template->title }}</h4>
-                </div>
-                <p>[CLIENT_FIRST_NAME] => For Client First Name</p>
-                <p>[CLIENT_SURNAME] => For Client Surname</p>
-                <p>[CLIENT_GENDER] => For Client Gender</p>
-                <p>[CITY] => For Client City</p>
-                <p>[CLIENT_EMAIL] => For Client Email</p>
-                <p>[CLIENT_PHONE] => For Client Phone</p>
-                <p>[CLIENT_DOB] => For Client Date of Birth</p>
-                <p>[DATE] => For Current Date</p>
-                <p>[ADDRESS_1] => For address 1</p>
-                <p>[ADDRESS_2] => For address 2</p>
-                <p>[NATIONALITY] => For Nationality</p>
-                <p>[COUNTRY] => For country</p>
-                <p>[REFERENCE_NUMBER] => For Client Reference Number</p>
-                <p>[SALUTATION] => Mr for Male, Mrs for Female</p>
-                <div class="card-body">
-                    <!-- Tab Navigation -->
-                    <ul class="nav nav-tabs mb-3" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" data-toggle="tab" href="#editOnline">
-                                <i class="fa fa-edit"></i> Edit Online
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#uploadNew">
-                                <i class="fa fa-upload"></i> Upload New File
-                            </a>
-                        </li>
-                    </ul>
-
-                    <!-- Tab Content -->
-                    <div class="tab-content">
-                        <!-- Edit Online Tab -->
-                        <div id="editOnline" class="tab-pane fade show active">
-                            {!! Form::model($template, [
-                                'route' => ['templates.update', $template->id],
-                                'method' => 'PUT',
-                                'id' => 'editOnlineForm',
-                            ]) !!}
-
-                            <!-- Title & Find Replace Row -->
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <div class="form-group mb-0">
-                                        {!! Form::label('title', 'Title:') !!}
-                                        {!! Form::text('title', null, [
-                                            'class' => 'form-control',
-                                            'required' => true,
-                                        ]) !!}
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group mb-0">
-                                        {!! Form::label('type', 'Template Type:') !!}
-                                        {!! Form::select('type', [
-                                            'Authority Letter' => 'Authority Letter',
-                                            'Initial Instruction' => 'Initial Instruction',
-                                            'Client Care' => 'Client Care',
-                                            'Client Closure Letter' => 'Client Closure Letter',
-                                            'Covering Letter' => 'Covering Letter',
-                                        ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type']) !!}
-                                        {!! $errors->first('type','<span class="help-block">:message</span>') !!}
-                                    </div>
-                                </div>
-                                <div class="form-group col-sm-6 {{ $errors->has('type') ? 'has-error' :'' }}" >
-                                    {!! Form::label('matter_type', 'Visa Type:') !!}
-                                    {!! Form::select('matter_type', [
-                                        'Appeal' => 'Appeal',
-                                        'Work Visa' => 'Work Visa',
-                                        'Student Visa' => 'Student Visa',
-                                        'Spouse Visa' => 'Spouse Visa',
-                                        'Visitor Visa' => 'Visitor Visa',
-                                        'Settlement Visa' => 'Settlement Visa'
-                                    ], null, ['class' => 'form-control', 'placeholder' => 'Select Type']) !!}
-                                    {!! $errors->first('matter_type','<span class="help-block">:message</span>') !!}
-                                </div>
-                                <div class="col-md-6 text-right d-flex align-items-end">
-                                    <button type="button" class="btn btn-info btn-sm ml-auto" id="findReplaceBtn">
-                                        <i class="fa fa-search"></i> Find & Replace
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Find & Replace Panel -->
-                            <div id="findReplacePanel" class="card mb-2" style="display:none;">
-                                <div class="card-body p-2">
-                                    <div class="row">
-                                        <div class="col-md-5">
-                                            <label class="mb-1 small">Find:</label>
-                                            <input type="text" id="findText" class="form-control form-control-sm">
-                                        </div>
-                                        <div class="col-md-5">
-                                            <label class="mb-1 small">Replace with:</label>
-                                            <input type="text" id="replaceText" class="form-control form-control-sm">
-                                        </div>
-                                        <div class="col-md-2 d-flex align-items-end">
-                                            <button type="button" class="btn btn-primary btn-sm btn-block"
-                                                id="replaceAllBtn">
-                                                Replace All
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Document Editor -->
-                            <div class="border bg-white p-3 mb-2"
-                                style="min-height: 500px; max-height: 600px; overflow-y: auto;">
-                                <!-- Loading -->
-                                <div id="editorLoading" class="text-center py-5">
-                                    <i class="fa fa-spinner fa-spin fa-2x"></i>
-                                    <p class="mt-2">Loading document...</p>
-                                </div>
-
-                                <!-- Editable Content -->
-                                <div id="documentContent" contenteditable="true" style="outline: none; display:none;">
-                                    <!-- Content will load here -->
-                                </div>
-                                <div id="documentFooterPreview" style="display:none;">
-                                    <div class="document-footer-line"></div>
-                                    <div class="document-footer-content">
-                                        <div>
-                                            <strong>UK Immigration Law</strong><br>
-                                            1st Floor, 236 ST. Helens Road, Bolton BL3 4EB, Ph. 07777328028,
-                                            Email: qureshisalim@yahoo.com
-                                        </div>
-                                        @if (is_file(public_path('images/footer.jpg')))
-                                            <img src="{{ asset('images/footer.jpg') }}" alt="UK Immigration Law">
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Hidden field for edited HTML -->
-                            <input type="hidden" name="edited_html" id="editedHtml">
-
-                            <!-- Submit Buttons -->
-                            <div class="form-group mb-0">
-                                <button type="submit" class="btn btn-success" id="saveBtn">
-                                    <i class="fa fa-save"></i> Save Changes
-                                </button>
-                                <a href="{{ route('templates.index') }}" class="btn btn-secondary">Cancel</a>
-                            </div>
-
-                            {!! Form::close() !!}
-                        </div>
-
-                        <!-- Upload New File Tab -->
-                        <div id="uploadNew" class="tab-pane fade">
-                            {!! Form::model($template, [
-                                'route' => ['templates.update', $template->id],
-                                'method' => 'PUT',
-                                'files' => true,
-                            ]) !!}
-
-                            <!-- Title -->
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    {!! Form::label('title', 'Title:') !!}
-                                    {!! Form::text('title', null, [
-                                        'class' => 'form-control',
-                                        'required' => true,
-                                    ]) !!}
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group mb-0">
-                                    {!! Form::label('type', 'Template Type:') !!}
-                                    {!! Form::select('type', [
-                                        'Authority Letter' => 'Authority Letter',
-                                        'Initial Instruction' => 'Initial Instruction',
-                                        'Client Care' => 'Client Care',
-                                        'Client Closure Letter' => 'Client Closure Letter',
-                                        'Covering Letter' => 'Covering Letter',
-                                    ], null, ['class' => 'form-control', 'placeholder' => 'Select Template Type']) !!}
-                                    {!! $errors->first('type','<span class="help-block">:message</span>') !!}
-                                </div>
-                            </div>
-
-                            <div class="form-group col-sm-6 {{ $errors->has('type') ? 'has-error' :'' }}" >
-                                {!! Form::label('matter_type', 'Visa Type:') !!}
-                                {!! Form::select('matter_type', [
-                                    'Appeal' => 'Appeal',
-                                    'Work Visa' => 'Work Visa',
-                                    'Student Visa' => 'Student Visa',
-                                    'Spouse Visa' => 'Spouse Visa',
-                                    'Visitor Visa' => 'Visitor Visa',
-                                    'Settlement Visa' => 'Settlement Visa'
-                                ], null, ['class' => 'form-control', 'placeholder' => 'Select Type']) !!}
-                                {!! $errors->first('matter_type','<span class="help-block">:message</span>') !!}
-                            </div>
-
-                            <!-- Upload File -->
-                            <div class="form-group">
-                                {!! Form::label('doc_file', 'Upload New Document:') !!}
-                                {!! Form::file('doc_file', [
-                                    'class' => 'form-control',
-                                    'accept' => '.docx',
-                                ]) !!}
-                                <small class="form-text text-muted">Upload a new .docx file to replace the current
-                                    template</small>
-                            </div>
-
-                            <!-- Submit -->
-                            <div class="form-group mb-0">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-upload"></i> Upload & Save
-                                </button>
-                                <a href="{{ route('templates.index') }}" class="btn btn-secondary">Cancel</a>
-                            </div>
-
-                            {!! Form::close() !!}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="col-sm-12">
+    @if ($errors->any())
+        <div class="alert alert-danger"><ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+    @endif
+    <div class="alert alert-info">
+        Download the current DOCX, edit its wording or keys in Microsoft Word, then upload the revised file.
+        Each template keeps its own page size, fonts, logos, headers and footers.
+        Saving title or category changes keeps the document unchanged.
     </div>
+    <a class="btn btn-default mb-3" href="{{ route('templates.download', $template->id) }}">Download Current DOCX</a>
+    <p>If an older online edit changed the layout, upload your original DOCX again.</p>
+</div>
+<div class="form-group col-sm-6">
+    {!! Form::label('title', 'Title:') !!}
+    {!! Form::text('title', null, ['class' => 'form-control', 'required' => true]) !!}
+</div>
+<div class="form-group col-sm-6">
+    {!! Form::label('type', 'Template Type:') !!}
+    {!! Form::select('type', array_combine($types = ['Authority Letter', 'Initial Instruction', 'Client Care', 'Client Closure Letter', 'Covering Letter'], $types), null, ['class' => 'form-control', 'required' => true]) !!}
+</div>
+<div class="form-group col-sm-6">
+    {!! Form::label('matter_type', 'Visa Type:') !!}
+    {!! Form::select('matter_type', array_combine($matters = ['Appeal', 'Work Visa', 'Student Visa', 'Spouse Visa', 'Visitor Visa', 'Settlement Visa'], $matters), null, ['class' => 'form-control', 'required' => true]) !!}
+</div>
+<div class="form-group col-sm-6">
+    {!! Form::label('doc_file', 'Replace Document (optional):') !!}
+    {!! Form::file('doc_file', ['class' => 'form-control', 'accept' => '.docx']) !!}
+    <small>Upload an original Word DOCX with client keys. Maximum 10 MB.</small>
+</div>
+<div class="col-sm-12">
+    <details class="mb-3"><summary>Supported client keys</summary>
+        <p>Insert these keys in Word wherever the corresponding client value should appear. Other text stays as written.</p>
+        <p><code>[CLIENT_FIRST_NAME]</code> <code>[CLIENT_SURNAME]</code> <code>[SALUTATION]</code>
+        <code>[REFERENCE_NUMBER]</code> <code>[ADDRESS_1]</code> <code>[ADDRESS_2]</code>
+        <code>[CITY]</code> <code>[CLIENT_EMAIL]</code> <code>[CLIENT_PHONE]</code>
+        <code>[CLIENT_DOB]</code> <code>[CLIENT_GENDER]</code> <code>[CLIENT_PASSPORT_NO]</code>
+        <code>[NATIONALITY]</code> <code>[COUNTRY]</code> <code>[DATE]</code></p>
+    </details>
+    <button type="submit" class="btn btn-success">Save Changes</button>
+    <a href="{{ route('templates.index') }}" class="btn btn-default">Cancel</a>
 </div>

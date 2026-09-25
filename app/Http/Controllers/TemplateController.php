@@ -39,8 +39,9 @@ class TemplateController extends Controller
 
         $request->validate([
             'title' => 'required|string|max:255',
-            'doc_file' => 'required|file|mimes:docx|max:10240',
+            'edited_html' => 'prohibited',
             'type' => 'required|in:Authority Letter,Initial Instruction,Client Care,Client Closure Letter,Covering Letter',
+            'doc_file' => 'required|file|mimes:docx|max:10240',
             'visa_type' => 'required|in:Appeal,Work Visa,Student Visa,Spouse Visa,Visitor Visa,Settlement Visa',
         ]);
 
@@ -103,11 +104,25 @@ class TemplateController extends Controller
     }
 
     // Update template
+    public function download(Template $template)
+    {
+        $content = $template->content;
+        if (is_resource($content)) {
+            $content = stream_get_contents($content);
+        }
+
+        return response($content)->header('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            ->header('Content-Disposition', 'attachment; filename="Template_' . $template->id . '.docx"');
+    }
+
     public function update(Request $request, Template $template)
     {
 
         $request->validate([
             'title' => 'required|string|max:255',
+            'edited_html' => 'prohibited',
+            'type' => 'required|in:Authority Letter,Initial Instruction,Client Care,Client Closure Letter,Covering Letter',
+            'matter_type' => 'required|in:Appeal,Work Visa,Student Visa,Spouse Visa,Visitor Visa,Settlement Visa',
         ]);
 
         $template->title = $request->title;
@@ -129,147 +144,11 @@ class TemplateController extends Controller
 
             $template->content = $uploadedFile->get();
         } 
-        // Check if edited HTML content exists
-        elseif ($request->filled('edited_html')) {
-            // Convert HTML back to DOCX
-            $template->content = $this->htmlToDocx($request->edited_html);
-        }
         $template->type = $request->type;
         $template->matter_type = $request->matter_type;
         $template->save();
 
         return redirect()->route('templates.index')->with('success', 'Template updated successfully');
-    }
-
-    // Helper: Convert HTML to DOCX binary
-    private function htmlToDocx($html)
-    {
-        $html = $this->cleanHtmlForWord($html);
-
-        $phpWord = new \PhpOffice\PhpWord\PhpWord();
-        $section = $phpWord->addSection([
-            'pageSizeW' => 11906,
-            'pageSizeH' => 16838,
-            'marginLeft' => 1440,
-            'marginRight' => 1440,
-            'marginTop' => 1440,
-            'marginBottom' => 1440,
-            'footerDistance' => 720,
-        ]);
-
-        // Mammoth does not bring DOCX headers into the online editor. Add the
-        // firm logo while saving so the generated DOCX and PDF have the same
-        // branding on every page.
-        $headerLogo = public_path('images/logo_imigration_law.png');
-        if (is_file($headerLogo)) {
-            $header = $section->addHeader();
-            $header->addImage($headerLogo, [
-                'width' => 159,
-                'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT,
-            ]);
-        }
-
-        $footer = $section->addFooter();
-        $footerTable = $footer->addTable([
-            'borderTopSize' => 6,
-            'borderTopColor' => '999999',
-            'cellMarginTop' => 40,
-            'cellMarginBottom' => 20,
-        ]);
-        $footerTable->addRow(900);
-
-        $footerTextCell = $footerTable->addCell(8500);
-        $footerTextCell->addText(
-            'UK Immigration Law',
-            ['bold' => true, 'name' => 'Arial', 'size' => 9],
-            ['alignment' => 'center']
-        );
-        $footerTextCell->addText(
-            '1st Floor, 236 ST. Helens Road, Bolton BL3 4EB, Ph. 07777328028, Email: qureshisalim@yahoo.com',
-            ['name' => 'Arial', 'size' => 8],
-            ['alignment' => 'center']
-        );
-
-        $footerLogoCell = $footerTable->addCell(1800);
-        $footerLogo = public_path('images/footer.jpg');
-        if (is_file($footerLogo)) {
-            $footerLogoCell->addImage($footerLogo, [
-                'width' => 55,
-                'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT,
-            ]);
-        }
-
-        try {
-            \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html, false, false);
-        } catch (\Throwable $e) {
-            throw new \RuntimeException(
-                'Template HTML could not be converted to DOCX: ' . $e->getMessage(),
-                0,
-                $e
-            );
-        }
-
-        $phpWordTempDir = storage_path('app/phpword');
-        if (!is_dir($phpWordTempDir)) {
-            mkdir($phpWordTempDir, 0755, true);
-        }
-        \PhpOffice\PhpWord\Settings::setTempDir($phpWordTempDir);
-
-        $tempFile = tempnam($phpWordTempDir, 'docx_');
-        if ($tempFile === false) {
-            throw new \RuntimeException('Unable to create a temporary DOCX file.');
-        }
-        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-        $objWriter->save($tempFile);
-        
-        $content = file_get_contents($tempFile);
-        @unlink($tempFile);
-        
-        return $content;
-    }
-
-    private function cleanHtmlForWord(string $html): string
-    {
-        // Base64 images ko temp files mein convert karo
-        $html = preg_replace_callback(
-            '/<img[^>]+src=["\']data:([^;]+);base64,([^"\']+)["\'][^>]*\/?>/i',
-            function ($matches) {
-                $mimeType = $matches[1]; // e.g. image/png
-                $base64Data = $matches[2];
-                $ext = explode('/', $mimeType)[1]; // png, jpg etc.
-                
-                $tmpFile = tempnam(sys_get_temp_dir(), 'img_') . '.' . $ext;
-                file_put_contents($tmpFile, base64_decode($base64Data));
-                
-                // PhpWord HTML parser img tag with file path
-                return '<img src="' . $tmpFile . '" />';
-            },
-            $html
-        );
-
-        // ... baaki steps same rehte hain
-        if (preg_match('/<body[^>]*>(.*?)<\/body>/is', $html, $matches)) {
-            $html = $matches[1];
-        }
-
-        $allowedTags = '<p><br><strong><em><b><i><u><ul><ol><li><h1><h2><h3><h4><h5><h6><table><tr><td><th><thead><tbody><span><a><sup><sub><img>';
-        $html = strip_tags($html, $allowedTags);
-
-        // Keep inline styles because Mammoth uses them for the original layout.
-        $html = preg_replace('/\s+/', ' ', $html);
-        $html = preg_replace('/<p>\s*<\/p>/i', '', $html);
-        $html = preg_replace('/<br>/i', '<br/>', $html);
-
-        $html = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
-
-        $html = preg_replace_callback('/<img\b([^>]*)>/i', function ($matches) {
-            $attributes = preg_replace('/\s*\/\s*$/', '', $matches[1]);
-            return '<img' . $attributes . ' />';
-        }, $html);
-
-        $html = preg_replace('/<img\b[^>]*\bsrc=["\']\s*["\'][^>]*>/i', '', $html);
-
-        return trim($html);
     }
 
     // Delete template

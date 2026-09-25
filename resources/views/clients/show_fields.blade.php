@@ -478,7 +478,7 @@
                             <p class="mt-2">Loading document...</p>
                         </div>
 
-                        <div id="documentContent" contenteditable="true" style="outline: none; display:none;">
+                        <div id="documentContent" contenteditable="false" style="outline: none; display:none;">
                             <!-- Word content will be rendered here -->
                         </div>
                     </div>
@@ -486,7 +486,7 @@
                     <div class="mt-2 alert alert-info py-2">
                         <small>
                             <i class="fa fa-info-circle"></i>
-                            Click anywhere to edit • Use Find & Replace for bulk changes
+                            The preview and downloads use the original template with the current client details. Update client details on the client record; update wording or formatting by uploading a revised DOCX template.
                         </small>
                     </div>
                 </div>

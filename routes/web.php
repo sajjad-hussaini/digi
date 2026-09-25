@@ -53,8 +53,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
         Route::resource('custom-fields', CustomFieldController::class, ['names' => 'customFields']);
         Route::resource('file-types', FileTypeController::class, ['names' => 'fileTypes']);
     });
-     // Templates list
+    // Templates list
     Route::get('/templates/list', [ClientController::class, 'getTemplates']);
+    Route::get('/templates/{template}/download', [TemplateController::class, 'download'])->name('templates.download');
     // routes/web.php
     Route::get('/invoice/{id}', [InvoiceController::class, 'show']);
     Route::get('/invoice/{id}/pdf', [InvoiceController::class, 'downloadPdf']);

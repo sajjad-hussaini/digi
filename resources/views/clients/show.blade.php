@@ -318,57 +318,36 @@ $(document).on('click', '#is_permanent', function () {
 });
 
 // Load template content from DB
+let templatePreviewUrl = null;
+let templatePreviewRequest = null;
 function loadTemplateContent(templateId) {
     $('#choice-step').hide();
     $('#editor-step').show();
-    $('#editorLoading').show();
-    $('#documentContent').hide();
+    $('#documentToolbar, #findReplaceBtn, #findReplacePanel, #documentContent').hide();
+    $('#documentPreview').remove();
+    $('#editorLoading').show().text('Generating PDF preview...');
     $('#templateTitleText').text(selectedTemplateTitle);
-
-    $.ajax({
-        url: '/admin/templates/' + templateId + '/content',
-        type: 'GET',
-        success: function(response) {
-            // Base64 to ArrayBuffer convert karo
-            let binaryStr = atob(response.content);
-            let bytes = new Uint8Array(binaryStr.length);
-            for (let i = 0; i < binaryStr.length; i++) {
-                bytes[i] = binaryStr.charCodeAt(i);
-            }
-
-            // Mammoth se DOCX to HTML convert karo
-            mammoth.convertToHtml({arrayBuffer: bytes.buffer})
-                .then(function(result) {
-                    let html = result.value;
-
-                    // Remove logos embedded in the uploaded template. Branding
-                    // is added once by the generated header and footer below.
-                    const templateContent = $('<div>').html(html);
-                    templateContent.find('img').remove();
-                    html = templateContent.html();
-                    
-                    // Auto replace client placeholders
-                    html = autoReplaceClientData(html);
-                    html = ensureDocumentHeader(html);
-                    html = ensureDocumentFooter(html);
-                    
-                    $('#documentContent').html(html);
-                    formatTemplateImages();
-                    $('#editorLoading').hide();
-                    $('#documentContent').show();
-                })
-                .catch(function(err) {
-                    console.error('Mammoth error:', err);
-                    $('#editorLoading').html('<span class="text-danger">Error rendering document</span>');
-                });
+    if (templatePreviewUrl) URL.revokeObjectURL(templatePreviewUrl);
+    templatePreviewUrl = null;
+    templatePreviewRequest = $.ajax({
+        url: "{{ route('client.initial.instruction.generate', $client->id) }}",
+        type: 'POST',
+        data: {template_id: templateId, format: 'pdf', _token: '{{ csrf_token() }}'},
+        xhrFields: {responseType: 'blob'},
+        success: function(blob) {
+            templatePreviewUrl = URL.createObjectURL(blob);
+            $('<iframe>', {id: 'documentPreview', title: 'Client document PDF preview', src: templatePreviewUrl})
+                .css({width: '100%', height: '750px', border: 0}).appendTo('#docxEditor');
+            $('#editorLoading').hide();
         },
-        error: function(xhr) {
-            console.error('Error:', xhr);
-            $('#editorLoading').html('<span class="text-danger">Error loading template</span>');
+        error: async function(xhr, status) {
+            if (status === 'abort') return;
+            let message = 'PDF preview could not be generated. You can still download the DOCX.';
+            try { message = JSON.parse(await xhr.response.text()).error || message; } catch (error) {}
+            $('#editorLoading').text(message);
         }
     });
 }
-
 function formatTemplateImages() {
     $('#documentContent img').not('.document-header img, .document-footer img').each(function() {
         $(this).css({
@@ -503,6 +482,11 @@ function generateDocument(format, currentTargetType) {
 
 // Reset editor
 function resetEditor() {
+    if (templatePreviewRequest) templatePreviewRequest.abort();
+    templatePreviewRequest = null;
+    if (templatePreviewUrl) URL.revokeObjectURL(templatePreviewUrl);
+    templatePreviewUrl = null;
+    $('#documentPreview').remove();
     $('#editor-step').hide();
     $('#choice-step').show();
     $('#documentContent').empty().hide();
