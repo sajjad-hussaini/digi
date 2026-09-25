@@ -90,7 +90,7 @@
         .footer-logo {
             position: absolute;
             top: -28.2px;
-            right: 0;
+            right: -5px;
             width: 70px;
             text-align: right;
         }
