@@ -6,7 +6,7 @@
     <style>
         @page {
             size: letter portrait;
-            margin-top: 15mm;
+            margin-top: 10mm;
             margin-right: 17.5mm;
             margin-bottom: 22mm;
             margin-left: 17.5mm;
@@ -21,12 +21,12 @@
         .header-logo { 
             position: absolute; 
             top: 0; 
-            right: 20px; 
+            right: 5px; 
             width: 80px; 
             text-align: right;
         }
         .header-logo img {
-            width: 90px;
+            width: 75px;
             height: auto;
         }
         .letter-wrap { 
@@ -38,7 +38,7 @@
             text-decoration: underline;
             font-size: 28px; 
             font-weight: bold; 
-            margin-top: 180px; 
+            margin-top: 130px; 
             margin-bottom: 25px; 
             text-transform: uppercase; 
             letter-spacing: 0.5px;
@@ -94,6 +94,9 @@
             width: 70px;
             text-align: right;
         }
+        .top-line{
+            margin-top: 40px;
+        }
     </style>
 </head>
 <body>
@@ -119,7 +122,7 @@
     <div class="letter-wrap">
         <h1 class="title">FORM OF AUTHORITY</h1>
 
-        <p class="lead-line">
+        <p class="lead-line top-line">
             I, <span class="highlight">{{ $clientFullName }}</span>, 
             date of birth <span class="highlight">{{ $dob }}</span>, 
             national <span class="highlight">{{ $nationality }}</span>, 
@@ -139,19 +142,19 @@
         <table class="signature-table" width="100%">
             <tr>
                 <td style="padding-bottom: 16px;">
-                    <p style="margin: 0 0 35px; font-size: 18px; font-weight: bold;">Signed :</p>
+                    <p style="margin: 0 0 35px; font-size: 18px; ">Signed :</p>
                     <div style="border-bottom: 1px solid #000; width: 280px;"></div>
                     <p style="margin: 4px 0 0; font-size: 13px;">(Client's Signature)</p>
                 </td>
             </tr>
             <tr>
                 <td style="padding-bottom: 18px;">
-                    <p style="margin: 0; font-size: 18px;"><strong>Print Name :</strong> <span class="highlight">{{ $clientFullName }}</span></p>
+                    <p style="margin: 0; font-size: 18px;">Print Name : <span class="highlight">{{ $clientFullName }}</span></p>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <p style="margin: 0; font-size: 18px;"><strong>Dated :</strong> {{ $today }}</p>
+                    <p style="margin: 0; font-size: 18px;">Dated : {{ $today }}</p>
                 </td>
             </tr>
         </table>
