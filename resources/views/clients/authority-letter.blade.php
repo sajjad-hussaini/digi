@@ -5,8 +5,8 @@
     <title>Form of Authority</title>
     <style>
         @page {
-            size: letter portrait;
-            margin-top: 10mm;
+            size: A4 portrait;
+            margin-top: 12mm;
             margin-right: 17.5mm;
             margin-bottom: 22mm;
             margin-left: 17.5mm;
@@ -26,7 +26,7 @@
             text-align: right;
         }
         .header-logo img {
-            width: 75px;
+            width: 80px;
             height: auto;
         }
         .letter-wrap { 
@@ -38,7 +38,7 @@
             text-decoration: underline;
             font-size: 28px; 
             font-weight: bold; 
-            margin-top: 130px; 
+            margin-top: 140px; 
             margin-bottom: 25px; 
             text-transform: uppercase; 
             letter-spacing: 0.5px;
