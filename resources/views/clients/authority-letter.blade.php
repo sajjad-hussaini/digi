@@ -35,6 +35,7 @@
         }
         .title { 
             text-align: center; 
+            text-decoration: underline;
             font-size: 28px; 
             font-weight: bold; 
             margin-top: 180px; 
