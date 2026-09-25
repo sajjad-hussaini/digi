@@ -26,7 +26,7 @@
             text-align: right;
         }
         .header-logo img {
-            width: 80px;
+            width: 78px;
             height: auto;
         }
         .letter-wrap { 
@@ -38,7 +38,7 @@
             text-decoration: underline;
             font-size: 28px; 
             font-weight: bold; 
-            margin-top: 140px; 
+            margin-top: 150px; 
             margin-bottom: 25px; 
             text-transform: uppercase; 
             letter-spacing: 0.5px;
@@ -95,7 +95,7 @@
             text-align: right;
         }
         .top-line{
-            margin-top: 40px;
+            margin-top: 45px;
         }
     </style>
 </head>
