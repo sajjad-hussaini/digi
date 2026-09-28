@@ -21,8 +21,18 @@ class StoreInvoiceRequest extends FormRequest
             'items' => ['required', 'array', 'min:1', 'max:100'],
             'items.*.description' => ['required', 'string', 'max:1000'],
             'items.*.fees' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
+            'apply_vat' => ['sometimes', 'boolean'],
             'vat' => ['nullable', 'numeric', 'min:0', 'max:99999999.99'],
         ];
+    }
+
+    public function invoiceTotals(): array
+    {
+        $subtotal = array_sum(array_map(static fn ($item) => (float) $item['fees'], $this->input('items', [])));
+        // Keep the invoice form's existing whole-pound rounding.
+        $vat = $this->boolean('apply_vat') ? round($subtotal * 0.20) : 0;
+
+        return ['vat' => $vat, 'total_due' => round($subtotal + $vat)];
     }
 
     protected function prepareForValidation(): void

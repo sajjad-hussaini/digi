@@ -92,6 +92,13 @@
 {{-- Totals --}}
 <div class="row" style="margin-top: 20px;">
     <div class="col-sm-4 col-sm-offset-8">
+        <div class="checkbox">
+            <input type="hidden" name="apply_vat" value="0">
+            <label for="apply_vat">
+                <input type="checkbox" name="apply_vat" id="apply_vat" value="1" @checked(old('apply_vat', false))>
+                Apply VAT (20%)
+            </label>
+        </div>
         <table class="table table-bordered">
             <tr>
                 <td><strong>Subtotal</strong></td>
@@ -103,6 +110,7 @@
                     <input type="number"
                         name="vat"
                         id="vat"
+                        readonly
                         class="form-control"
                         min="0"
                         placeholder="0"
@@ -149,33 +157,9 @@
                 subtotal += parseFloat($(this).val()) || 0;
             });
 
-            // Default VAT auto calculate
-            let vat = (20 / 100) * subtotal;
+            const vat = $('#apply_vat').is(':checked') ? Math.round(0.20 * subtotal) : 0;
+            $('#vat').val(vat);
 
-            // Agar VAT empty hai tabhi auto set karo
-            $('#vat').val(Math.round(vat));
-            if (vat == 0.00) {
-                $('#vat').val('');
-            }
-
-            vat = parseFloat($('#vat').val()) || 0;
-
-            const total = subtotal + vat;
-
-            $('#subtotal-display').text('£' + Math.round(subtotal));
-            $('#total-display').text('£' + Math.round(total));
-            $('#total_due').val(Math.round(total));
-        }
-
-        function updateTotalOnly() {
-
-            let subtotal = 0;
-
-            $('.fee-input').each(function() {
-                subtotal += parseFloat($(this).val()) || 0;
-            });
-
-            const vat = parseFloat($('#vat').val()) || 0;
             const total = subtotal + vat;
 
             $('#subtotal-display').text('£' + Math.round(subtotal));
@@ -246,8 +230,8 @@
             calculateTotal();
         });
 
-        $(document).on('input', '#vat', function() {
-            updateTotalOnly();
+        $(document).on('change', '#apply_vat', function() {
+            calculateTotal();
         });
 
         // ----- Page load par calculate -----

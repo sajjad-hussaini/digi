@@ -41,15 +41,17 @@ class InvoiceController extends Controller
 
     public function store(StoreInvoiceRequest $request)
     {
+        $totals = $request->invoiceTotals();
+
         // Step 1: Invoice save karein
         $invoice = Invoice::create([
             'client_id'    => $request->client_id,
             'invoice_no'   => $request->invoice_no,
             'invoice_date' => $request->invoice_date,
             'our_ref'      => $request->our_ref,
-            'vat'          => $request->vat ?? 0,
-            'total_due'    => $request->total_due,
-            'amount'    => $request->total_due,
+            'vat'          => $totals['vat'],
+            'total_due'    => $totals['total_due'],
+            'amount'    => $totals['total_due'],
             'status'       => 'unpaid',
         ]);
 
