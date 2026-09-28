@@ -31,7 +31,7 @@ class StoreClientRequest extends FormRequest
             'phone' => ['required', 'string', 'regex:/^[0-9+()\-\s]{7,25}$/'],
             'email' => ['required', 'email:rfc', 'max:255'],
             'passport_no' => ['nullable', 'string', 'max:50', 'regex:/^[A-Za-z0-9\-\/]+$/'],
-            'visa_type' => ['required', Rule::in(['Appeal', 'Work Visa', 'Student Visa', 'Spouse Visa', 'Visitor Visa', 'Settlement Visa'])],
+            'visa_type' => \App\VisaType::rules($this->route('client') instanceof \App\Client ? $this->route('client')->visa_type : null),
             'visa_issue_date' => ['required', 'date_format:d/m/Y'],
             'visa_expiry_date' => ['required', 'date_format:d/m/Y', 'after_or_equal:visa_issue_date'],
             'priority' => ['required', Rule::in(['Urgent', 'High', 'Medium', 'Low'])],

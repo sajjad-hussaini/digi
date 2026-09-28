@@ -97,14 +97,10 @@
 <!-- Matter Type -->
 <div class="form-group col-sm-6 {{ $errors->has('type') ? 'has-error' :'' }}">
     {!! Form::label('visa_type', 'Visa Type:') !!}
-    {!! Form::select('visa_type', [
-        'Appeal' => 'Appeal',
-        'Work Visa' => 'Work Visa',
-        'Student Visa' => 'Student Visa',
-        'Spouse Visa' => 'Spouse Visa',
-        'Visitor Visa' => 'Visitor Visa',
-        'Settlement Visa' => 'Settlement Visa'
-    ], null, ['class' => 'form-control', 'placeholder' => 'Select Type']) !!}
+    {!! Form::select('visa_type', \App\VisaType::options($client->visa_type ?? null), null, ['class' => 'form-control', 'placeholder' => 'Select Type']) !!}
+    @can('update clients')
+    <small><a href="{{ route('visa-types.index') }}" target="_blank" rel="noopener">Manage visa types</a> &middot; Refresh this form after changing the list.</small>
+    @endcan
     {!! $errors->first('visa_type','<span class="help-blocks">:message</span>') !!}
 </div>
 

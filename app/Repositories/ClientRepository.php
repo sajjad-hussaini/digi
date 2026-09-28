@@ -62,7 +62,7 @@ class ClientRepository extends BaseRepository
         $request->validate([
             'first_name' => 'required',
             'sir_name' => 'required',
-            'visa_type' => 'required',
+            'visa_type' => \App\VisaType::rules(),
         ]);
 
         $client = Client::create([

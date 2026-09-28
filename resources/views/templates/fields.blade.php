@@ -20,7 +20,7 @@
 </div>
 <div class="form-group col-sm-6">
     {!! Form::label('matter_type', 'Visa Type:') !!}
-    {!! Form::select('matter_type', array_combine($matters = ['Appeal', 'Work Visa', 'Student Visa', 'Spouse Visa', 'Visitor Visa', 'Settlement Visa'], $matters), null, ['class' => 'form-control', 'required' => true]) !!}
+    {!! Form::select('matter_type', \App\VisaType::options($template->matter_type ?? null), null, ['class' => 'form-control', 'required' => true]) !!}
 </div>
 <div class="form-group col-sm-6">
     {!! Form::label('doc_file', 'Replace Document (optional):') !!}

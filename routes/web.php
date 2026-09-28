@@ -53,6 +53,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','check_block']], func
         Route::resource('custom-fields', CustomFieldController::class, ['names' => 'customFields']);
         Route::resource('file-types', FileTypeController::class, ['names' => 'fileTypes']);
     });
+    Route::resource('visa-types', \App\Http\Controllers\VisaTypeController::class)->only(['index', 'store', 'destroy']);
     // Templates list
     Route::get('/templates/list', [ClientController::class, 'getTemplates']);
     Route::get('/templates/{template}/download', [TemplateController::class, 'download'])->name('templates.download');

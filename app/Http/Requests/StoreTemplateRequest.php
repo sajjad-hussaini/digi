@@ -20,7 +20,7 @@ class StoreTemplateRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'min:3', 'max:255'],
             'type' => ['required', Rule::in(self::TYPES)],
-            'visa_type' => ['required', Rule::in(self::MATTER_TYPES)],
+            'visa_type' => \App\VisaType::rules(),
             'doc_file' => ['required', 'file', 'mimes:docx', 'max:10240'],
         ];
     }

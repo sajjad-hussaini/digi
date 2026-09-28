@@ -42,7 +42,7 @@ class TemplateController extends Controller
             'edited_html' => 'prohibited',
             'type' => 'required|in:Authority Letter,Initial Instruction,Client Care,Client Closure Letter,Covering Letter',
             'doc_file' => 'required|file|mimes:docx|max:10240',
-            'visa_type' => 'required|in:Appeal,Work Visa,Student Visa,Spouse Visa,Visitor Visa,Settlement Visa',
+            'visa_type' => \App\VisaType::rules(),
         ]);
 
         $uploadedFile = $request->file('doc_file');
@@ -128,7 +128,7 @@ class TemplateController extends Controller
             'find_text' => ['nullable', 'string', 'max:2000', 'regex:/^[^\r\n\t\x00-\x08\x0B\x0C\x0E-\x1F]*$/u'],
             'replace_text' => ['nullable', 'string', 'max:10000', 'regex:/^[^\r\n\t\x00-\x08\x0B\x0C\x0E-\x1F]*$/u'],
             'type' => 'required|in:Authority Letter,Initial Instruction,Client Care,Client Closure Letter,Covering Letter',
-            'matter_type' => 'required|in:Appeal,Work Visa,Student Visa,Spouse Visa,Visitor Visa,Settlement Visa',
+            'matter_type' => \App\VisaType::rules($template->matter_type),
         ]);
 
         $template->title = $request->title;

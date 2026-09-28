@@ -67,3 +67,9 @@
     </li>
 @endif --}}
 
+
+@can('update clients')
+<li class="{{ Request::is('admin/visa-types*') ? 'active shine' : '' }}">
+    <a href="{{ route('visa-types.index') }}"><i class="fa fa-list-alt"></i><span>Visa Types</span></a>
+</li>
+@endcan

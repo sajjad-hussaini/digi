@@ -127,6 +127,7 @@ class ClientController extends Controller
 
     public function update(Request $request, Client $client)
     {
+        $request->validate(['visa_type' => \App\VisaType::rules($client->visa_type)]);
         // update client
         $client->update([
             'first_name' => $request->input('first_name'),
