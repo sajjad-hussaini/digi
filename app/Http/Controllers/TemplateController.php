@@ -121,6 +121,12 @@ class TemplateController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'edited_html' => 'prohibited',
+            'replacements' => 'nullable|array|max:100',
+            'replacements.*' => 'array:find,replace',
+            'replacements.*.find' => ['nullable', 'string', 'max:2000', 'regex:/^[^\r\n\t\x00-\x08\x0B\x0C\x0E-\x1F]*$/u'],
+            'replacements.*.replace' => ['nullable', 'string', 'max:10000', 'regex:/^[^\r\n\t\x00-\x08\x0B\x0C\x0E-\x1F]*$/u'],
+            'find_text' => ['nullable', 'string', 'max:2000', 'regex:/^[^\r\n\t\x00-\x08\x0B\x0C\x0E-\x1F]*$/u'],
+            'replace_text' => ['nullable', 'string', 'max:10000', 'regex:/^[^\r\n\t\x00-\x08\x0B\x0C\x0E-\x1F]*$/u'],
             'type' => 'required|in:Authority Letter,Initial Instruction,Client Care,Client Closure Letter,Covering Letter',
             'matter_type' => 'required|in:Appeal,Work Visa,Student Visa,Spouse Visa,Visitor Visa,Settlement Visa',
         ]);
@@ -144,11 +150,48 @@ class TemplateController extends Controller
 
             $template->content = $uploadedFile->get();
         } 
+        $replacementCount = 0;
+        $rows = $request->input('replacements') ?? [
+            ['find' => $request->input('find_text'), 'replace' => $request->input('replace_text')],
+        ];
+        $replacements = [];
+        $fields = [];
+        foreach ($rows as $index => $row) {
+            $find = (string) ($row['find'] ?? '');
+            $replacement = (string) ($row['replace'] ?? '');
+            $field = "replacements.{$index}.find";
+            if ($find === '') {
+                if ($replacement !== '') {
+                    throw \Illuminate\Validation\ValidationException::withMessages([$field => 'Enter the text you want to replace.']);
+                }
+                continue;
+            }
+            if (array_key_exists($find, $replacements)) {
+                throw \Illuminate\Validation\ValidationException::withMessages([$field => 'Use each Find text only once.']);
+            }
+            $replacements[$find] = $replacement;
+            $fields[$find] = $field;
+        }
+        if ($replacements) {
+            $content = $template->content;
+            if (is_resource($content)) $content = stream_get_contents($content);
+            try {
+                [$content, $replacementCount, $counts] = (new \App\Services\TemplateTextReplacer())->replaceManyDocument($content, $replacements);
+            } catch (\RuntimeException $exception) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['replacements' => $exception->getMessage()]);
+            }
+            $errors = [];
+            foreach ($counts as $find => $count) {
+                if ($count === 0) $errors[$fields[$find]] = 'Text not found: ' . $find . '. Check spelling, capitalization or overlapping rows. No changes were saved.';
+            }
+            if ($errors) throw \Illuminate\Validation\ValidationException::withMessages($errors);
+            $template->content = $content;
+        }
         $template->type = $request->type;
         $template->matter_type = $request->matter_type;
         $template->save();
 
-        return redirect()->route('templates.index')->with('success', 'Template updated successfully');
+        return redirect()->route('templates.index')->with('success', 'Template updated successfully' . ($replacementCount ? ". Replaced {$replacementCount} occurrence(s)." : ''));
     }
 
     // Delete template

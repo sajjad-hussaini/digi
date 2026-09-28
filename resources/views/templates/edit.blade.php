@@ -19,8 +19,16 @@
                     @include('templates.fields')
 
                     {!! Form::close() !!}
+
+                    @include('templates.preview')
                 </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.6/dist/docx-preview.min.js"></script>
+    <script src="{{ asset('js/template-preview.js') }}"></script>
 @endsection

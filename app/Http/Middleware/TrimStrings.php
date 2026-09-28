@@ -14,5 +14,14 @@ class TrimStrings extends Middleware
     protected $except = [
         'password',
         'password_confirmation',
+        'find_text',
+        'replace_text',
     ];
+    protected function transform($key, $value)
+    {
+        if (preg_match('/^replacements\.[^.]+\.(find|replace)$/', $key)) {
+            return $value;
+        }
+        return parent::transform($key, $value);
+    }
 }
