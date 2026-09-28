@@ -486,7 +486,7 @@ class ClientController extends Controller
         $pdfFile .= '.pdf';
 
         try {
-            $this->convertDocxToPdfWithWord($temporaryFile, $pdfFile);
+            $this->convertTemplateToPdf($temporaryFile, $pdfFile);
 
             return response()->download(
                 $pdfFile,
@@ -494,6 +494,19 @@ class ClientController extends Controller
             )->deleteFileAfterSend(true);
         } finally {
             @unlink($temporaryFile);
+        }
+    }
+
+    private function convertTemplateToPdf(string $docxFile, string $pdfFile): void
+    {
+        $driver = config('documents.pdf_driver', 'auto');
+        if ($driver === 'auto') $driver = PHP_OS_FAMILY === 'Windows' ? 'word' : 'libreoffice';
+        if ($driver === 'word') {
+            $this->convertDocxToPdfWithWord($docxFile, $pdfFile);
+        } elseif ($driver === 'libreoffice') {
+            app(\App\Services\LibreOfficePdfConverter::class)->convert($docxFile, $pdfFile);
+        } else {
+            throw new \RuntimeException('Invalid DOCUMENT_PDF_DRIVER. Use auto, word or libreoffice.');
         }
     }
 
