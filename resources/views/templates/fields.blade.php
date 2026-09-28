@@ -53,14 +53,7 @@
     <p style="margin-top:12px">All replacements run when you save. If you upload a DOCX, they apply to that file. Longer text may change page breaks.</p>
 </div>
 <div class="col-sm-12">
-    <details class="mb-3"><summary>Supported client keys</summary>
-        <p>Insert these keys in Word wherever the corresponding client value should appear. Other text stays as written.</p>
-        <p><code>[CLIENT_FIRST_NAME]</code> <code>[CLIENT_SURNAME]</code> <code>[SALUTATION]</code>
-        <code>[REFERENCE_NUMBER]</code> <code>[ADDRESS_1]</code> <code>[ADDRESS_2]</code>
-        <code>[CITY]</code> <code>[CLIENT_EMAIL]</code> <code>[CLIENT_PHONE]</code>
-        <code>[CLIENT_DOB]</code> <code>[CLIENT_GENDER]</code> <code>[CLIENT_PASSPORT_NO]</code>
-        <code>[NATIONALITY]</code> <code>[COUNTRY]</code> <code>[DATE]</code></p>
-    </details>
+    @include('templates.client_keys')
     <button type="submit" class="btn btn-success">Save Changes</button>
     <a href="{{ route('templates.index') }}" class="btn btn-default">Cancel</a>
 </div>

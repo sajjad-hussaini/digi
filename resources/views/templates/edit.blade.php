@@ -1,5 +1,8 @@
 @extends('layouts.app')
 @section('title', 'Edit ' . ucfirst(config('settings.templates_label_singular')))
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/template-client-keys.css') }}">
+@endsection
 @section('content')
     <section class="content-header">
         <h1>
@@ -28,6 +31,7 @@
 @endsection
 
 @section('scripts')
+    <script src="{{ asset('js/template-client-keys.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.6/dist/docx-preview.min.js"></script>
     <script src="{{ asset('js/template-preview.js') }}"></script>
